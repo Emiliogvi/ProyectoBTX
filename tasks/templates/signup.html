@@ -1,0 +1,59 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<div class="container">
+  <h1>Registrarse</h1>
+
+  {{error}}
+
+  <form action="/signup/" method="POST">
+    {% csrf_token %} 
+    
+    <!-- Traducir manualmente cada campo -->
+    <div class="form-group">
+      <label for="id_username">Nombre de usuario:</label>
+      <input type="text" name="username" class="form-control" id="id_username" required>
+      <small class="form-text text-muted">
+        Requerido. 150 caracteres o menos. Solo letras, dígitos y @/./+/-/_
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="id_password1">Contraseña:</label>
+      <input type="password" name="password1" class="form-control" id="id_password1" required>
+      <small class="form-text text-muted">
+        <ul>
+          <li>Tu contraseña no puede ser muy similar a tu otra información personal.</li>
+          <li>Tu contraseña debe contener al menos 8 caracteres.</li>
+          <li>Tu contraseña no puede ser una contraseña comúnmente utilizada.</li>
+          <li>Tu contraseña no puede ser completamente numérica.</li>
+        </ul>
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label for="id_password2">Confirmación de contraseña:</label>
+      <input type="password" name="password2" class="form-control" id="id_password2" required>
+      <small class="form-text text-muted">
+        Ingresa la misma contraseña que antes, para verificación.
+      </small>
+    </div>
+
+    <button class="btn btn-primary">Registrarse</button>
+  </form>
+</div>
+
+<style>
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  .form-text ul {
+    margin-bottom: 0;
+    padding-left: 1rem;
+  }
+  .form-text li {
+    margin-bottom: 0.25rem;
+  }
+</style>
+
+{% endblock %}

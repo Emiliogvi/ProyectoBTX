@@ -1,0 +1,528 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Mostrar errores -->
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            <!-- Cuadro blanco principal -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-5">
+                    <h1 class="text-center mb-4">Crear Nueva Simulación</h1>
+                    
+                    <!-- Información de la simulación en borrador -->
+                    <div class="simulation-info mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="nombreSimulacion" class="form-label">Nombre de Simulación:</label>
+                                <input type="text" class="form-control" id="nombreSimulacion" placeholder="Ej: Simulación Centro Ciudad">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="ubicacionSimulacion" class="form-label">Ubicación:</label>
+                                <input type="text" class="form-control" id="ubicacionSimulacion" placeholder="Ej: Bucaramanga, Centro">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="descripcionSimulacion" class="form-label">Descripción:</label>
+                                <input type="text" class="form-control" id="descripcionSimulacion" placeholder="Descripción opcional...">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary" id="crearBorradorBtn">
+                                <i class="fas fa-plus me-2"></i>Crear Borrador
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Columna izquierda - Área de subida de archivos -->
+                        <div class="col-md-8">
+                            <div id="uploadArea" style="display: none;">
+                                <div class="drop-zone border-dashed rounded p-5 text-center mb-4" id="dropZone">
+                                    <div class="file-icon mb-3">
+                                        <i class="fas fa-file-excel fa-4x text-primary"></i>
+                                    </div>
+                                    <h4>Arrastra tu archivo Excel aquí</h4>
+                                    <p class="text-muted">o haz clic para seleccionar archivo</p>
+                                    <p class="text-muted small">Sube un archivo a la vez</p>
+                                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="d-none">
+                                    <button class="btn btn-outline-primary mt-3" onclick="document.getElementById('fileInput').click()">
+                                        Seleccionar Archivo
+                                    </button>
+                                </div>
+                                
+                                <!-- Lista de archivos en borrador -->
+                                <div class="uploaded-files mt-4">
+                                    <h5>Archivos en Borrador</h5>
+                                    <div id="filesList" class="mt-3"></div>
+                                </div>
+                            </div>
+
+                            <div id="noBorradorMessage" class="alert alert-info text-center">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Primero crea un borrador de simulación para comenzar a subir archivos.
+                            </div>
+                        </div>
+                        
+                        <!-- Columna derecha - Controles -->
+                        <div class="col-md-4">
+                            <div class="table-selection">
+                                <h5>Seleccionar Tipo de Tabla</h5>
+                                <div class="dropdown mb-3">
+                                    <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="tableDropdown" data-bs-toggle="dropdown" disabled>
+                                        Seleccionar tabla
+                                    </button>
+                                    <ul class="dropdown-menu w-100">
+                                        <li><a class="dropdown-item" href="#" data-table="Emisiones">Emisiones</a></li>
+                                        <li><a class="dropdown-item" href="#" data-table="Dispersión">Dispersión Atmosférica</a></li>
+                                        <li><a class="dropdown-item" href="#" data-table="Exposición">Exposición Poblacional</a></li>
+                                        <li><a class="dropdown-item" href="#" data-table="Salud">Salud Respiratoria</a></li>
+                                        <li><a class="dropdown-item" href="#" data-table="Social">Respuesta Social y Regulatoria</a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="selected-table mb-3">
+                                    <h6>Tabla Seleccionada:</h6>
+                                    <div id="selectedTable" class="alert alert-info py-2">No seleccionada</div>
+                                </div>
+
+                                <!-- Información del archivo actual -->
+                                <div class="current-file mb-3" id="currentFileInfo" style="display: none;">
+                                    <h6>Archivo Seleccionado:</h6>
+                                    <div id="fileInfo" class="alert alert-warning py-2"></div>
+                                </div>
+                                
+                                <button class="btn btn-success w-100 mb-2" id="uploadBtn" disabled>
+                                    <i class="fas fa-upload me-2"></i>Subir Archivo al Borrador
+                                </button>
+                                
+                                <button class="btn btn-danger w-100 mb-2" id="removeBtn" disabled>
+                                    <i class="fas fa-trash me-2"></i>Eliminar Archivo
+                                </button>
+                                
+                                <button class="btn btn-primary w-100 mt-4" id="finalizarBtn" disabled>
+                                    <i class="fas fa-check me-2"></i>Finalizar Simulación
+                                </button>
+
+                                <button class="btn btn-outline-danger w-100 mt-2" id="cancelarBtn" style="display: none;">
+                                    <i class="fas fa-times me-2"></i>Cancelar Borrador
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulación en borrador actual -->
+            <div class="card shadow-sm border-0 mt-4" id="currentDraftSection" style="display: none;">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-edit me-2"></i>Simulación en Borrador
+                        <span class="badge bg-warning ms-2">Borrador</span>
+                    </h5>
+                    <div id="draftInfo"></div>
+                </div>
+            </div>
+
+            <!-- Lista de simulaciones existentes -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Simulaciones Completadas</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Archivos</th>
+                                    <th>Ubicación</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for simulacion in simulaciones %}
+                                <tr>
+                                    <td>{{ simulacion.nombre_simulacion }}</td>
+                                    <td>
+                                        {% for archivo in simulacion.archivoexcel_set.all %}
+                                            <span class="badge bg-info">{{ archivo.tipo_tabla }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{ simulacion.ubicacion|default:"No especificada" }}</td>
+                                    <td>{{ simulacion.fecha_ejecucion|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge {% if simulacion.estado == 'completada' %}bg-success{% else %}bg-warning{% endif %}">
+                                            {{ simulacion.estado }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'simulacion_detail' simulacion.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'delete_simulation' simulacion.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar esta simulación?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No hay simulaciones completadas</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function getCookie(name){const v=`; ${document.cookie}`;const p=v.split(`; ${name}=`);if(p.length===2) return p.pop().split(';').shift();}
+  const csrftoken = getCookie('csrftoken');
+</script>
+
+<!-- Modal para finalizar simulación -->
+<div class="modal fade" id="finalizarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Finalizar Simulación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres finalizar esta simulación? Esta acción no se puede deshacer.</p>
+                <div id="finalizarDetails"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Seguir Editando</button>
+                <form method="POST" action="{% url 'finalizar_simulacion' %}" id="finalizarForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="simulacion_id" id="simulacionIdInput">
+                    <button type="submit" class="btn btn-primary">Finalizar Simulación</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-dashed {
+        border: 2px dashed #dee2e6;
+        transition: all 0.3s ease;
+    }
+    .border-dashed:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .border-dashed.dragover {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+    }
+    .file-item {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .file-item.selected {
+        border-color: #007bff;
+        background-color: #e3f2fd;
+    }
+    .file-icon {
+        color: #28a745;
+    }
+    .file-info {
+        font-size: 0.9em;
+    }
+    .draft-file {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+    }
+</style>
+
+<script>
+    let selectedTable = '';
+    let currentFile = null;
+    let currentDraft = null;
+    let draftFiles = [];
+
+    // Configurar dropdown
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectedTable = this.getAttribute('data-table');
+            document.getElementById('selectedTable').textContent = this.textContent;
+            document.getElementById('tableDropdown').textContent = this.textContent;
+            updateButtons();
+        });
+    });
+
+    // Botón crear borrador
+    document.getElementById('crearBorradorBtn').addEventListener('click', function() {
+        const nombre = document.getElementById('nombreSimulacion').value.trim();
+        const ubicacion = document.getElementById('ubicacionSimulacion').value.trim();
+        const descripcion = document.getElementById('descripcionSimulacion').value.trim();
+
+        if (!nombre) {
+            alert('Por favor, ingresa un nombre para la simulación');
+            return;
+        }
+
+        // Crear borrador via AJAX
+        fetch("{% url 'crear_borrador' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: `nombre_simulacion=${encodeURIComponent(nombre)}&ubicacion=${encodeURIComponent(ubicacion)}&descripcion=${encodeURIComponent(descripcion)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                currentDraft = data.simulacion;
+                showDraftInfo();
+                document.getElementById('uploadArea').style.display = 'block';
+                document.getElementById('noBorradorMessage').style.display = 'none';
+                document.getElementById('tableDropdown').disabled = false;
+                document.getElementById('crearBorradorBtn').disabled = true;
+                document.getElementById('cancelarBtn').style.display = 'block';
+                updateButtons();
+            } else {
+                alert('Error al crear borrador: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al crear borrador');
+        });
+    });
+
+    // Configurar zona de arrastre
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        if (file && file.name.match(/\.(xlsx|xls|csv)$/)) {
+            currentFile = file;
+            showFileInfo(file);
+            updateButtons();
+        } else {
+            alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)');
+        }
+    }
+
+    function showFileInfo(file) {
+        document.getElementById('fileInfo').textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        document.getElementById('currentFileInfo').style.display = 'block';
+    }
+
+    function showDraftInfo() {
+        document.getElementById('draftInfo').innerHTML = `
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Nombre:</strong> ${currentDraft.nombre_simulacion}
+                </div>
+                <div class="col-md-4">
+                    <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}
+                </div>
+                <div class="col-md-4">
+                    <strong>Archivos:</strong> ${draftFiles.length}
+                </div>
+            </div>
+        `;
+        document.getElementById('currentDraftSection').style.display = 'block';
+    }
+
+    function updateButtons() {
+        const hasFile = currentFile !== null;
+        const hasTable = selectedTable !== '';
+        const hasDraft = currentDraft !== null;
+        const hasFiles = draftFiles.length > 0;
+        
+        document.getElementById('uploadBtn').disabled = !hasFile || !hasTable || !hasDraft;
+        document.getElementById('removeBtn').disabled = !hasFile;
+        document.getElementById('finalizarBtn').disabled = !hasDraft || !hasFiles;
+    }
+
+    // Botón subir archivo
+    document.getElementById('uploadBtn').addEventListener('click', function() {
+        if (!currentFile || !selectedTable || !currentDraft) {
+            alert('Falta información para subir el archivo');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('archivo_excel', currentFile);
+        formData.append('tipo_tabla', selectedTable);
+        formData.append('simulacion_id', currentDraft.id);
+
+        fetch("{% url 'subir_archivo_borrador' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Agregar archivo a la lista
+                draftFiles.push({
+                    id: data.archivo_id,
+                    name: currentFile.name,
+                    table: selectedTable,
+                    size: (currentFile.size / 1024 / 1024).toFixed(2) + ' MB'
+                });
+                
+                updateFilesList();
+                currentFile = null;
+                selectedTable = '';
+                document.getElementById('selectedTable').textContent = 'No seleccionada';
+                document.getElementById('tableDropdown').textContent = 'Seleccionar tabla';
+                document.getElementById('currentFileInfo').style.display = 'none';
+                updateButtons();
+                
+                alert('Archivo subido correctamente al borrador');
+            } else {
+                alert('Error al subir archivo: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al subir archivo');
+        });
+    });
+
+    function updateFilesList() {
+        const filesList = document.getElementById('filesList');
+        filesList.innerHTML = '';
+        
+        draftFiles.forEach((fileData, index) => {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'file-item draft-file';
+            fileDiv.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-file-excel text-success me-2"></i>
+                        <strong>${fileData.name}</strong>
+                        <div class="file-info text-muted">
+                            ${fileData.table} - ${fileData.size}
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarArchivoBorrador(${fileData.id}, ${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            filesList.appendChild(fileDiv);
+        });
+        
+        showDraftInfo();
+    }
+
+    function eliminarArchivoBorrador(archivoId, index) {
+        if (confirm('¿Eliminar este archivo del borrador?')) {
+            fetch("{% url 'eliminar_archivo_borrador' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: `archivo_id=${archivoId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    draftFiles.splice(index, 1);
+                    updateFilesList();
+                    updateButtons();
+                } else {
+                    alert('Error al eliminar archivo');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar archivo');
+            });
+        }
+    }
+
+    // Botón finalizar
+    document.getElementById('finalizarBtn').addEventListener('click', function() {
+        document.getElementById('finalizarDetails').innerHTML = `
+            <div class="alert alert-info">
+                <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
+                <strong>Archivos:</strong> ${draftFiles.length} archivos<br>
+                <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}
+            </div>
+        `;
+        document.getElementById('simulacionIdInput').value = currentDraft.id;
+        new bootstrap.Modal(document.getElementById('finalizarModal')).show();
+    });
+
+    // Botón cancelar
+    document.getElementById('cancelarBtn').addEventListener('click', function() {
+        if (confirm('¿Cancelar este borrador? Se perderán todos los archivos subidos.')) {
+            if (currentDraft) {
+                fetch("{% url 'cancelar_borrador' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: `simulacion_id=${currentDraft.id}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+            } else {
+                location.reload();
+            }
+        }
+    });
+
+    // Botón eliminar archivo actual
+    document.getElementById('removeBtn').addEventListener('click', function() {
+        currentFile = null;
+        document.getElementById('currentFileInfo').style.display = 'none';
+        fileInput.value = '';
+        updateButtons();
+    });
+</script>
+
+{% endblock %}

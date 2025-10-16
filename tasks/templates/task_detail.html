@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Columna izquierda - Gráfica del modelo causal (2/3) -->
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center">
+                    <h3 class="card-title mb-4">{{task.title}}</h3>
+                    
+                    <!-- Gráfica del modelo causal -->
+                    <div class="causal-model-container">
+                        <img src="/static/images/modelo_causal_btx.jpg" 
+                             alt="Modelo Causal BTX" 
+                             class="causal-model-img img-fluid"
+                             id="causalModel">
+                    </div>
+                    
+                    <!-- Información adicional de la tarea -->
+                    <div class="task-details mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <strong>ID del Registro:</strong> {{task.id}}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Usuario Responsable:</strong> {{task.user.username}}
+                                </div>
+                                <div class="info-item">
+                                    <strong>Fecha de Creación:</strong> {{task.created|date:'d/m/Y'}}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <strong>Hora de Creación:</strong> {{task.created|date:'H:i'}}
+                                </div>
+                                {% if task.ubicacion %}
+                                <div class="info-item">
+                                    <strong>Ubicación:</strong> {{task.ubicacion}}
+                                </div>
+                                {% endif %}
+                                <div class="info-item">
+                                    <strong>Estado:</strong> 
+                                    <span class="badge {% if task.datecompleted %}bg-success{% else %}bg-warning{% endif %}">
+                                        {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de archivos de la simulación -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        Archivos de la Simulación: {{task.title}}
+                        <small class="text-muted">({{ archivos_simulacion|length }} archivos)</small>
+                    </h5>
+                    
+                    {% if archivos_simulacion %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre del Archivo</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha de Carga</th>
+                                    <th>Tamaño</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for archivo in archivos_simulacion %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-file-excel text-success me-2"></i>
+                                        {{ archivo.archivo.name|slice:"15:" }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ archivo.tipo_tabla }}</span>
+                                    </td>
+                                    <td>{{ archivo.fecha_carga|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if archivo.archivo.size %}
+                                            {{ archivo.archivo.size|filesizeformat }}
+                                        {% else %}
+                                            Desconocido
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ archivo.archivo.url }}" class="btn btn-sm btn-outline-success" download>
+                                            <i class="fas fa-download me-1"></i>Descargar
+                                        </a>
+                                        <a href="{% url 'delete_archivo' archivo.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este archivo?')">
+                                            <i class="fas fa-trash me-1"></i>Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No hay archivos asociados a esta simulación.
+                        {% if simulacion %}
+                        <!-- Debug: Mostrar información de la simulación -->
+                        <div class="mt-2 small">
+                            <strong>Debug:</strong> Simulación encontrada pero sin archivos
+                        </div>
+                        {% else %}
+                        <div class="mt-2 small">
+                            <strong>Debug:</strong> No se encontró simulación con nombre "{{task.title}}"
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Formulario para agregar más archivos -->
+                    <div class="mt-4">
+                        <h6>Agregar más archivos a esta simulación</h6>
+                        <form method="POST" action="{% url 'add_archivo_simulacion' task.id %}" enctype="multipart/form-data" class="row g-3">
+                            {% csrf_token %}
+                            <div class="col-md-4">
+                                <select name="tipo_tabla" class="form-select" required>
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="Emisiones">Emisiones</option>
+                                    <option value="Dispersión">Dispersión Atmosférica</option>
+                                    <option value="Exposición">Exposición Poblacional</option>
+                                    <option value="Salud">Salud Respiratoria</option>
+                                    <option value="Social">Respuesta Social y Regulatoria</option>
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="file" name="archivo_excel" class="form-control" accept=".xlsx,.xls,.csv" required>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-plus me-1"></i>Agregar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha - Datos numéricos BTX (1/3) -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4">Datos BTX - Indicadores</h5>
+                    
+                    <!-- Datos numéricos extraídos de la base de datos -->
+                    <div class="btx-data">
+                        {% if btx_data %}
+                            <!-- Si hay datos reales de la base de datos -->
+                            <div class="data-item">
+                                <strong>Concentración Benceno:</strong> 
+                                <span class="float-end">{{ btx_data.concentracion_benzeno }} µg/m³</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Concentración Tolueno:</strong> 
+                                <span class="float-end">{{ btx_data.concentracion_tolueno }} µg/m³</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Concentración Xileno:</strong> 
+                                <span class="float-end">{{ btx_data.concentracion_xileno }} µg/m³</span>
+                            </div>
+                        {% else %}
+                            <!-- Datos de ejemplo (cuando no hay conexión a BD) -->
+                            <div class="data-item">
+                                <strong>Límite de exposición al Benceno (OMS):</strong> 
+                                <span class="float-end">5 µg/m³</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Tiempo de vida media en aire del Tolueno:</strong> 
+                                <span class="float-end">2 días</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Tiempo de vida media en aire del Xileno:</strong> 
+                                <span class="float-end">1 día</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Concentración típica de BTX en zona de alto tráfico:</strong> 
+                                <span class="float-end">50-200 µg/m³</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Número de vehículos en Bucaramanga (2023):</strong> 
+                                <span class="float-end">400,000+</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Población expuesta en zonas críticas:</strong> 
+                                <span class="float-end">150,000 personas</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Casos de asma reportados:</strong> 
+                                <span class="float-end">1,250 casos/año</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Hospitalizaciones respiratorias:</strong> 
+                                <span class="float-end">320 casos/año</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Factor de emisión vehicular:</strong> 
+                                <span class="float-end">2.45 g/km</span>
+                            </div>
+                            <div class="data-item">
+                                <strong>Velocidad del viento promedio:</strong> 
+                                <span class="float-end">3.2 m/s</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Botones de descarga -->
+                    <div class="download-buttons mt-4">
+                        {% if archivos_simulacion %}
+                            {% for archivo in archivos_simulacion %}
+                            <a href="{{ archivo.archivo.url }}" class="btn btn-outline-success w-100 mb-2" download>
+                                <i class="fas fa-file-excel me-2"></i>Descargar {{ archivo.tipo_tabla }}
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            <button class="btn btn-outline-success w-100 mb-2" disabled>
+                                <i class="fas fa-file-excel me-2"></i>No hay archivos
+                            </button>
+                        {% endif %}
+                        
+                        <button class="btn btn-outline-primary w-100 mb-2" id="downloadJPG">
+                            <i class="fas fa-image me-2"></i>Descargar Gráfica JPG
+                        </button>
+                        <button class="btn btn-outline-info w-100 mb-2" id="downloadTXT">
+                            <i class="fas fa-file-alt me-2"></i>Descargar Datos TXT
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formularios de acciones -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title">Acciones del Registro</h6>
+                    
+                    <!-- Formulario de actualización -->
+                    {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.as_p }}
+                        </div>
+                        <button class="btn btn-warning w-100">
+                            <i class="fas fa-edit me-2"></i>Actualizar
+                        </button>
+                    </form>
+
+                    <!-- Botones de completar y eliminar -->
+                    <div class="d-grid gap-2">
+                        <form action="{% url 'complete_task' task.id %}" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Completar
+                            </button>
+                        </form>
+
+                        <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-2"></i>Eliminar Registro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>¡Advertencia!</strong> Esta acción no se puede deshacer.
+                </div>
+                <p>¿Estás seguro de que quieres eliminar permanentemente el registro <strong>"{{task.title}}"</strong>?</p>
+                <p class="text-muted">Se eliminarán todos los datos asociados, incluyendo archivos Excel y resultados.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{% url 'delete_task' task.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sí, Eliminar Permanentemente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .causal-model-container {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    .causal-model-img {
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        max-height: 400px;
+        width: auto;
+    }
+    .causal-model-img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    .btx-data {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .data-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 0.9em;
+    }
+    .data-item:last-child {
+        border-bottom: none;
+    }
+    .info-item {
+        margin-bottom: 10px;
+        padding: 8px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        font-size: 0.9em;
+    }
+    .download-buttons .btn {
+        transition: all 0.3s ease;
+    }
+    .download-buttons .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+    }
+    .download-buttons .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    .card {
+        border-radius: 15px;
+    }
+    .card-body {
+        padding: 25px;
+    }
+</style>
+
+<script>
+    // Funcionalidad para las descargas
+    document.getElementById('downloadJPG').addEventListener('click', function() {
+        // Descargar la gráfica JPG
+        const imageUrl = document.getElementById('causalModel').src;
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'modelo_causal_btx.jpg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    document.getElementById('downloadTXT').addEventListener('click', function() {
+        // Generar y descargar archivo TXT con los datos
+        const dataItems = document.querySelectorAll('.data-item');
+        let txtContent = 'DATOS BTX - INDICADORES\n';
+        txtContent += '========================\n\n';
+        
+        dataItems.forEach(item => {
+            const text = item.textContent.trim();
+            txtContent += text + '\n';
+        });
+        
+        txtContent += '\n---\n';
+        txtContent += `Registro ID: {{task.id}}\n`;
+        txtContent += `Título: {{task.title}}\n`;
+        txtContent += `Usuario: {{task.user.username}}\n`;
+        txtContent += `Fecha: {{task.created|date:'d/m/Y'}}\n`;
+        txtContent += `Hora: {{task.created|date:'H:i'}}\n`;
+        {% if task.ubicacion %}
+        txtContent += `Ubicación: {{task.ubicacion}}\n`;
+        {% endif %}
+        txtContent += `Fecha de generación: ${new Date().toLocaleDateString()}\n`;
+        
+        const blob = new Blob([txtContent], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `datos_btx_registro_{{task.id}}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // Efecto de hover mejorado para la imagen
+    const causalImage = document.getElementById('causalModel');
+    causalImage.addEventListener('mouseenter', function() {
+        this.style.cursor = 'zoom-in';
+    });
+    
+    causalImage.addEventListener('mouseleave', function() {
+        this.style.cursor = 'default';
+    });
+
+    // Efecto de zoom al hacer clic en la imagen
+    causalImage.addEventListener('click', function() {
+        if (this.style.transform === 'scale(1.8)') {
+            this.style.transform = 'scale(1)';
+            this.style.zIndex = '1';
+        } else {
+            this.style.transform = 'scale(1.8)';
+            this.style.zIndex = '1000';
+            this.style.position = 'relative';
+        }
+    });
+</script>
+
+{% endblock %}
