@@ -72,17 +72,19 @@ class ArchivoExcel(models.Model):
     simulacion = models.ForeignKey(Simulacion, on_delete=models.CASCADE)
     tipo_tabla = models.CharField(max_length=20, choices=TIPOS)
     archivo = models.FileField(
-        upload_to='archivos_excel/%Y/%m/%d/',  # ← ORGANIZACIÓN POR FECHA
+        upload_to='archivos_excel/%Y/%m/%d/',
         validators=[FileExtensionValidator(allowed_extensions=['xls', 'xlsx', 'csv'])]
     )
     fecha_carga = models.DateTimeField(auto_now_add=True)
 
+    # 👇 NUEVOS CAMPOS
+    valido = models.BooleanField(default=False)
+    errores_validacion = models.TextField(blank=True, null=True)
+    num_filas = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return f"{self.tipo_tabla} ({self.simulacion.nombre_simulacion})"
 
-    def nombre_archivo(self):
-        """Devuelve solo el nombre del archivo sin la ruta"""
-        return os.path.basename(self.archivo.name)
 
 
 # -------------------------

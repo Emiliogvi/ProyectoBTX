@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from .utils import validar_archivo_excel
 
 from .models import Task, Simulacion, ArchivoExcel
 from .forms import TaskForm
@@ -440,3 +441,88 @@ def simulacion_detail(request, simulacion_id):
         'simulacion': simulacion,
         'error': error,
     })
+
+@login_required
+def subir_archivo_borrador(request):
+    if request.method == 'POST':
+        try:
+            simulacion_id = request.POST.get('simulacion_id')
+            simulacion = get_object_or_404(
+                Simulacion, id=simulacion_id, usuario=request.user, estado='borrador'
+            )
+
+            if 'archivo_excel' not in request.FILES:
+                return JsonResponse({'success': False, 'error': 'No se recibió ningún archivo'})
+
+            archivo_excel = request.FILES['archivo_excel']
+            tipo_tabla = request.POST.get('tipo_tabla')
+
+            # 1) guarda el registro y el archivo físicamente
+            archivo = ArchivoExcel.objects.create(
+                simulacion=simulacion,
+                tipo_tabla=tipo_tabla,
+                archivo=archivo_excel
+            )
+
+            # 2) valida el archivo ya guardado
+            es_valido, errores, num_filas = validar_archivo_excel(archivo.archivo.path, tipo_tabla)
+
+            # 3) actualiza flags en BD
+            archivo.valido = bool(es_valido)
+            archivo.errores_validacion = errores
+            archivo.num_filas = num_filas
+            archivo.save(update_fields=['valido', 'errores_validacion', 'num_filas'])
+
+            return JsonResponse({
+                'success': True,
+                'archivo_id': archivo.id,
+                'valido': archivo.valido,
+                'errores': archivo.errores_validacion,
+                'num_filas': archivo.num_filas,
+                'msg': (f'{tipo_tabla}: {num_filas} filas procesadas.' if archivo.valido
+                        else f'{tipo_tabla}: inválido. {errores or ""}')
+            })
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+
+# al inicio del archivo ya importaste: from .utils import validar_archivo_excel
+
+@login_required
+def add_archivo_simulacion(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+
+    if request.method == 'POST' and 'archivo_excel' in request.FILES:
+        try:
+            simulacion = Simulacion.objects.filter(
+                usuario=request.user,
+                nombre_simulacion=task.title
+            ).first()
+
+            if not simulacion:
+                simulacion = Simulacion.objects.create(
+                    usuario=request.user,
+                    nombre_simulacion=task.title,
+                    descripcion=task.description,
+                    ubicacion=task.ubicacion or "No especificada",
+                    estado='completada'
+                )
+
+            archivo = ArchivoExcel.objects.create(
+                simulacion=simulacion,
+                tipo_tabla=request.POST.get('tipo_tabla'),
+                archivo=request.FILES['archivo_excel']
+            )
+
+            es_valido, errores, num_filas = validar_archivo_excel(archivo.archivo.path, archivo.tipo_tabla)
+            archivo.valido = bool(es_valido)
+            archivo.errores_validacion = errores
+            archivo.num_filas = num_filas
+            archivo.save(update_fields=['valido', 'errores_validacion', 'num_filas'])
+
+        except Exception as e:
+            print(f"Error al agregar archivo: {e}")
+
+    return redirect('task_detail', task_id=task_id)
