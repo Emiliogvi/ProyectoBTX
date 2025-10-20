@@ -12,10 +12,10 @@
                     
                     <!-- Gráfica del modelo causal -->
                     <div class="causal-model-container">
-                        <img src="/static/images/modelo_causal_btx.jpg" 
-                             alt="Modelo Causal BTX" 
-                             class="causal-model-img img-fluid"
-                             id="causalModel">
+                        <img src="{% url 'causal_graph_jpg' %}?v={{ task.created|date:'U' }}"
+                            alt="Modelo Causal BTX"
+                            class="causal-model-img img-fluid"
+                            id="causalModel">
                     </div>
                     
                     <!-- Información adicional de la tarea -->
@@ -220,6 +220,18 @@
                         <button class="btn btn-outline-primary w-100 mb-2" id="downloadJPG">
                             <i class="fas fa-image me-2"></i>Descargar Gráfica JPG
                         </button>
+
+                        <script>
+                        // Descargar la JPG generada por Django
+                            document.getElementById('downloadJPG').addEventListener('click', function () {
+                                const a = document.createElement('a');
+                                a.href = "{% url 'causal_graph_jpg' %}";
+                                a.download = "modelo_causal_btx.jpg";
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            });
+                        </script>
                         
                         {% if resultados_txt %}
                         <button class="btn btn-outline-info w-100 mb-2" id="downloadTXT">
