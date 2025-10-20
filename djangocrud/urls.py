@@ -40,6 +40,9 @@ urlpatterns = [
     path('finalizar_simulacion/', views.finalizar_simulacion, name='finalizar_simulacion'),
     path('cancelar_borrador/', views.cancelar_borrador, name='cancelar_borrador'),
     path('simulaciones/<int:simulacion_id>/', views.simulacion_detail, name='simulacion_detail'),
+    path('add_archivo_simulacion/<int:task_id>/', views.add_archivo_simulacion, name='add_archivo_simulacion'),
+    path('simulacion_detail/<int:simulacion_id>/', views.simulacion_detail, name='simulacion_detail'),
+
 ]
 
 if settings.DEBUG:

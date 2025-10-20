@@ -78,6 +78,20 @@
                   </div>
                   <div id="filesList" class="mt-3"></div>
                 </div>
+
+                <!-- Información del procesamiento -->
+                <div id="procesamientoInfo" class="mt-4" style="display: none;">
+                  <div class="alert alert-info">
+                    <h6 class="alert-heading"><i class="fas fa-cogs me-2"></i>Procesamiento de Datos BTX</h6>
+                    <p class="mb-2">Al finalizar la simulación se ejecutarán las siguientes ecuaciones:</p>
+                    <ul class="small mb-0">
+                      <li>BTX Total = 0.5×Benceno + 0.3×Tolueno + 0.2×Xileno</li>
+                      <li>BTX Ajustado = (BTX_total / (Velocidad_Viento + 0.1)) × (1 + Temperatura / 100)</li>
+                      <li>Exposición = BTX_ajustado × (Tiempo_Exposición / 10) × (1 / Tamaño_Población)</li>
+                      <li>Regresión lineal múltiple para estimar casos de salud</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
 
               <!-- Mensaje inicial -->
@@ -127,8 +141,19 @@
 
                   <hr class="text-muted">
 
+                  <!-- Estado del procesamiento -->
+                  <div id="estadoProcesamiento" class="mb-3" style="display: none;">
+                    <h6 class="fw-semibold small text-muted mb-1">Estado del Análisis</h6>
+                    <div class="alert alert-warning py-2 px-3 rounded-3">
+                      <small>
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        <span id="archivosRequeridos">0/4</span> archivos requeridos
+                      </small>
+                    </div>
+                  </div>
+
                   <button class="btn btn-primary w-100 mt-1 rounded-3 lift" id="finalizarBtn" disabled>
-                    <i class="fas fa-check me-2"></i>Finalizar Simulación
+                    <i class="fas fa-calculator me-2"></i>Procesar y Finalizar
                   </button>
 
                   <button class="btn btn-outline-secondary w-100 mt-2 rounded-3" id="cancelarBtn" style="display: none;">
@@ -212,6 +237,372 @@
   function getCookie(name){const v=`; ${document.cookie}`;const p=v.split(`; ${name}=`);if(p.length===2) return p.pop().split(';').shift();}
   const csrftoken = getCookie('csrftoken');
   function escapeHtml(s){return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  let selectedTable = '';
+  let currentFile = null;
+  let currentDraft = null;
+  let draftFiles = [];
+
+  // Archivos requeridos para el procesamiento
+  const archivosRequeridos = ['Emisiones', 'Dispersión', 'Exposición', 'Salud'];
+  const archivosOpcionales = ['Social'];
+
+  // dropdown tipo tabla
+  document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      selectedTable = this.getAttribute('data-table');
+      const selectedTableElement = document.getElementById('selectedTable');
+      const tableDropdown = document.getElementById('tableDropdown');
+      
+      if (selectedTableElement) selectedTableElement.textContent = this.textContent;
+      if (tableDropdown) tableDropdown.textContent = this.textContent;
+      updateButtons();
+    });
+  });
+
+  // crear borrador
+  document.getElementById('crearBorradorBtn').addEventListener('click', function() {
+    const nombre = document.getElementById('nombreSimulacion').value.trim();
+    const ubicacion = document.getElementById('ubicacionSimulacion').value.trim();
+    const descripcion = document.getElementById('descripcionSimulacion').value.trim();
+
+    if (!nombre) { alert('Por favor, ingresa un nombre para la simulación'); return; }
+
+    fetch("{% url 'crear_borrador' %}", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+      body: `nombre_simulacion=${encodeURIComponent(nombre)}&ubicacion=${encodeURIComponent(ubicacion)}&descripcion=${encodeURIComponent(descripcion)}`
+    })
+    .then(r=>r.json())
+    .then(data=>{
+      if (data.success){
+        currentDraft = data.simulacion;
+        showDraftInfo();
+        
+        const uploadArea = document.getElementById('uploadArea');
+        const noBorradorMessage = document.getElementById('noBorradorMessage');
+        const tableDropdown = document.getElementById('tableDropdown');
+        const crearBorradorBtn = document.getElementById('crearBorradorBtn');
+        const cancelarBtn = document.getElementById('cancelarBtn');
+        const procesamientoInfo = document.getElementById('procesamientoInfo');
+        
+        if (uploadArea) uploadArea.style.display = 'block';
+        if (noBorradorMessage) noBorradorMessage.style.display = 'none';
+        if (tableDropdown) tableDropdown.disabled = false;
+        if (crearBorradorBtn) crearBorradorBtn.disabled = true;
+        if (cancelarBtn) cancelarBtn.style.display = 'block';
+        if (procesamientoInfo) procesamientoInfo.style.display = 'block';
+        
+        updateButtons();
+        alert('Borrador creado. Ya puedes subir archivos.');
+      } else {
+        alert('Error al crear borrador: ' + (data.error || ''));
+      }
+    })
+    .catch(()=>alert('Error al crear borrador'));
+  });
+
+  // drag & drop
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  
+  if (dropZone) {
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+  }
+  
+  if (fileInput) {
+    fileInput.addEventListener('change', e => { if (e.target.files.length>0) handleFile(e.target.files[0]); });
+  }
+
+  function handleFile(file){
+    if (file && file.name.match(/\.(xlsx|xls|csv)$/)){
+      currentFile = file; 
+      showFileInfo(file); 
+      updateButtons();
+    } else { 
+      alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)'); 
+    }
+  }
+
+  function showFileInfo(file){
+    const fileInfo = document.getElementById('fileInfo');
+    const currentFileInfo = document.getElementById('currentFileInfo');
+    
+    if (fileInfo) fileInfo.textContent = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+    if (currentFileInfo) currentFileInfo.style.display = 'block';
+  }
+
+  function showDraftInfo(){
+    const draftInfo = document.getElementById('draftInfo');
+    const currentDraftSection = document.getElementById('currentDraftSection');
+    
+    if (draftInfo) {
+      draftInfo.innerHTML = `
+        <div class="row g-3">
+          <div class="col-md-4"><strong>Nombre:</strong> ${currentDraft.nombre_simulacion}</div>
+          <div class="col-md-4"><strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}</div>
+          <div class="col-md-4"><strong>Archivos:</strong> ${draftFiles.length}</div>
+        </div>`;
+    }
+    
+    if (currentDraftSection) currentDraftSection.style.display = 'block';
+  }
+
+  function verificarArchivosRequeridos() {
+    const archivosSubidos = draftFiles.map(f => f.table);
+    const archivosFaltantes = archivosRequeridos.filter(req => !archivosSubidos.includes(req));
+    const archivosCompletos = archivosFaltantes.length === 0;
+    
+    // Actualizar estado
+    const estadoElement = document.getElementById('estadoProcesamiento');
+    const archivosRequeridosElement = document.getElementById('archivosRequeridos');
+    
+    if (estadoElement && archivosRequeridosElement) {
+      if (draftFiles.length > 0) {
+        estadoElement.style.display = 'block';
+        archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length}`;
+        
+        if (archivosCompletos) {
+          estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3';
+          estadoElement.querySelector('.alert').innerHTML = `
+            <small>
+              <i class="fas fa-check-circle me-1"></i>
+              Todos los archivos requeridos están listos
+            </small>
+          `;
+        } else {
+          estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3';
+          estadoElement.querySelector('.alert').innerHTML = `
+            <small>
+              <i class="fas fa-exclamation-triangle me-1"></i>
+              Faltan ${archivosFaltantes.length} archivos requeridos
+            </small>
+          `;
+        }
+      } else {
+        estadoElement.style.display = 'none';
+      }
+    }
+    
+    return archivosCompletos;
+  }
+
+  function updateButtons(){
+    const hasFile = currentFile !== null;
+    const hasTable = selectedTable !== '';
+    const hasDraft = currentDraft !== null;
+    const archivosCompletos = verificarArchivosRequeridos();
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    const removeBtn = document.getElementById('removeBtn');
+    const finalizarBtn = document.getElementById('finalizarBtn');
+    
+    if (uploadBtn) uploadBtn.disabled = !hasFile || !hasTable || !hasDraft;
+    if (removeBtn) removeBtn.disabled = !hasFile;
+    if (finalizarBtn) finalizarBtn.disabled = !(hasDraft && archivosCompletos);
+  }
+
+  // subir archivo
+  document.getElementById('uploadBtn').addEventListener('click', function(){
+    if (!currentFile || !selectedTable || !currentDraft){ 
+        alert('Falta información para subir el archivo'); 
+        return; 
+    }
+
+    const formData = new FormData();
+    formData.append('archivo_excel', currentFile);
+    formData.append('tipo_tabla', selectedTable);
+    formData.append('simulacion_id', currentDraft.id);
+
+    console.log('DEBUG: Enviando archivo:', {
+        nombre: currentFile.name,
+        tipo: selectedTable,
+        simulacion: currentDraft.id
+    });
+
+    fetch("{% url 'subir_archivo_borrador' %}", { 
+        method: 'POST', 
+        headers: { 'X-CSRFToken': csrftoken }, 
+        body: formData 
+    })
+    .then(response => {
+        console.log('DEBUG: Respuesta recibida, status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('DEBUG: Datos recibidos:', data);
+        if (data.success){
+            draftFiles.push({
+                id: data.archivo_id,
+                name: currentFile.name,
+                table: selectedTable,
+                size: (currentFile.size/1024/1024).toFixed(2) + ' MB',
+                valido: data.valido,
+                msg: data.msg || '',
+                errores: data.errores || ''
+            });
+            updateFilesList();
+            
+            // Limpiar selección después de subir
+            currentFile = null; 
+            selectedTable = '';
+            
+            const selectedTableElement = document.getElementById('selectedTable');
+            const tableDropdown = document.getElementById('tableDropdown');
+            const currentFileInfo = document.getElementById('currentFileInfo');
+            
+            if (selectedTableElement) selectedTableElement.textContent = 'No seleccionada';
+            if (tableDropdown) tableDropdown.textContent = 'Seleccionar tabla';
+            if (currentFileInfo) currentFileInfo.style.display = 'none';
+            if (fileInput) fileInput.value = '';
+            
+            updateButtons();
+            
+            if (data.valido) {
+                alert('Archivo subido y validado correctamente: ' + data.msg);
+            } else {
+                alert('Archivo subido pero con errores: ' + data.errores);
+            }
+        } else {
+            alert('Error al subir archivo: ' + (data.error || 'Error desconocido'));
+        }
+    })
+    .catch(error => {
+        console.error('DEBUG: Error en fetch:', error);
+        alert('Error de conexión al subir archivo: ' + error.message);
+    });
+  });
+
+  function updateFilesList(){
+    const filesList = document.getElementById('filesList');
+    if (!filesList) return;
+
+    filesList.innerHTML = '';
+
+    let valid = 0, invalid = 0;
+
+    draftFiles.forEach((f, index) => {
+      if (f.valido) valid++; else invalid++;
+      
+      const esRequerido = archivosRequeridos.includes(f.table);
+      const esOpcional = archivosOpcionales.includes(f.table);
+      
+      let claseEstado = '';
+      if (esRequerido) {
+        claseEstado = 'archivo-requerido';
+      } else if (esOpcional) {
+        claseEstado = 'archivo-opcional';
+      }
+
+      const item = document.createElement('div');
+      item.className = `file-item draft-file ${claseEstado}`;
+      item.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start gap-3">
+          <div>
+            <div class="mb-1">
+              <i class="fas fa-file-excel text-success me-2"></i>
+              <strong>${escapeHtml(f.name)}</strong>
+              ${esRequerido ? '<span class="badge bg-primary ms-2">Requerido</span>' : ''}
+              ${esOpcional ? '<span class="badge bg-secondary ms-2">Opcional</span>' : ''}
+            </div>
+            <div class="file-info text-muted">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
+            <div class="mt-1">
+              ${f.valido ? '<span class="badge bg-success">Válido</span>' : '<span class="badge bg-danger">Inválido</span>'}
+              ${f.msg ? `<small class="text-muted ms-2">${escapeHtml(f.msg)}</small>` : ''}
+              ${(!f.valido && f.errores) ? `<div class="text-danger small mt-1">${escapeHtml(f.errores)}</div>` : ''}
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-danger rounded-3" onclick="eliminarArchivoBorrador(${f.id}, ${index})">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>`;
+      filesList.appendChild(item);
+    });
+
+    const countValid = document.getElementById('countValid');
+    const countInvalid = document.getElementById('countInvalid');
+    
+    if (countValid) countValid.textContent = valid;
+    if (countInvalid) countInvalid.textContent = invalid;
+    
+    showDraftInfo();
+  }
+
+  function eliminarArchivoBorrador(archivoId, index){
+    if (!confirm('¿Eliminar este archivo del borrador?')) return;
+    fetch("{% url 'eliminar_archivo_borrador' %}", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+      body: `archivo_id=${archivoId}`
+    })
+    .then(r=>r.json())
+    .then(data=>{
+      if (data.success){
+        draftFiles.splice(index, 1);
+        updateFilesList();
+        updateButtons();
+      } else { 
+        alert('Error al eliminar archivo: ' + (data.error || 'Error desconocido')); 
+      }
+    })
+    .catch(()=>alert('Error de conexión al eliminar archivo'));
+  }
+
+  document.getElementById('finalizarBtn').addEventListener('click', function(){
+    const archivosCompletos = verificarArchivosRequeridos();
+    
+    if (!archivosCompletos) {
+      alert('Faltan archivos requeridos para procesar la simulación. Se necesitan: ' + archivosRequeridos.join(', '));
+      return;
+    }
+
+    const finalizarDetails = document.getElementById('finalizarDetails');
+    const simulacionIdInput = document.getElementById('simulacionIdInput');
+    
+    if (finalizarDetails) {
+      finalizarDetails.innerHTML = `
+        <div class="alert alert-info">
+          <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
+          <strong>Archivos a procesar:</strong> ${draftFiles.length} archivos<br>
+          <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}<br>
+          <strong>Procesamiento:</strong> Análisis BTX completo con regresión lineal
+        </div>`;
+    }
+    
+    if (simulacionIdInput) simulacionIdInput.value = currentDraft.id;
+    
+    const finalizarModal = new bootstrap.Modal(document.getElementById('finalizarModal'));
+    finalizarModal.show();
+  });
+
+  document.getElementById('cancelarBtn').addEventListener('click', function(){
+    if (!confirm('¿Cancelar este borrador? Se perderán todos los archivos subidos.')) return;
+    if (currentDraft){
+      fetch("{% url 'cancelar_borrador' %}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+        body: `simulacion_id=${currentDraft.id}`
+      }).then(r=>r.json()).then(d=>{ 
+        if (d.success) location.reload(); 
+        else alert('Error al cancelar borrador: ' + (d.error || 'Error desconocido'));
+      }).catch(()=>alert('Error de conexión al cancelar borrador'));
+    } else { 
+      location.reload(); 
+    }
+  });
+
+  document.getElementById('removeBtn').addEventListener('click', function(){
+    currentFile = null; 
+    
+    const currentFileInfo = document.getElementById('currentFileInfo');
+    if (currentFileInfo) currentFileInfo.style.display = 'none';
+    
+    if (fileInput) fileInput.value = '';
+    updateButtons();
+  });
 </script>
 
 <!-- Modal Finalizar -->
@@ -219,11 +610,22 @@
   <div class="modal-dialog">
     <div class="modal-content soft-card">
       <div class="modal-header">
-        <h5 class="modal-title">Finalizar Simulación</h5>
+        <h5 class="modal-title">Procesar y Finalizar Simulación</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="mb-3">¿Estás seguro de que quieres finalizar esta simulación? Esta acción no se puede deshacer.</p>
+        <p class="mb-3">¿Estás seguro de que quieres procesar y finalizar esta simulación?</p>
+        
+        <div class="alert alert-info">
+          <h6 class="alert-heading"><i class="fas fa-cogs me-2"></i>Procesamiento que se ejecutará:</h6>
+          <ul class="small mb-0">
+            <li>Análisis de concentraciones BTX (Benceno, Tolueno, Xileno)</li>
+            <li>Cálculo de exposición poblacional</li>
+            <li>Modelo de regresión para casos de salud</li>
+            <li>Generación de archivo de resultados TXT</li>
+          </ul>
+        </div>
+
         <div id="finalizarDetails"></div>
       </div>
       <div class="modal-footer">
@@ -231,7 +633,9 @@
         <form method="POST" action="{% url 'finalizar_simulacion' %}" id="finalizarForm">
           {% csrf_token %}
           <input type="hidden" name="simulacion_id" id="simulacionIdInput">
-          <button type="submit" class="btn btn-primary">Finalizar Simulación</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-calculator me-2"></i>Procesar y Finalizar
+          </button>
         </form>
       </div>
     </div>
@@ -239,29 +643,23 @@
 </div>
 
 <style>
-  /* --- estético general --- */
   .soft-card { border-radius: 16px; box-shadow: 0 8px 24px rgba(16,24,40,.06); }
   .pretty-input { border-radius: 12px; }
   .lift { transition: transform .15s ease, box-shadow .15s ease; }
   .lift:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(16,24,40,.12); }
-
-  /* --- drop zone --- */
   .pretty-border { border: 2px dashed #e3e7ef; border-radius: 16px; }
   .drop-zone { padding: 40px; background: linear-gradient(180deg,#fafbff 0,#fff 100%); }
   .drop-zone.dragover { border-color: #0d6efd; background: #eef5ff; }
-
-  /* --- lista de archivos --- */
   .file-item { background: #fbfcff; border: 1px solid #eef1f6; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
   .draft-file { border-left: 4px solid #84d087; background: #f6fff7; }
   .file-info { font-size: .9em; }
-
-  /* --- panel derecho sticky --- */
   .controls-sticky { position: sticky; top: 16px; }
   @media (max-width: 767.98px){ .controls-sticky { position: static; } }
-
-  /* --- badges suaves bootstrap 5.3 --- */
   .bg-info-subtle { background-color: #e7f1ff!important; }
   .text-info-emphasis { color: #084298!important; }
+  .archivo-requerido { border-left-color: #198754 !important; }
+  .archivo-faltante { border-left-color: #dc3545 !important; }
+  .archivo-opcional { border-left-color: #6c757d !important; }
 </style>
 
 <script>
@@ -269,6 +667,10 @@
   let currentFile = null;
   let currentDraft = null;
   let draftFiles = [];
+
+  // Archivos requeridos para el procesamiento
+  const archivosRequeridos = ['Emisiones', 'Dispersión', 'Exposición', 'Salud'];
+  const archivosOpcionales = ['Social'];
 
   // dropdown tipo tabla
   document.querySelectorAll('.dropdown-item').forEach(item => {
@@ -304,6 +706,7 @@
         document.getElementById('tableDropdown').disabled = false;
         document.getElementById('crearBorradorBtn').disabled = true;
         document.getElementById('cancelarBtn').style.display = 'block';
+        document.getElementById('procesamientoInfo').style.display = 'block';
         updateButtons();
         alert('Borrador creado. Ya puedes subir archivos.');
       } else {
@@ -342,52 +745,113 @@
     document.getElementById('currentDraftSection').style.display = 'block';
   }
 
+  function verificarArchivosRequeridos() {
+    const archivosSubidos = draftFiles.map(f => f.table);
+    const archivosFaltantes = archivosRequeridos.filter(req => !archivosSubidos.includes(req));
+    const archivosCompletos = archivosFaltantes.length === 0;
+    
+    // Actualizar estado
+    const estadoElement = document.getElementById('estadoProcesamiento');
+    const archivosRequeridosElement = document.getElementById('archivosRequeridos');
+    
+    if (draftFiles.length > 0) {
+      estadoElement.style.display = 'block';
+      archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length}`;
+      
+      if (archivosCompletos) {
+        estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3';
+        estadoElement.querySelector('.alert').innerHTML = `
+          <small>
+            <i class="fas fa-check-circle me-1"></i>
+            Todos los archivos requeridos están listos
+          </small>
+        `;
+      } else {
+        estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3';
+        estadoElement.querySelector('.alert').innerHTML = `
+          <small>
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            Faltan ${archivosFaltantes.length} archivos requeridos
+          </small>
+        `;
+      }
+    } else {
+      estadoElement.style.display = 'none';
+    }
+    
+    return archivosCompletos;
+  }
+
   function updateButtons(){
     const hasFile = currentFile !== null;
     const hasTable = selectedTable !== '';
     const hasDraft = currentDraft !== null;
-    const hasFiles = draftFiles.length > 0;
-    const allValid = draftFiles.length > 0 && draftFiles.every(f => f.valido);
+    const archivosCompletos = verificarArchivosRequeridos();
 
     document.getElementById('uploadBtn').disabled = !hasFile || !hasTable || !hasDraft;
     document.getElementById('removeBtn').disabled = !hasFile;
-    document.getElementById('finalizarBtn').disabled = !(hasDraft && hasFiles && allValid);
+    document.getElementById('finalizarBtn').disabled = !(hasDraft && archivosCompletos);
   }
 
   // subir archivo
   document.getElementById('uploadBtn').addEventListener('click', function(){
-    if (!currentFile || !selectedTable || !currentDraft){ alert('Falta información para subir el archivo'); return; }
+    if (!currentFile || !selectedTable || !currentDraft){ 
+        alert('Falta información para subir el archivo'); 
+        return; 
+    }
 
     const formData = new FormData();
     formData.append('archivo_excel', currentFile);
     formData.append('tipo_tabla', selectedTable);
     formData.append('simulacion_id', currentDraft.id);
 
-    fetch("{% url 'subir_archivo_borrador' %}", { method: 'POST', headers: { 'X-CSRFToken': csrftoken }, body: formData })
-      .then(r=>r.json())
-      .then(data=>{
+    console.log('DEBUG: Enviando archivo:', {
+        nombre: currentFile.name,
+        tipo: selectedTable,
+        simulacion: currentDraft.id
+    });
+
+    fetch("{% url 'subir_archivo_borrador' %}", { 
+        method: 'POST', 
+        headers: { 'X-CSRFToken': csrftoken }, 
+        body: formData 
+    })
+    .then(response => {
+        console.log('DEBUG: Respuesta recibida, status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('DEBUG: Datos recibidos:', data);
         if (data.success){
-          draftFiles.push({
-            id: data.archivo_id,
-            name: currentFile.name,
-            table: selectedTable,
-            size: (currentFile.size/1024/1024).toFixed(2) + ' MB',
-            valido: data.valido,
-            msg: data.msg || '',
-            errores: data.errores || ''
-          });
-          updateFilesList();
-          currentFile = null; selectedTable = '';
-          document.getElementById('selectedTable').textContent = 'No seleccionada';
-          document.getElementById('tableDropdown').textContent = 'Seleccionar tabla';
-          document.getElementById('currentFileInfo').style.display = 'none';
-          updateButtons();
-          alert(data.msg || 'Archivo procesado');
+            draftFiles.push({
+                id: data.archivo_id,
+                name: currentFile.name,
+                table: selectedTable,
+                size: (currentFile.size/1024/1024).toFixed(2) + ' MB',
+                valido: data.valido,
+                msg: data.msg || '',
+                errores: data.errores || ''
+            });
+            updateFilesList();
+            currentFile = null; selectedTable = '';
+            document.getElementById('selectedTable').textContent = 'No seleccionada';
+            document.getElementById('tableDropdown').textContent = 'Seleccionar tabla';
+            document.getElementById('currentFileInfo').style.display = 'none';
+            updateButtons();
+            
+            if (data.valido) {
+                alert('Archivo subido y validado correctamente: ' + data.msg);
+            } else {
+                alert('Archivo subido pero con errores: ' + data.errores);
+            }
         } else {
-          alert('Error al subir archivo: ' + data.error);
+            alert('Error al subir archivo: ' + (data.error || 'Error desconocido'));
         }
-      })
-      .catch(()=>alert('Error al subir archivo'));
+    })
+    .catch(error => {
+        console.error('DEBUG: Error en fetch:', error);
+        alert('Error de conexión al subir archivo: ' + error.message);
+    });
   });
 
   function updateFilesList(){
@@ -398,14 +862,27 @@
 
     draftFiles.forEach((f, index) => {
       if (f.valido) valid++; else invalid++;
+      
+      const esRequerido = archivosRequeridos.includes(f.table);
+      const esOpcional = archivosOpcionales.includes(f.table);
+      
+      let claseEstado = '';
+      if (esRequerido) {
+        claseEstado = 'archivo-requerido';
+      } else if (esOpcional) {
+        claseEstado = 'archivo-opcional';
+      }
+
       const item = document.createElement('div');
-      item.className = 'file-item draft-file';
+      item.className = `file-item draft-file ${claseEstado}`;
       item.innerHTML = `
         <div class="d-flex justify-content-between align-items-start gap-3">
           <div>
             <div class="mb-1">
               <i class="fas fa-file-excel text-success me-2"></i>
               <strong>${escapeHtml(f.name)}</strong>
+              ${esRequerido ? '<span class="badge bg-primary ms-2">Requerido</span>' : ''}
+              ${esOpcional ? '<span class="badge bg-secondary ms-2">Opcional</span>' : ''}
             </div>
             <div class="file-info text-muted">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
             <div class="mt-1">
@@ -445,11 +922,19 @@
   }
 
   document.getElementById('finalizarBtn').addEventListener('click', function(){
+    const archivosCompletos = verificarArchivosRequeridos();
+    
+    if (!archivosCompletos) {
+      alert('Faltan archivos requeridos para procesar la simulación. Se necesitan: ' + archivosRequeridos.join(', '));
+      return;
+    }
+
     document.getElementById('finalizarDetails').innerHTML = `
       <div class="alert alert-info">
         <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
-        <strong>Archivos:</strong> ${draftFiles.length} archivos<br>
-        <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}
+        <strong>Archivos a procesar:</strong> ${draftFiles.length} archivos<br>
+        <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}<br>
+        <strong>Procesamiento:</strong> Análisis BTX completo con regresión lineal
       </div>`;
     document.getElementById('simulacionIdInput').value = currentDraft.id;
     new bootstrap.Modal(document.getElementById('finalizarModal')).show();
