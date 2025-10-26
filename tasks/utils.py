@@ -1,83 +1,90 @@
-import os
 import pandas as pd
+import numpy as np
+from datetime import datetime
 
-def validar_archivo_excel(file_path, tipo_tabla):
+def validar_archivo_excel(ruta_archivo, tipo_tabla):
     """
     Valida un archivo Excel según su tipo de tabla
     Retorna: (es_valido, errores, num_filas)
     """
     try:
-        # Verificar que el archivo existe
-        if not os.path.exists(file_path):
-            return False, "El archivo no existe", 0
+        # Leer el archivo Excel
+        excel_file = pd.ExcelFile(ruta_archivo)
+        hojas_disponibles = excel_file.sheet_names
         
-        # Columnas esperadas por tipo de tabla
-        columnas_por_tipo = {
-            'Emisiones': ['Fuente_ID', 'Tipo_Fuente', 'Gas', 'Tasa_Emisión', 'Ubicación', 'Fecha_Registro'],
-            'Dispersión': ['Registro_ID', 'Gas', 'Velocidad_Viento', 'Dirección_Viento', 'Temperatura', 'Concentración', 'Fecha_Registro'],
-            'Exposición': ['Población_ID', 'Zona', 'Tamaño_Población', 'Tiempo_Exposición', 'Nivel_Exposición', 'Fecha_Registro'],
-            'Salud': ['Registro_Salud_ID', 'Zona', 'Casos_Asma', 'Casos_Bronquitis', 'Hospitalizaciones', 'Mortalidad', 'Fecha_Registro'],
-            'Social': ['Política_ID', 'Tipo_Medida', 'Institución', 'Fecha_Implementación', 'Impacto_Estimado', 'Observaciones']
+        print(f"DEBUG: Hojas disponibles: {hojas_disponibles}")
+        
+        # Usar la primera hoja por defecto
+        hoja_a_usar = hojas_disponibles[0] if hojas_disponibles else 0
+        print(f"DEBUG: Probando hoja '{hoja_a_usar}'")
+        
+        # Leer la hoja
+        df = pd.read_excel(ruta_archivo, sheet_name=hoja_a_usar)
+        
+        # Limpiar nombres de columnas (eliminar espacios extras y convertir a minúsculas)
+        df.columns = df.columns.str.strip().str.lower()
+        
+        print(f"DEBUG: Columnas encontradas (en minúsculas): {list(df.columns)}")
+        
+        # Definir columnas requeridas por tipo de tabla (en minúsculas)
+        columnas_requeridas = {
+            'Emisiones': ['fuente_id', 'tipo_fuente', 'gas', 'tasa_emision', 'ubicacion', 'eficiencia_control', 'fecha_registro'],
+            'Dispersión': ['gas', 'velocidad_viento', 'direccion_viento', 'temperatura', 'concentracion', 'fecha_registro'],
+            'Exposición': ['zona', 'tamaño_poblacion', 'tiempo_exposicion', 'nivel_exposicion', 'fecha_registro'],
+            'Salud': ['zona', 'casos_asma', 'casos_bronquitis', 'hospitalizaciones', 'mortalidad', 'fecha_registro'],
+            'Social': ['tipo_medida', 'institucion', 'fecha_implementacion', 'impacto_estimado', 'observaciones']
         }
         
-        columnas_esperadas = columnas_por_tipo.get(tipo_tabla)
-        if not columnas_esperadas:
-            return False, f"Tipo de tabla no válido: {tipo_tabla}", 0
+        # Columnas alternativas (con y sin acentos)
+        columnas_alternativas = {
+            'tasa_emision': ['tasa_emisión'],
+            'tamaño_poblacion': ['tamaño_población'],
+            'tiempo_exposicion': ['tiempo_exposición'],
+            'nivel_exposicion': ['nivel_exposición'],
+            'direccion_viento': ['dirección_viento'],
+            'concentracion': ['concentración'],
+            'institucion': ['institución'],
+            'impacto_estimado': ['impacto_estimado'],
+            'ubicacion': ['ubicación'],
+            'eficiencia_control': ['eficiencia_control']
+        }
         
-        # Intentar leer el archivo Excel
-        try:
-            # Leer todas las hojas para encontrar la correcta
-            excel_file = pd.ExcelFile(file_path)
-            hojas_disponibles = excel_file.sheet_names
-            
-            print(f"DEBUG: Hojas disponibles: {hojas_disponibles}")
-            
-            # Buscar una hoja que tenga las columnas esperadas
-            hoja_encontrada = None
-            df_final = None
-            
-            for hoja in hojas_disponibles:
-                try:
-                    df_temp = pd.read_excel(file_path, sheet_name=hoja)
-                    print(f"DEBUG: Probando hoja '{hoja}' - Columnas: {list(df_temp.columns)}")
-                    
-                    # Verificar si esta hoja tiene las columnas que necesitamos
-                    columnas_encontradas = [col for col in columnas_esperadas if col in df_temp.columns]
-                    if len(columnas_encontradas) >= 3:  # Al menos 3 columnas esperadas
-                        hoja_encontrada = hoja
-                        df_final = df_temp
-                        print(f"DEBUG: Hoja adecuada encontrada: {hoja}")
+        # Verificar columnas requeridas
+        requeridas = columnas_requeridas.get(tipo_tabla, [])
+        columnas_faltantes = []
+        
+        for columna in requeridas:
+            if columna not in df.columns:
+                # Buscar alternativas
+                alternativas = columnas_alternativas.get(columna, [])
+                encontrada = False
+                for alt in alternativas:
+                    if alt in df.columns:
+                        encontrada = True
                         break
-                        
-                except Exception as e:
-                    print(f"DEBUG: Error leyendo hoja {hoja}: {e}")
-                    continue
-            
-            if df_final is None:
-                # Si no encontramos una hoja con las columnas, usar la primera hoja
-                print("DEBUG: Usando primera hoja por defecto")
-                df_final = pd.read_excel(file_path, sheet_name=0)
-                hoja_encontrada = hojas_disponibles[0]
-            
-        except Exception as e:
-            return False, f"No se pudo leer el archivo Excel: {str(e)}", 0
+                if not encontrada:
+                    columnas_faltantes.append(columna)
         
-        num_filas = len(df_final)
-        
-        # Verificar columnas
-        columnas_faltantes = [col for col in columnas_esperadas if col not in df_final.columns]
-        columnas_encontradas = [col for col in columnas_esperadas if col in df_final.columns]
-        
-        mensaje_hoja = f"Hoja: {hoja_encontrada}"
         if columnas_faltantes:
-            mensaje_validacion = f"Advertencia: Faltan columnas {columnas_faltantes}. Encontradas: {columnas_encontradas}"
-        else:
-            mensaje_validacion = f"Todas las columnas requeridas encontradas"
+            errores = f"Faltan columnas {columnas_faltantes}. Encontradas: {list(df.columns)}"
+            print(f"DEBUG: Validación fallida - {errores}")
+            return False, errores, len(df)
         
-        print(f"DEBUG: Validación completada - {mensaje_hoja}, {mensaje_validacion}, Filas: {num_filas}")
+        # Verificar que haya datos
+        if len(df) == 0:
+            errores = "El archivo no contiene datos"
+            print(f"DEBUG: Validación fallida - {errores}")
+            return False, errores, 0
         
-        return True, f"{mensaje_hoja}. {mensaje_validacion}", num_filas
+        # Verificar tipos de datos básicos
+        for columna in df.columns:
+            if df[columna].isna().all():
+                print(f"DEBUG: Advertencia - Columna '{columna}' está vacía")
+        
+        print(f"DEBUG: Validación completada - Hoja: {hoja_a_usar}, Filas: {len(df)}")
+        return True, f"Archivo válido con {len(df)} filas", len(df)
         
     except Exception as e:
-        print(f"DEBUG: Error general en validar_archivo_excel: {str(e)}")
-        return False, f"Error validando archivo: {str(e)}", 0
+        error_msg = f"Error al validar archivo: {str(e)}"
+        print(f"DEBUG: Validación fallida - {error_msg}")
+        return False, error_msg, 0

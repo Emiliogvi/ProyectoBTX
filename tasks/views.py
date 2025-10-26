@@ -152,8 +152,8 @@ def procesar_datos_simulacion(simulacion):
                 # Leer la hoja
                 df = pd.read_excel(archivo.archivo.path, sheet_name=hoja_a_usar)
                 
-                # Limpiar nombres de columnas (eliminar espacios extras)
-                df.columns = df.columns.str.strip()
+                # Limpiar nombres de columnas (eliminar espacios extras y convertir a minúsculas)
+                df.columns = df.columns.str.strip().str.lower()
                 
                 # Convertir nombres a minúsculas sin acentos para consistencia
                 tipo_clave = (archivo.tipo_tabla.lower()
@@ -206,6 +206,8 @@ def procesar_datos_simulacion(simulacion):
         return None, f"Error procesando datos: {str(e)}"
 
 
+# En la función calcular_ecuaciones_btx en views.py, modifica la sección de procesamiento de emisiones:
+
 def calcular_ecuaciones_btx(dfs):
     """
     Calcula las ecuaciones BTX basadas en los DataFrames usando datos reales de los Excels
@@ -237,27 +239,27 @@ def calcular_ecuaciones_btx(dfs):
                 for col, val in df.iloc[0].items():
                     print(f"  {col}: {val} (tipo: {type(val)})")
         
-        # 1. Datos de Dispersión Atmosférica (para concentraciones BTX)
-        if 'dispersión' in dfs or 'dispersion' in dfs:
-            df_dispersion = dfs.get('dispersión') or dfs.get('dispersion')
-            print(f"DEBUG: Procesando dispersión - {len(df_dispersion)} filas")
-            print(f"DEBUG: Columnas: {list(df_dispersion.columns)}")
+        # 1. Datos de Emisiones (para concentraciones BTX por separado)
+        if 'emisiones' in dfs:
+            df_emisiones = dfs['emisiones']
+            print(f"DEBUG: Procesando emisiones - {len(df_emisiones)} filas")
+            print(f"DEBUG: Columnas: {list(df_emisiones.columns)}")
             
-            # Extraer concentraciones específicas de cada gas
-            if 'Gas' in df_dispersion.columns and 'Concentración' in df_dispersion.columns:
-                print("DEBUG: Extrayendo concentraciones por gas...")
+            # Extraer concentraciones específicas de cada gas por separado
+            if 'gas' in df_emisiones.columns and 'tasa_emision' in df_emisiones.columns:
+                print("DEBUG: Extrayendo concentraciones por gas desde emisiones...")
                 try:
                     # Convertir a string para búsqueda case-insensitive
-                    df_dispersion['Gas'] = df_dispersion['Gas'].astype(str)
+                    df_emisiones['gas'] = df_emisiones['gas'].astype(str)
                     
-                    # Filtrar por cada gas
-                    benceno_mask = df_dispersion['Gas'].str.contains('benceno', case=False, na=False)
-                    tolueno_mask = df_dispersion['Gas'].str.contains('tolueno', case=False, na=False)
-                    xileno_mask = df_dispersion['Gas'].str.contains('xileno', case=False, na=False)
+                    # Filtrar por cada gas específico
+                    benceno_mask = df_emisiones['gas'].str.contains('benceno', case=False, na=False)
+                    tolueno_mask = df_emisiones['gas'].str.contains('tolueno', case=False, na=False)
+                    xileno_mask = df_emisiones['gas'].str.contains('xileno', case=False, na=False)
                     
-                    benceno_data = df_dispersion[benceno_mask]['Concentración']
-                    tolueno_data = df_dispersion[tolueno_mask]['Concentración']
-                    xileno_data = df_dispersion[xileno_mask]['Concentración']
+                    benceno_data = df_emisiones[benceno_mask]['tasa_emision']
+                    tolueno_data = df_emisiones[tolueno_mask]['tasa_emision']
+                    xileno_data = df_emisiones[xileno_mask]['tasa_emision']
                     
                     print(f"DEBUG: Filas Benceno: {len(benceno_data)}")
                     print(f"DEBUG: Filas Tolueno: {len(tolueno_data)}")
@@ -276,34 +278,42 @@ def calcular_ecuaciones_btx(dfs):
                         print(f"DEBUG: Xileno promedio: {xileno_mean} µg/m³")
                         
                 except Exception as e:
-                    print(f"ERROR extrayendo concentraciones: {e}")
+                    print(f"ERROR extrayendo concentraciones de emisiones: {e}")
             
-            # Extraer velocidad del viento y temperatura
-            if 'Velocidad_Viento' in df_dispersion.columns:
-                velocidad_viento_mean = df_dispersion['Velocidad_Viento'].mean()
-                print(f"DEBUG: Velocidad viento promedio: {velocidad_viento_mean} m/s")
-            else:
-                print("DEBUG: Columna 'Velocidad_Viento' no encontrada")
-            
-            if 'Temperatura' in df_dispersion.columns:
-                temperatura_mean = df_dispersion['Temperatura'].mean()
-                print(f"DEBUG: Temperatura promedio: {temperatura_mean} °C")
-            else:
-                print("DEBUG: Columna 'Temperatura' no encontrada")
-        
-        # 2. Datos de Emisiones (para tasa de emisión)
-        if 'emisiones' in dfs:
-            df_emisiones = dfs['emisiones']
-            print(f"DEBUG: Procesando emisiones - {len(df_emisiones)} filas")
-            print(f"DEBUG: Columnas: {list(df_emisiones.columns)}")
-            
-            if 'Tasa_Emisión' in df_emisiones.columns:
+            # Extraer tasa de emisión promedio
+            if 'tasa_emision' in df_emisiones.columns:
                 # Convertir a numérico por si hay problemas de formato
-                df_emisiones['Tasa_Emisión'] = pd.to_numeric(df_emisiones['Tasa_Emisión'], errors='coerce')
-                tasa_emision_promedio = df_emisiones['Tasa_Emisión'].mean()
+                df_emisiones['tasa_emision'] = pd.to_numeric(df_emisiones['tasa_emision'], errors='coerce')
+                tasa_emision_promedio = df_emisiones['tasa_emision'].mean()
+                print(f"DEBUG: Tasa emisión promedio: {tasa_emision_promedio} µg/m³")
+            elif 'tasa_emisión' in df_emisiones.columns:
+                df_emisiones['tasa_emisión'] = pd.to_numeric(df_emisiones['tasa_emisión'], errors='coerce')
+                tasa_emision_promedio = df_emisiones['tasa_emisión'].mean()
                 print(f"DEBUG: Tasa emisión promedio: {tasa_emision_promedio} µg/m³")
             else:
-                print("DEBUG: Columna 'Tasa_Emisión' no encontrada en emisiones")
+                print("DEBUG: Columna 'tasa_emision' no encontrada en emisiones")
+        
+        # 2. Datos de Dispersión Atmosférica (para variables ambientales)
+        if 'dispersión' in dfs or 'dispersion' in dfs:
+            df_dispersion = dfs.get('dispersión') or dfs.get('dispersion')
+            print(f"DEBUG: Procesando dispersión - {len(df_dispersion)} filas")
+            print(f"DEBUG: Columnas: {list(df_dispersion.columns)}")
+            
+            # Extraer velocidad del viento y temperatura
+            if 'velocidad_viento' in df_dispersion.columns:
+                velocidad_viento_mean = df_dispersion['velocidad_viento'].mean()
+                print(f"DEBUG: Velocidad viento promedio: {velocidad_viento_mean} m/s")
+            elif 'velocidad del viento' in df_dispersion.columns:
+                velocidad_viento_mean = df_dispersion['velocidad del viento'].mean()
+                print(f"DEBUG: Velocidad viento promedio: {velocidad_viento_mean} m/s")
+            else:
+                print("DEBUG: Columna 'velocidad_viento' no encontrada")
+            
+            if 'temperatura' in df_dispersion.columns:
+                temperatura_mean = df_dispersion['temperatura'].mean()
+                print(f"DEBUG: Temperatura promedio: {temperatura_mean} °C")
+            else:
+                print("DEBUG: Columna 'temperatura' no encontrada")
         
         # 3. Datos de Exposición Poblacional
         if 'exposición' in dfs or 'exposicion' in dfs:
@@ -311,19 +321,27 @@ def calcular_ecuaciones_btx(dfs):
             print(f"DEBUG: Procesando exposición - {len(df_exposicion)} filas")
             print(f"DEBUG: Columnas: {list(df_exposicion.columns)}")
             
-            if 'Tamaño_Población' in df_exposicion.columns:
-                df_exposicion['Tamaño_Población'] = pd.to_numeric(df_exposicion['Tamaño_Población'], errors='coerce')
-                tamaño_poblacion_mean = df_exposicion['Tamaño_Población'].mean()
+            if 'tamaño_población' in df_exposicion.columns:
+                df_exposicion['tamaño_población'] = pd.to_numeric(df_exposicion['tamaño_población'], errors='coerce')
+                tamaño_poblacion_mean = df_exposicion['tamaño_población'].mean()
+                print(f"DEBUG: Población promedio: {tamaño_poblacion_mean} personas")
+            elif 'tamaño_poblacion' in df_exposicion.columns:
+                df_exposicion['tamaño_poblacion'] = pd.to_numeric(df_exposicion['tamaño_poblacion'], errors='coerce')
+                tamaño_poblacion_mean = df_exposicion['tamaño_poblacion'].mean()
                 print(f"DEBUG: Población promedio: {tamaño_poblacion_mean} personas")
             else:
-                print("DEBUG: Columna 'Tamaño_Población' no encontrada")
+                print("DEBUG: Columna 'tamaño_población' no encontrada")
             
-            if 'Tiempo_Exposición' in df_exposicion.columns:
-                df_exposicion['Tiempo_Exposición'] = pd.to_numeric(df_exposicion['Tiempo_Exposición'], errors='coerce')
-                tiempo_exposicion_mean = df_exposicion['Tiempo_Exposición'].mean()
+            if 'tiempo_exposición' in df_exposicion.columns:
+                df_exposicion['tiempo_exposición'] = pd.to_numeric(df_exposicion['tiempo_exposición'], errors='coerce')
+                tiempo_exposicion_mean = df_exposicion['tiempo_exposición'].mean()
+                print(f"DEBUG: Tiempo exposición promedio: {tiempo_exposicion_mean} horas")
+            elif 'tiempo_exposicion' in df_exposicion.columns:
+                df_exposicion['tiempo_exposicion'] = pd.to_numeric(df_exposicion['tiempo_exposicion'], errors='coerce')
+                tiempo_exposicion_mean = df_exposicion['tiempo_exposicion'].mean()
                 print(f"DEBUG: Tiempo exposición promedio: {tiempo_exposicion_mean} horas")
             else:
-                print("DEBUG: Columna 'Tiempo_Exposición' no encontrada")
+                print("DEBUG: Columna 'tiempo_exposición' no encontrada")
         
         # 4. Datos de Salud Respiratoria
         if 'salud' in dfs:
@@ -333,7 +351,7 @@ def calcular_ecuaciones_btx(dfs):
             
             # Sumar todos los casos de salud
             casos_totales = 0
-            columnas_casos = ['Casos_Asma', 'Casos_Bronquitis', 'Hospitalizaciones', 'Mortalidad']
+            columnas_casos = ['casos_asma', 'casos_bronquitis', 'hospitalizaciones', 'mortalidad']
             
             for col in columnas_casos:
                 if col in df_salud.columns:
@@ -354,9 +372,9 @@ def calcular_ecuaciones_btx(dfs):
             print(f"DEBUG: Procesando social - {len(df_social)} filas")
             print(f"DEBUG: Columnas: {list(df_social.columns)}")
             
-            if 'Impacto_Estimado' in df_social.columns:
-                df_social['Impacto_Estimado'] = pd.to_numeric(df_social['Impacto_Estimado'], errors='coerce')
-                impacto_estimado = df_social['Impacto_Estimado'].mean()
+            if 'impacto_estimado' in df_social.columns:
+                df_social['impacto_estimado'] = pd.to_numeric(df_social['impacto_estimado'], errors='coerce')
+                impacto_estimado = df_social['impacto_estimado'].mean()
                 print(f"DEBUG: Impacto estimado promedio: {impacto_estimado}")
             else:
                 # Usar el número de políticas como proxy
@@ -368,7 +386,7 @@ def calcular_ecuaciones_btx(dfs):
         print("CALCULANDO ECUACIONES")
         print("=" * 50)
         
-        # 1. Promedio total de BTX emitido
+        # 1. Promedio total de BTX emitido (usando datos de emisiones por separado)
         BTX_total = 0.5 * benceno_mean + 0.3 * tolueno_mean + 0.2 * xileno_mean
         print(f"DEBUG: BTX Total calculado: {BTX_total:.4f} µg/m³")
         print(f"DEBUG: - Benceno: {benceno_mean:.2f} µg/m³")
@@ -456,7 +474,6 @@ def calcular_ecuaciones_btx(dfs):
             },
             'datos_reales_utilizados': False
         }
-
 
 def guardar_resultados_txt(resultados, simulacion):
     """
@@ -594,12 +611,16 @@ def task_detail(request, task_id):
             'concentracion_benzeno': 4.8,
             'concentracion_tolueno': 15.2,
             'concentracion_xileno': 8.7,
+            'btx_total': 8.5,
+            'casos_totales': 1570,
         }
     else:
         btx_data = {
             'concentracion_benzeno': 4.8,
             'concentracion_tolueno': 15.2,
             'concentracion_xileno': 8.7,
+            'btx_total': 8.5,
+            'casos_totales': 1570,
         }
 
     if request.method == 'POST':
