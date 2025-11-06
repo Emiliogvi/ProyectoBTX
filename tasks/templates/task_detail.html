@@ -65,9 +65,16 @@
                     <div class="row mb-5">
                         <div class="col-12">
                             <h6 class="fw-semibold mb-3">Relación entre concentración BTX y casos respiratorios</h6>
+                            {% if datos_graficas.datos_disponibles and datos_graficas.dispersion.btx_total and datos_graficas.dispersion.casos_respiratorios %}
                             <div class="chart-container" style="position: relative; height:400px; width:100%">
                                 <canvas id="grafico-btx-salud"></canvas>
                             </div>
+                            {% else %}
+                            <div class="alert alert-warning text-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay datos suficientes para generar la gráfica. Se necesitan archivos de Emisiones y Salud con datos válidos.
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -75,12 +82,19 @@
                     <div class="row">
                         <div class="col-12">
                             <h6 class="fw-semibold mb-3">Mapa de correlaciones BTX vs variables ambientales y de salud</h6>
+                            {% if datos_graficas.datos_disponibles and datos_graficas.correlaciones.variables and datos_graficas.correlaciones.matriz %}
                             <div class="chart-container" style="position: relative; height:500px; width:100%">
                                 <canvas id="grafico-correlograma"></canvas>
                             </div>
                             <div class="mt-3">
                                 <small class="text-muted">Los valores representan coeficientes de correlación entre -1 y 1</small>
                             </div>
+                            {% else %}
+                            <div class="alert alert-warning text-center">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay datos suficientes para generar el mapa de correlaciones. Se necesitan múltiples archivos con datos válidos.
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -341,49 +355,67 @@
 <!-- Scripts para gráficas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Datos de ejemplo para las gráficas (debes reemplazar con datos reales de Django)
+// Datos para las gráficas desde Django
 const datosGraficas = {
     dispersion: {
-        btx_total: [8.5, 9.2, 7.8, 10.1, 8.9, 9.5, 7.2, 10.5, 8.3, 9.8],
-        casos_respiratorios: [1200, 1350, 1100, 1450, 1300, 1400, 1050, 1500, 1250, 1420]
+        btx_total: {{ datos_graficas.dispersion.btx_total|default:"[]"|safe }},
+        casos_respiratorios: {{ datos_graficas.dispersion.casos_respiratorios|default:"[]"|safe }}
     },
     correlaciones: {
-        variables: ['Benceno', 'Tolueno', 'Xileno', 'BTX Total', 'Velocidad Viento', 'Temperatura', 'Casos Asma', 'Hospitalizaciones'],
-        matriz: [
-            [1.00, 0.85, 0.78, 0.95, -0.45, 0.32, 0.88, 0.72],
-            [0.85, 1.00, 0.82, 0.92, -0.38, 0.28, 0.79, 0.68],
-            [0.78, 0.82, 1.00, 0.89, -0.42, 0.35, 0.75, 0.65],
-            [0.95, 0.92, 0.89, 1.00, -0.48, 0.38, 0.91, 0.78],
-            [-0.45, -0.38, -0.42, -0.48, 1.00, -0.15, -0.52, -0.41],
-            [0.32, 0.28, 0.35, 0.38, -0.15, 1.00, 0.35, 0.28],
-            [0.88, 0.79, 0.75, 0.91, -0.52, 0.35, 1.00, 0.85],
-            [0.72, 0.68, 0.65, 0.78, -0.41, 0.28, 0.85, 1.00]
-        ]
-    }
+        variables: {{ datos_graficas.correlaciones.variables|default:"[]"|safe }},
+        matriz: {{ datos_graficas.correlaciones.matriz|default:"[]"|safe }}
+    },
+    datos_disponibles: {{ datos_graficas.datos_disponibles|yesno:"true,false" }}
 };
+
+console.log('Datos para gráficas:', datosGraficas);
 
 // Gráfica 1: Dispersión con línea de regresión
 function inicializarGraficaDispersion() {
-    const ctx = document.getElementById('grafico-btx-salud').getContext('2d');
+    const ctx = document.getElementById('grafico-btx-salud');
+    if (!ctx) {
+        console.warn('No se encontró el elemento grafico-btx-salud');
+        return;
+    }
+    
+    const ctx2d = ctx.getContext('2d');
+    
+    // Verificar que hay datos suficientes
+    if (!datosGraficas.dispersion.btx_total || !datosGraficas.dispersion.casos_respiratorios || 
+        datosGraficas.dispersion.btx_total.length < 2 || datosGraficas.dispersion.casos_respiratorios.length < 2) {
+        console.warn('Datos insuficientes para gráfica de dispersión:', datosGraficas.dispersion);
+        return;
+    }
+    
+    // Crear datos para scatter plot
+    const scatterData = [];
+    for (let i = 0; i < datosGraficas.dispersion.btx_total.length; i++) {
+        scatterData.push({
+            x: parseFloat(datosGraficas.dispersion.btx_total[i]) || 0,
+            y: parseFloat(datosGraficas.dispersion.casos_respiratorios[i]) || 0
+        });
+    }
     
     // Calcular línea de regresión
-    const regression = calcularRegresionLineal(
-        datosGraficas.dispersion.btx_total, 
-        datosGraficas.dispersion.casos_respiratorios
-    );
+    const xValues = datosGraficas.dispersion.btx_total.map(x => parseFloat(x) || 0);
+    const yValues = datosGraficas.dispersion.casos_respiratorios.map(y => parseFloat(y) || 0);
+    const regression = calcularRegresionLineal(xValues, yValues);
     
-    const lineaRegresion = datosGraficas.dispersion.btx_total.map(x => regression.slope * x + regression.intercept);
+    // Crear puntos para la línea de regresión
+    const minX = Math.min(...xValues);
+    const maxX = Math.max(...xValues);
+    const lineData = [
+        { x: minX, y: regression.slope * minX + regression.intercept },
+        { x: maxX, y: regression.slope * maxX + regression.intercept }
+    ];
     
-    new Chart(ctx, {
+    new Chart(ctx2d, {
         type: 'scatter',
         data: {
             datasets: [
                 {
                     label: 'Datos Observados',
-                    data: datosGraficas.dispersion.btx_total.map((x, i) => ({
-                        x: x,
-                        y: datosGraficas.dispersion.casos_respiratorios[i]
-                    })),
+                    data: scatterData,
                     backgroundColor: 'rgba(54, 162, 235, 0.7)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     pointRadius: 6,
@@ -391,16 +423,14 @@ function inicializarGraficaDispersion() {
                 },
                 {
                     label: 'Línea de Regresión',
-                    data: datosGraficas.dispersion.btx_total.map((x, i) => ({
-                        x: x,
-                        y: lineaRegresion[i]
-                    })),
+                    data: lineData,
                     type: 'line',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 2,
                     pointRadius: 0,
-                    fill: false
+                    fill: false,
+                    tension: 0
                 }
             ]
         },
@@ -418,7 +448,8 @@ function inicializarGraficaDispersion() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `BTX: ${context.parsed.x.toFixed(2)} µg/m³, Casos: ${context.parsed.y}`;
+                            const point = context.raw;
+                            return `BTX: ${point.x.toFixed(2)} µg/m³, Casos: ${point.y.toFixed(0)}`;
                         }
                     }
                 }
@@ -428,47 +459,68 @@ function inicializarGraficaDispersion() {
                     title: {
                         display: true,
                         text: 'BTX Total (µg/m³)'
-                    }
+                    },
+                    type: 'linear',
+                    position: 'bottom'
                 },
                 y: {
                     title: {
                         display: true,
                         text: 'Casos Respiratorios'
-                    }
+                    },
+                    type: 'linear'
                 }
             }
         }
     });
 }
 
-// Gráfica 2: Mapa de calor de correlaciones (versión simple y funcional)
+// Gráfica 2: Mapa de calor de correlaciones
 function inicializarGraficaCorrelograma() {
-    const ctx = document.getElementById('grafico-correlograma').getContext('2d');
+    const ctx = document.getElementById('grafico-correlograma');
+    if (!ctx) {
+        console.warn('No se encontró el elemento grafico-correlograma');
+        return;
+    }
+    
+    const ctx2d = ctx.getContext('2d');
     
     const variables = datosGraficas.correlaciones.variables;
     const matriz = datosGraficas.correlaciones.matriz;
     
-    // Crear datos para el heatmap simple
-    const datasets = variables.map((variable, index) => {
-        return {
-            label: variable,
-            data: matriz[index],
-            backgroundColor: function(context) {
-                const value = context.raw;
-                return getColorForValue(value);
-            },
-            borderColor: 'white',
-            borderWidth: 1,
-            borderSkipped: false,
-        };
-    });
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: variables,
-            datasets: datasets
-        },
+    // Verificar que hay datos suficientes
+    if (!variables || !matriz || variables.length === 0 || matriz.length === 0) {
+        console.warn('Datos insuficientes para mapa de correlaciones:', datosGraficas.correlaciones);
+        return;
+    }
+    
+    // Preparar datos para el heatmap
+    const labels = variables;
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'Matriz de Correlación',
+            data: [],
+            backgroundColor: []
+        }]
+    };
+    
+    // Llenar los datos para el heatmap
+    for (let i = 0; i < variables.length; i++) {
+        for (let j = 0; j < variables.length; j++) {
+            const value = matriz[i][j];
+            data.datasets[0].data.push({
+                x: variables[j],
+                y: variables[i],
+                v: value
+            });
+            data.datasets[0].backgroundColor.push(getColorForValue(value));
+        }
+    }
+    
+    new Chart(ctx2d, {
+        type: 'scatter',
+        data: data,
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -483,8 +535,10 @@ function inicializarGraficaCorrelograma() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const value = context.raw;
+                            const point = context.raw;
                             let interpretacion = '';
+                            const value = point.v;
+                            
                             if (value >= 0.8) interpretacion = ' (Correlación muy fuerte positiva)';
                             else if (value >= 0.6) interpretacion = ' (Correlación fuerte positiva)';
                             else if (value >= 0.4) interpretacion = ' (Correlación moderada positiva)';
@@ -495,46 +549,27 @@ function inicializarGraficaCorrelograma() {
                             else if (value >= -0.8) interpretacion = ' (Correlación fuerte negativa)';
                             else interpretacion = ' (Correlación muy fuerte negativa)';
                             
-                            return `${context.dataset.label}: ${value.toFixed(2)}${interpretacion}`;
-                        }
-                    }
-                },
-                legend: {
-                    display: true,
-                    position: 'right',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 10,
-                        font: {
-                            size: 11
+                            return `${point.y} vs ${point.x}: ${value.toFixed(2)}${interpretacion}`;
                         }
                     }
                 }
             },
             scales: {
                 x: {
-                    stacked: false,
                     title: {
                         display: true,
                         text: 'Variables'
                     },
-                    ticks: {
-                        maxRotation: 45,
-                        minRotation: 45
-                    }
+                    type: 'category',
+                    labels: labels
                 },
                 y: {
-                    min: -1,
-                    max: 1,
                     title: {
                         display: true,
-                        text: 'Coeficiente de Correlación'
+                        text: 'Variables'
                     },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toFixed(1);
-                        }
-                    }
+                    type: 'category',
+                    labels: labels
                 }
             }
         }
@@ -561,23 +596,32 @@ function getColorForValue(value) {
     
     if (value >= 0) {
         // Escala de rojos para positivos (más intenso = más rojo)
-        const intensity = Math.floor(value * 200);
+        const intensity = Math.min(200, Math.floor(value * 255));
         return `rgba(255, ${100 - intensity}, ${100 - intensity}, 0.8)`;
     } else {
         // Escala de azules para negativos (más intenso = más azul)
-        const intensity = Math.floor(absValue * 200);
+        const intensity = Math.min(200, Math.floor(absValue * 255));
         return `rgba(${100 - intensity}, ${100 - intensity}, 255, 0.8)`;
     }
 }
 
 // Inicializar gráficas cuando el documento esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    // Solo inicializar gráficas si los elementos existen
-    if (document.getElementById('grafico-btx-salud')) {
-        inicializarGraficaDispersion();
-    }
-    if (document.getElementById('grafico-correlograma')) {
-        inicializarGraficaCorrelograma();
+    console.log('DEBUG: Inicializando gráficas...');
+    console.log('DEBUG: Datos disponibles:', datosGraficas.datos_disponibles);
+    
+    // Solo inicializar gráficas si los elementos existen y hay datos disponibles
+    if (datosGraficas.datos_disponibles) {
+        if (document.getElementById('grafico-btx-salud')) {
+            console.log('DEBUG: Inicializando gráfica de dispersión');
+            inicializarGraficaDispersion();
+        }
+        if (document.getElementById('grafico-correlograma')) {
+            console.log('DEBUG: Inicializando gráfica de correlaciones');
+            inicializarGraficaCorrelograma();
+        }
+    } else {
+        console.log('DEBUG: No hay datos disponibles para gráficas');
     }
 });
 </script>
@@ -655,6 +699,11 @@ document.addEventListener('DOMContentLoaded', function() {
         border-radius: 8px;
         padding: 15px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+    .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
     }
 </style>
 
