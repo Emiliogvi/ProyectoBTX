@@ -1,19 +1,57 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Iniciar sesión · BTX UDES{% endblock %}
 
 {% block content %}
 
-<h1>Iniciar Sesión</h1>
+<div class="container-xxl btx-auth">
+  <div class="btx-auth-card">
+    <div class="btx-auth-head">
+      <h1 class="btx-auth-title">Iniciar sesión</h1>
+      <p class="btx-auth-subtitle">Accede al simulador del modelo BTX</p>
+    </div>
 
-<p>
-{{error}}
-</p>
+    {% if error %}
+      <div class="alert alert-danger mb-3" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
 
-<form action="/signin/" method="POST">
-  {% csrf_token %}
-  {{form.as_p}}
-  <button>
-    Iniciar Sesión
-  </button>
-</form>
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger mb-3" role="alert">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <form action="/signin/" method="POST" class="btx-form" novalidate>
+      {% csrf_token %}
+
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          <div class="btx-field">
+            {{ field }}
+          </div>
+          {% if field.help_text %}
+            <div class="form-text">{{ field.help_text }}</div>
+          {% endif %}
+          {% if field.errors %}
+            <div class="invalid-feedback d-block">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="d-grid">
+        <button type="submit" class="btn-btx">Ingresar</button>
+      </div>
+    </form>
+
+    <div class="btx-auth-footer">
+      <span>¿No tienes cuenta?</span>
+      <a href="/signup" class="btx-auth-link">Regístrate</a>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

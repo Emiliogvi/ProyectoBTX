@@ -1,59 +1,65 @@
-{% extends 'base.html' %} 
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Registrarse · BTX UDES{% endblock %}
+
 {% block content %}
 
-<div class="container">
-  <h1>Registrarse</h1>
-
-  {{error}}
-
-  <form action="/signup/" method="POST">
-    {% csrf_token %} 
-    
-    <!-- Traducir manualmente cada campo -->
-    <div class="form-group">
-      <label for="id_username">Nombre de usuario:</label>
-      <input type="text" name="username" class="form-control" id="id_username" required>
-      <small class="form-text text-muted">
-        Requerido. 150 caracteres o menos. Solo letras, dígitos y @/./+/-/_
-      </small>
+<div class="container-xxl btx-auth">
+  <div class="btx-auth-card">
+    <div class="btx-auth-head">
+      <h1 class="btx-auth-title">Crear cuenta</h1>
+      <p class="btx-auth-subtitle">Regístrate para acceder al simulador BTX</p>
     </div>
 
-    <div class="form-group">
-      <label for="id_password1">Contraseña:</label>
-      <input type="password" name="password1" class="form-control" id="id_password1" required>
-      <small class="form-text text-muted">
-        <ul>
-          <li>Tu contraseña no puede ser muy similar a tu otra información personal.</li>
-          <li>Tu contraseña debe contener al menos 8 caracteres.</li>
-          <li>Tu contraseña no puede ser una contraseña comúnmente utilizada.</li>
-          <li>Tu contraseña no puede ser completamente numérica.</li>
-        </ul>
-      </small>
-    </div>
+    {% if error %}
+      <div class="alert alert-danger mb-3" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
 
-    <div class="form-group">
-      <label for="id_password2">Confirmación de contraseña:</label>
-      <input type="password" name="password2" class="form-control" id="id_password2" required>
-      <small class="form-text text-muted">
-        Ingresa la misma contraseña que antes, para verificación.
-      </small>
-    </div>
+    <form action="/signup/" method="POST" class="btx-form" novalidate>
+      {% csrf_token %}
 
-    <button class="btn btn-primary">Registrarse</button>
-  </form>
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Nombre de usuario</label>
+        <input type="text" name="username" id="id_username" class="input-btx" required>
+        <small class="form-text text-muted">
+          Requerido. 150 caracteres o menos. Solo letras, dígitos y @/./+/-/_.
+        </small>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password1" class="form-label">Contraseña</label>
+        <input type="password" name="password1" id="id_password1" class="input-btx" required>
+        <small class="form-text text-muted">
+          <ul>
+            <li>Debe tener al menos 8 caracteres.</li>
+            <li>No puede ser completamente numérica.</li>
+            <li>No puede ser muy similar a tus datos personales.</li>
+            <li>No puede ser una contraseña común.</li>
+          </ul>
+        </small>
+      </div>
+
+      <div class="mb-3">
+        <label for="id_password2" class="form-label">Confirmar contraseña</label>
+        <input type="password" name="password2" id="id_password2" class="input-btx" required>
+        <small class="form-text text-muted">
+          Ingresa la misma contraseña anterior para verificación.
+        </small>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn-btx">Registrarse</button>
+      </div>
+    </form>
+
+    <div class="btx-auth-footer">
+      <span>¿Ya tienes cuenta?</span>
+      <a href="/signin" class="btx-auth-link">Inicia sesión</a>
+    </div>
+  </div>
 </div>
-
-<style>
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  .form-text ul {
-    margin-bottom: 0;
-    padding-left: 1rem;
-  }
-  .form-text li {
-    margin-bottom: 0.25rem;
-  }
-</style>
 
 {% endblock %}

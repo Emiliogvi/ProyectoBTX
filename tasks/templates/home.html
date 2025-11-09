@@ -1,149 +1,133 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Simulador BTX · UDES{% endblock %}
+
 {% block content %}
 
-<div class="container">
-  <div class="info-box">
-    <div class="row">
-      <!-- Columna izquierda con fotos -->
-      <div class="col-md-5 project-title">
-        <h3 class="section-title">Simulador del modelo dinámico de causalidad de gases BTX y efectos en la salud humana, en zona de alto tráfico automotor de Bucaramanga</h3>
-        
-        <!-- Espacio para las 3 fotos -->
-        <div class="photos-container mt-4">
-          <div class="photo-frame mb-3">
-            <img src="/media/foto1.jpg" alt="Imagen 1 del proyecto" class="project-photo">
-          </div>
-          <div class="photo-frame mb-3">
-            <img src="/media/foto2.jpg" alt="Imagen 2 del proyecto" class="project-photo">
-          </div>
-          <div class="photo-frame mb-3">
-            <img src="/media/foto3.jpg" alt="Imagen 3 del proyecto" class="project-photo">
-          </div>
-        </div>
-      </div>
-      
-      <!-- Columna derecha con la información -->
-      <div class="col-md-7 project-summary">
-        <h4 class="section-title">Glosario y Efectos en la Salud</h4>
-        
-        <p><strong>BTX en el aire:</strong> Se refiere a la combinación de Benceno, Tolueno y Xileno, compuestos orgánicos volátiles presentes en combustibles y emisiones vehiculares que pueden tener efectos adversos en la salud humana.</p>
-        
-        <div class="health-effects">
-          <p class="subsection-title">Efectos del Benceno en la salud:</p>
-          <ul>
-            <li>Irritación de ojos, piel y vías respiratorias</li>
-            <li>Mareos, somnolencia y dolor de cabeza</li>
-            <li>Alteraciones del sistema nervioso central</li>
-            <li>Anemia y disminución de plaquetas en sangre</li>
-            <li>Leucemia y otros tipos de cáncer (exposición prolongada)</li>
-            <li>Alteraciones cromosómicas y daño al material genético</li>
-          </ul>
-          
-          <p class="subsection-title">Efectos del Tolueno en la salud:</p>
-          <ul>
-            <li>Irritación de ojos, nariz y garganta</li>
-            <li>Dolor de cabeza, mareos y confusión</li>
-            <li>Daño al sistema nervioso central</li>
-            <li>Problemas hepáticos y renales</li>
-            <li>Alteraciones en el desarrollo fetal (en embarazadas)</li>
-          </ul>
-          
-          <p class="subsection-title">Efectos del Xileno en la salud:</p>
-          <ul>
-            <li>Irritación de mucosas y vías respiratorias</li>
-            <li>Dolor de cabeza, mareos y náuseas</li>
-            <li>Alteraciones en la coordinación motora</li>
-            <li>Problemas cardíacos y respiratorios</li>
-            <li>Daño hepático y renal con exposición prolongada</li>
-          </ul>
-        </div>
-        
-        <p class="subsection-title">Propósito del Proyecto</p>
-        <p>Desarrollar un simulador del modelo dinámico causal de gases BTX y sus efectos en la salud humana que permita el ingreso, almacenamiento, procesamiento y visualización de datos a partir de cinco grupos de variables organizadas en tablas (emisiones, dispersión atmosférica, exposición poblacional, salud respiratoria y respuesta social/regulatoria).</p>
-        
-        <p class="subsection-title">Perspectiva del producto</p>
-        <p>El sistema funcionará como una aplicación cliente-servidor en entorno local. El usuario podrá interactuar mediante una interfaz web para cargar archivos Excel, visualizar diagramas y consultar resultados almacenados.</p>
+<!-- HERO -->
+<div class="btx-hero container-xxl">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <h1 class="btx-title">
+        Simulador del modelo dinámico de causalidad de gases
+        <span class="btx-chip">BTX</span> y efectos en la salud humana
+      </h1>
+      <p class="btx-subtitle">
+        Zona de alto tráfico automotor de Bucaramanga · Ingreso, procesamiento y visualización de datos por dominios:
+        <span class="btx-tag">Emisiones</span>
+        <span class="btx-tag">Dispersión</span>
+        <span class="btx-tag">Exposición</span>
+        <span class="btx-tag">Salud</span>
+        <span class="btx-tag">Respuesta social/regulatoria</span>
+      </p>
+    </div>
+
+    <div class="col-lg-4 d-flex justify-content-lg-end">
+      <div class="btx-badge">
+        <div class="btx-badge-dot"></div>
+        Proyecto BTX
       </div>
     </div>
   </div>
 </div>
 
-<style>
-  .info-box {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    margin: 40px auto;
-    max-width: 1200px;
-  }
-  .project-title {
-    border-right: 2px solid #e9ecef;
-    padding-right: 25px;
-  }
-  .project-summary {
-    padding-left: 25px;
-  }
-  .section-title {
-    color: #495057;
-    font-weight: 600;
-    margin-bottom: 15px;
-  }
-  .subsection-title {
-    font-weight: 600;
-    margin-top: 15px;
-    margin-bottom: 8px;
-    color: #6c757d;
-  }
-  ul {
-    padding-left: 20px;
-  }
-  li {
-    margin-bottom: 5px;
-  }
-  .health-effects {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 15px;
-  }
-  
-  /* Estilos para las fotos */
-  .photos-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  .photo-frame {
-    width: 100%;
-    height: 200px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border: 1px solid #e9ecef;
-  }
-  .project-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  
-  @media (max-width: 768px) {
-    .project-title {
-      border-right: none;
-      border-bottom: 2px solid #e9ecef;
-      padding-right: 0;
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-    }
-    .project-summary {
-      padding-left: 0;
-    }
-    .photo-frame {
-      height: 150px;
-    }
-  }
-</style>
+<!-- CONTENIDO PRINCIPAL -->
+<div class="container-xxl">
+  <div class="btx-card shadow-sm">
+    <!-- 👇 CAMBIO: usamos layout propio en vez de .row/.col -->
+    <div class="btx-two-col">
+
+      <!-- Columna izquierda: imágenes -->
+      <div>
+        <h3 class="btx-section-title">Contexto visual</h3>
+        <div class="btx-photos">
+          <figure class="btx-photo">
+            <img src="{% static 'img/foto1.jpg' %}" alt="Imagen 1 del proyecto">
+            <figcaption>Corredor vial urbano</figcaption>
+          </figure>
+          <figure class="btx-photo">
+            <img src="{% static 'img/foto2.jpg' %}" alt="Imagen 2 del proyecto">
+            <figcaption>Monitoreo ambiental</figcaption>
+          </figure>
+          <figure class="btx-photo">
+            <img src="{% static 'img/foto3.jpg' %}" alt="Imagen 3 del proyecto">
+            <figcaption>Impacto poblacional</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Columna derecha: descripción -->
+      <div>
+        <h3 class="btx-section-title">Glosario y efectos en la salud</h3>
+
+        <p class="mb-3">
+          <strong>BTX en el aire:</strong> combinación de
+          <span class="btx-chip">Benceno</span>,
+          <span class="btx-chip">Tolueno</span> y
+          <span class="btx-chip">Xileno</span>, compuestos orgánicos volátiles presentes en combustibles y emisiones vehiculares con potencial impacto en la salud humana.
+        </p>
+
+        <!-- Efectos del Benceno -->
+        <div class="btx-callout">
+          <div class="btx-callout-title">Efectos del Benceno</div>
+          <ul class="btx-list">
+            <li>Irritación de ojos, piel y vías respiratorias</li>
+            <li>Mareos, somnolencia y cefalea</li>
+            <li>Alteraciones del sistema nervioso central</li>
+            <li>Anemia y disminución de plaquetas</li>
+            <li>Leucemia y otros cánceres (exposición prolongada)</li>
+            <li>Alteraciones cromosómicas</li>
+          </ul>
+        </div>
+
+        <!-- Efectos del Tolueno -->
+        <div class="btx-callout">
+          <div class="btx-callout-title">Efectos del Tolueno</div>
+          <ul class="btx-list">
+            <li>Irritación de ojos, nariz y garganta</li>
+            <li>Cefalea, mareos y confusión</li>
+            <li>Daño al sistema nervioso central</li>
+            <li>Compromiso hepático y renal</li>
+            <li>Riesgos en desarrollo fetal (embarazo)</li>
+          </ul>
+        </div>
+
+        <!-- Efectos del Xileno -->
+        <div class="btx-callout">
+          <div class="btx-callout-title">Efectos del Xileno</div>
+          <ul class="btx-list">
+            <li>Irritación de mucosas y vías respiratorias</li>
+            <li>Cefalea, mareos y náuseas</li>
+            <li>Alteraciones en coordinación motora</li>
+            <li>Problemas cardíacos y respiratorios</li>
+            <li>Daño hepático y renal (exposición prolongada)</li>
+          </ul>
+        </div>
+
+        <!-- Tarjetas informativas -->
+        <div class="row g-3 mt-2">
+          <div class="col-lg-6">
+            <div class="btx-info-card">
+              <div class="btx-info-title">Propósito del proyecto</div>
+              <p class="mb-0">
+                Desarrollar un simulador del modelo dinámico causal BTX y sus efectos en la salud, con ingreso y procesamiento de datos y visualización por dominios.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="btx-info-card">
+              <div class="btx-info-title">Perspectiva del producto</div>
+              <p class="mb-0">
+                Aplicación cliente-servidor local. Interfaz web para cargar Excel, visualizar diagramas y consultar resultados almacenados.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div><!-- /derecha -->
+
+    </div><!-- /btx-two-col -->
+  </div><!-- /btx-card -->
+</div>
 
 {% endblock %}
