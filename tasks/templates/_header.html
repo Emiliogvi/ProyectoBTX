@@ -1,0 +1,29 @@
+<header class="btx-header shadow-sm">
+  <div class="container-xxl d-flex align-items-center justify-content-between py-2">
+    <a href="{% url 'home' %}" class="d-inline-flex align-items-center text-decoration-none">
+      <span class="fw-bold" style="color:var(--brand-700);">Proyecto BTX</span>
+    </a>
+
+    <nav class="d-flex align-items-center gap-3">
+      <a href="{% url 'home' %}" class="text-decoration-none">Inicio</a>
+      <a href="{% url 'tasks' %}" class="text-decoration-none">Simulaciones</a>
+      <a href="{% url 'create_task' %}" class="text-decoration-none">Crear simulación</a>
+
+      {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-outline-secondary">Cerrar sesión</button>
+        </form>
+      {% else %}
+        <a href="{% url 'signin' %}" class="btn btn-sm btn-outline-secondary">Iniciar sesión</a>
+        <a href="{% url 'signup' %}" class="btn btn-sm btn-primary">Registrarse</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<style>
+  .btx-header{ background:#fff; border-bottom:1px solid #eee; }
+  .btx-header a{ color:#444; }
+  .btx-header a:hover{ color: var(--brand-700); }
+</style>

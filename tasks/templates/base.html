@@ -1,29 +1,150 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>{% block title %}BTX · UDES{% endblock %}</title>
-
-    <!-- Bootstrap 5 -->
+    <title>Django CRUD</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-
-    <!-- Estilos del proyecto (tema UDES) -->
-    <link rel="stylesheet" href="{% static 'css/btx.css' %}">
-
-    {% block extra_head %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    
   </head>
   <body>
     {% include '_navbar.html' %}
-
-    <main class="container-xxl py-3">
-      {% block content %}{% endblock %}
-    </main>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
+    
+    {% block content %}
+    {% endblock %}
   </body>
 </html>
+
+<style>
+/* ====== BTX AUTH THEME ====== */
+:root{
+  --btx-blue:#28537E;
+  --btx-blue-d:#214665;
+  --btx-white:#fff;
+  --btx-gray-100:#f5f6f7;
+  --btx-gray-300:#d1d5db;
+  --btx-gray-600:#4b5563;
+  --btx-gray-800:#1f2937;
+  --btx-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+/* Contenedor centrado (si existe .container se adapta) */
+.auth-wrap{
+  max-width: 520px;
+  margin: 32px auto;
+  padding: 0 12px;
+}
+
+.auth-card{
+  background: var(--btx-white);
+  border: 1px solid var(--btx-gray-300);
+  border-radius: 14px;
+  box-shadow: var(--btx-shadow);
+  overflow: hidden;
+}
+
+/* Header del card */
+.auth-head{
+  background: var(--btx-blue);
+  color: var(--btx-white);
+  padding: 18px 22px;
+  font-weight: 700;
+  letter-spacing:.2px;
+}
+
+/* Body del card */
+.auth-body{
+  padding: 22px;
+}
+
+/* Texto de error simple ({{error}}) */
+.auth-error, p:has(> .errorlist), .errorlist{
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 6px 0 14px 0;
+}
+
+/* Formularios genéricos (soporta {{form.as_p}} y Bootstrap) */
+form button,
+button.btn,
+.btn.btn-primary{
+  background: var(--btx-blue) !important;
+  border: 1px solid var(--btx-blue) !important;
+  color: #fff !important;
+  padding: .6rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform .05s ease, background .2s ease, box-shadow .2s ease;
+}
+form button:hover,
+.btn.btn-primary:hover{
+  background: var(--btx-blue-d) !important;
+  border-color: var(--btx-blue-d) !important;
+  box-shadow: 0 6px 18px rgba(40,83,126,.25);
+}
+form button:active,
+.btn.btn-primary:active{ transform: scale(.98); }
+
+/* Inputs (sirve para inputs nativos y .form-control) */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+select,
+textarea,
+.form-control{
+  background: var(--btx-white);
+  border: 1px solid var(--btx-gray-300) !important;
+  border-radius: 10px !important;
+  padding: .6rem .8rem !important;
+  color: var(--btx-gray-800);
+  width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.form-control:focus{
+  outline: none;
+  border-color: var(--btx-blue) !important;
+  box-shadow: 0 0 0 .2rem rgba(40,83,126,.15) !important;
+}
+
+/* Etiquetas y ayudas */
+label{
+  font-weight: 600;
+  color: var(--btx-gray-800);
+}
+.form-text, small{
+  color: var(--btx-gray-600) !important;
+}
+
+/* Para {{form.as_p}}: estilo de <p> como filas */
+form p{
+  margin-bottom: 1rem;
+}
+form p > label{
+  display: block;
+  margin-bottom: .35rem;
+}
+
+/* Links dentro de auth */
+.auth-body a{
+  color: var(--btx-blue);
+  text-decoration: none;
+}
+.auth-body a:hover{ text-decoration: underline; }
+
+/* Espaciado final */
+.auth-actions{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+</style>
