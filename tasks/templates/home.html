@@ -1,86 +1,223 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% block content %}
 
-<div class="project-hero">
+<!-- ======================================== -->
+<!-- HERO SUPERIOR -->
+<!-- ======================================== -->
+<section class="project-hero">
   <div class="container">
-    <h1 class="hero-title">
-      Simulador del modelo dinámico de causalidad de gases BTX y efectos en la salud humana, en zona de alto tráfico automotor de Bucaramanga
-    </h1>
-    <p class="hero-subtitle">Proyecto académico · BTX · Salud pública · Modelación</p>
-  </div>
-</div>
+    <span class="hero-pill">Proyecto académico · Modelación ambiental</span>
 
+    <h1 class="hero-title">
+      Simulador del modelo dinámico de causalidad de gases BTX y sus efectos en la salud humana
+      en una zona de alto tráfico vehicular en Bucaramanga
+    </h1>
+
+    <p class="hero-subtitle">
+      Un sistema computacional para analizar emisiones, dispersión atmosférica, exposición poblacional
+      y riesgos respiratorios asociados al Benceno, Tolueno y Xileno.
+    </p>
+  </div>
+</section>
+
+<!-- ======================================== -->
+<!-- SECCIÓN PRINCIPAL DEL CONTENIDO -->
+<!-- ======================================== -->
 <div class="container">
-  <div class="info-box">
-    <div class="row g-4">
-      <!-- Columna izquierda con fotos -->
+  <section class="info-box">
+    <div class="row g-5 align-items-start">
+
+      <!-- ====================== -->
+      <!-- COLUMNA IZQUIERDA: FOTOS -->
+      <!-- ====================== -->
       <div class="col-md-5">
-        <div class="photos-panel">
-          <h3 class="panel-title">Galería del proyecto</h3>
+        <aside class="photos-panel">
+
+          <h2 class="panel-title">Galería del proyecto</h2>
+          <p class="panel-description">
+            Registro visual del contexto urbano, el flujo vehicular y las visualizaciones creadas durante el estudio.
+          </p>
+
           <div class="photos-grid">
             <figure class="photo-frame">
-              <img src="/media/foto1.jpg" alt="Imagen 1 del proyecto" class="project-photo">
+              <img src="/static/media/foto1.jpg" alt="Imagen del proyecto 1" class="project-photo">
             </figure>
             <figure class="photo-frame">
-              <img src="/media/foto2.jpg" alt="Imagen 2 del proyecto" class="project-photo">
+              <img src="/static/media/foto2.jpg" alt="Imagen del proyecto 2" class="project-photo">
             </figure>
             <figure class="photo-frame">
-              <img src="/media/foto3.jpg" alt="Imagen 3 del proyecto" class="project-photo">
+              <img src="/static/media/foto3.jpg" alt="Imagen del proyecto 3" class="project-photo">
             </figure>
           </div>
-          <p class="photo-note">*Imágenes de referencia del proceso y visualizaciones.</p>
-        </div>
-      </div>
-      
-      <!-- Columna derecha con la información -->
-      <div class="col-md-7">
-        <div class="content-panel">
-          <h4 class="section-title">Glosario y Efectos en la Salud</h4>
-          <p><strong>BTX en el aire:</strong> Se refiere a la combinación de Benceno, Tolueno y Xileno, compuestos orgánicos volátiles presentes en combustibles y emisiones vehiculares que pueden tener efectos adversos en la salud humana.</p>
-          
-          <div class="health-effects">
-            <p class="subsection-title">Efectos del Benceno en la salud:</p>
-            <ul class="btx-list">
-              <li>Irritación de ojos, piel y vías respiratorias</li>
-              <li>Mareos, somnolencia y dolor de cabeza</li>
-              <li>Alteraciones del sistema nervioso central</li>
-              <li>Anemia y disminución de plaquetas en sangre</li>
-              <li>Leucemia y otros tipos de cáncer (exposición prolongada)</li>
-              <li>Alteraciones cromosómicas y daño al material genético</li>
-            </ul>
-            
-            <p class="subsection-title">Efectos del Tolueno en la salud:</p>
-            <ul class="btx-list">
-              <li>Irritación de ojos, nariz y garganta</li>
-              <li>Dolor de cabeza, mareos y confusión</li>
-              <li>Daño al sistema nervioso central</li>
-              <li>Problemas hepáticos y renales</li>
-              <li>Alteraciones en el desarrollo fetal (en embarazadas)</li>
-            </ul>
-            
-            <p class="subsection-title">Efectos del Xileno en la salud:</p>
-            <ul class="btx-list">
-              <li>Irritación de mucosas y vías respiratorias</li>
-              <li>Dolor de cabeza, mareos y náuseas</li>
-              <li>Alteraciones en la coordinación motora</li>
-              <li>Problemas cardíacos y respiratorios</li>
-              <li>Daño hepático y renal con exposición prolongada</li>
-            </ul>
-          </div>
-          
-          <div class="divider"></div>
 
-          <p class="subsection-title">Propósito del Proyecto</p>
-          <p>Desarrollar un simulador del modelo dinámico causal de gases BTX y sus efectos en la salud humana que permita el ingreso, almacenamiento, procesamiento y visualización de datos a partir de cinco grupos de variables organizadas en tablas (emisiones, dispersión atmosférica, exposición poblacional, salud respiratoria y respuesta social/regulatoria).</p>
-          
-          <p class="subsection-title">Perspectiva del producto</p>
-          <p>El sistema funcionará como una aplicación cliente-servidor en entorno local. El usuario podrá interactuar mediante una interfaz web para cargar archivos Excel, visualizar diagramas y consultar resultados almacenados.</p>
-        </div>
+          <p class="photo-note">
+            *Material ilustrativo del desarrollo del modelo, procesamiento de datos e interpretación de resultados.
+          </p>
+        </aside>
       </div>
+
+      <!-- ====================== -->
+      <!-- COLUMNA DERECHA: CONTENIDO -->
+      <!-- ====================== -->
+      <div class="col-md-7">
+        <article class="content-panel">
+
+          <!-- ====================== -->
+          <!-- 1. INTRODUCCIÓN -->
+          <!-- ====================== -->
+          <h2 class="section-title">Introducción al proyecto</h2>
+          <p>
+            En zonas de alto tráfico vehicular, las emisiones de compuestos orgánicos volátiles como el
+            <strong>Benceno, Tolueno y Xileno (BTX)</strong>
+            representan un riesgo significativo para la salud pública. Estos contaminantes están asociados a
+            alteraciones respiratorias, disminución del rendimiento cognitivo, daños en órganos vitales y, en el
+            caso del benceno, efectos cancerígenos.
+          </p>
+          <p>
+            El objetivo de este proyecto es desarrollar un simulador capaz de modelar la dinámica del BTX desde su
+            emisión hasta su impacto en la salud humana, integrando un enfoque sistémico que permita visualizar
+            relaciones causales, retroalimentaciones y comportamientos temporales a lo largo del tiempo.
+          </p>
+
+          <!-- ====================== -->
+          <!-- 2. GLOSARIO Y CONCEPTOS -->
+          <!-- ====================== -->
+          <div class="divider"></div>
+          <h2 class="section-title">Glosario y conceptos clave</h2>
+
+          <p>
+            <strong>BTX:</strong> Conjunto de compuestos derivados del petróleo que se liberan durante la combustión
+            vehicular y se acumulan en el aire, especialmente en zonas con alta congestión.
+          </p>
+
+          <div class="health-effects">
+            <p class="subsection-title">Efectos del Benceno</p>
+            <ul class="btx-list">
+              <li>Produce irritación de ojos, piel y vías respiratorias.</li>
+              <li>Provoca somnolencia, dolor de cabeza y mareos.</li>
+              <li>Puede generar anemia, alteraciones del sistema inmunológico y daño genético.</li>
+              <li>Su exposición prolongada está asociada a leucemia y otros tipos de cáncer.</li>
+            </ul>
+
+            <p class="subsection-title">Efectos del Tolueno</p>
+            <ul class="btx-list">
+              <li>Irritación nasal y ocular.</li>
+              <li>Afecta el sistema nervioso central, causando confusión, debilidad y fatiga.</li>
+              <li>La exposición crónica puede comprometer hígado y riñones.</li>
+            </ul>
+
+            <p class="subsection-title">Efectos del Xileno</p>
+            <ul class="btx-list">
+              <li>Causa dolor de cabeza, náuseas y pérdida de coordinación.</li>
+              <li>Puede producir daños respiratorios y alteraciones cardiovasculares.</li>
+              <li>La exposición prolongada incrementa el riesgo de problemas hepáticos y renales.</li>
+            </ul>
+          </div>
+
+          <!-- ====================== -->
+          <!-- 3. PROPÓSITO DEL SIMULADOR -->
+          <!-- ====================== -->
+          <div class="divider"></div>
+          <h2 class="section-title">Propósito del simulador</h2>
+
+          <p>
+            El simulador permite analizar el comportamiento dinámico de los gases BTX mediante la integración de
+            <strong>cinco grupos de variables fundamentales</strong>:
+          </p>
+
+          <ul class="btx-list">
+            <li>
+              <strong>Emisiones:</strong> Cantidad de BTX generada por vehículos, fuentes móviles y actividades urbanas.
+            </li>
+            <li>
+              <strong>Dispersión atmosférica:</strong> Movimiento, dilución y acumulación de los contaminantes en el aire
+              según condiciones meteorológicas y características del entorno.
+            </li>
+            <li>
+              <strong>Exposición poblacional:</strong> Nivel de contacto de las personas con los gases emitidos en
+              función del tiempo de permanencia y la concentración ambiental.
+            </li>
+            <li>
+              <strong>Salud respiratoria:</strong> Efectos biológicos, síntomas y cambios en indicadores de salud
+              asociados a la exposición al BTX.
+            </li>
+            <li>
+              <strong>Respuesta regulatoria:</strong> Acciones institucionales, políticas públicas, monitoreo y educación
+              ambiental orientadas a reducir el riesgo.
+            </li>
+          </ul>
+
+          <p>
+            El sistema permite ingresar y almacenar datos mediante archivos Excel, ejecutar simulaciones y visualizar
+            los resultados en diagramas y tablas, facilitando el análisis de escenarios y el seguimiento de indicadores.
+          </p>
+
+          <!-- ====================== -->
+          <!-- 4. METODOLOGÍA -->
+          <!-- ====================== -->
+          <div class="divider"></div>
+          <h2 class="section-title">Metodología del modelo dinámico</h2>
+
+          <p>
+            El modelo se basa en principios de <strong>Dinámica de Sistemas</strong>, que permiten representar
+            relaciones complejas entre variables ambientales y de salud. Entre los componentes clave se incluyen:
+          </p>
+
+          <ul class="btx-list">
+            <li>
+              <strong>Variables de nivel:</strong> Representan acumulaciones (por ejemplo, concentración de BTX en el aire).
+            </li>
+            <li>
+              <strong>Variables de flujo:</strong> Describen tasas de cambio (emisión, ventilación, dispersión).
+            </li>
+            <li>
+              <strong>Retardos temporales:</strong> Consideran el tiempo entre la exposición y la aparición de síntomas.
+            </li>
+            <li>
+              <strong>Bucles de retroalimentación:</strong> Modelan cómo las decisiones y respuestas influyen en el sistema
+              (por ejemplo, restricciones de tráfico o campañas de salud).
+            </li>
+          </ul>
+
+          <p>
+            Los parámetros del modelo se alimentan a partir de datos locales, literatura científica y supuestos de
+            simulación, lo que permite explorar distintos escenarios de tráfico y calidad del aire.
+          </p>
+
+          <!-- ====================== -->
+          <!-- 5. BENEFICIOS DEL SISTEMA -->
+          <!-- ====================== -->
+          <div class="divider"></div>
+          <h2 class="section-title">Beneficios del simulador</h2>
+
+          <ul class="btx-list">
+            <li>
+              Permite analizar escenarios hipotéticos modificando tráfico, velocidad o intensidad vehicular.
+            </li>
+            <li>
+              Facilita decisiones informadas en salud pública, planeación urbana y control ambiental.
+            </li>
+            <li>
+              Integra datos reales y visualizaciones personalizadas del modelo causal de BTX.
+            </li>
+            <li>
+              Ofrece una vista clara y estructurada del impacto respiratorio relacionado con la exposición a BTX.
+            </li>
+            <li>
+              Registra simulaciones previas para análisis comparativo y seguimiento en el tiempo.
+            </li>
+          </ul>
+
+        </article>
+      </div>
+
     </div>
-  </div>
+  </section>
 </div>
 
+<!-- ======================================== -->
+<!-- ESTILOS ESPECÍFICOS DE ESTA PÁGINA -->
+<!-- ======================================== -->
 <style>
   :root{
     --btx-blue:#28537E;
@@ -92,140 +229,199 @@
     --btx-gray-600:#6b7280;
     --btx-gray-700:#374151;
     --btx-gray-800:#1f2937;
-    --btx-shadow:0 12px 28px rgba(0,0,0,.08);
+    --btx-gray-900:#020617;
+    --btx-shadow:0 16px 40px rgba(15,23,42,0.12);
   }
 
-  /* Hero superior con degradado */
+  /* Hero superior */
   .project-hero{
-    background: linear-gradient(to bottom, #d1d5db 0%, #e5e7eb 50%, #f9fafb 100%);
-    color: var(--btx-gray-800);
-    padding: 38px 0 30px;
+    padding: 40px 0 32px;
     margin-bottom: 24px;
+    background:
+      radial-gradient(circle at top left, rgba(40, 83, 126, 0.16), transparent 55%),
+      linear-gradient(to bottom, #e5e7eb 0%, #f9fafb 45%, #ffffff 100%);
     border-bottom: 1px solid var(--btx-gray-200);
   }
+
+  .hero-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(40, 83, 126, 0.06);
+    color: var(--btx-blue);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
   .hero-title{
-    font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+    font-size: clamp(1.35rem, 2.3vw, 1.9rem);
     line-height: 1.35;
     font-weight: 800;
     margin: 0;
-    color: var(--btx-gray-800);
+    color: var(--btx-gray-900);
   }
+
   .hero-subtitle{
-    margin-top: 8px;
+    margin-top: 10px;
     color: var(--btx-gray-600);
     font-weight: 500;
+    font-size: 0.98rem;
+    max-width: 880px;
   }
 
   /* Caja principal */
   .info-box {
     background-color: var(--btx-white);
-    border-radius: 16px;
+    border-radius: 18px;
     box-shadow: var(--btx-shadow);
-    padding: 26px;
+    padding: 28px;
     margin: 24px auto 40px;
     max-width: 1200px;
-    border: 1px solid var(--btx-gray-200);
+    border: 1px solid rgba(15, 23, 42, 0.04);
+  }
+
+  /* Panel izquierdo – fotos */
+  .photos-panel {
+    padding-right: 0;
   }
 
   .panel-title{
     font-weight: 700;
-    color: var(--btx-gray-700);
-    font-size: 1.05rem;
-    margin-bottom: 14px;
-    display: inline-block;
-    border-left: 5px solid var(--btx-blue);
-    padding-left: 10px;
-  }
-  .section-title {
     color: var(--btx-gray-800);
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  .subsection-title {
-    font-weight: 700;
-    margin-top: 16px;
-    margin-bottom: 8px;
-    color: var(--btx-blue);
-  }
-  .divider{
-    height: 1px;
-    background: var(--btx-gray-200);
-    margin: 20px 0;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
   }
 
-  .health-effects {
-    background: var(--btx-gray-050);
-    border: 1px solid var(--btx-gray-200);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 14px;
+  .panel-description{
+    font-size: 0.9rem;
+    color: var(--btx-gray-600);
+    margin-bottom: 18px;
   }
 
-  .btx-list{
-    padding-left: 0;
-    list-style: none;
-    margin: 8px 0 14px;
-  }
-  .btx-list li{
-    position: relative;
-    padding-left: 26px;
-    margin-bottom: 8px;
-    color: var(--btx-gray-700);
-  }
-  .btx-list li::before{
-    content: "";
-    position: absolute;
-    left: 0; top: 8px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--btx-blue);
-    opacity: .85;
-  }
-
-  /* Fotos */
   .photos-grid{
     display: grid;
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 18px;
   }
+
   .photo-frame {
     width: 100%;
-    aspect-ratio: 16/10;
-    border-radius: 10px;
+    aspect-ratio: 4/3; /* más pequeño y equilibrado */
+    border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--btx-gray-200);
     background: var(--btx-gray-100);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     transition: transform .18s ease, box-shadow .18s ease;
   }
+
   .photo-frame:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
   }
+
   .project-photo {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
+
   .photo-note{
     color: var(--btx-gray-400);
-    font-size: .9rem;
-    margin-top: 8px;
+    font-size: 0.85rem;
+    margin-top: 10px;
   }
 
-  @media (min-width: 992px){
+  @media (min-width: 992px) {
+    .photo-frame {
+      max-height: 220px; /* limita altura en pantallas grandes */
+    }
     .info-box .row > .col-md-5{
       border-right: 1px dashed var(--btx-gray-200);
+      padding-right: 20px;
     }
     .info-box .row > .col-md-7{
       padding-left: 24px;
     }
   }
 
+  /* Panel derecho – contenido */
+  .content-panel{
+    color: var(--btx-gray-700);
+  }
+
+  .section-title{
+    color: var(--btx-gray-900);
+    font-weight: 700;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    font-size: 1.05rem;
+  }
+
+  .subsection-title{
+    font-weight: 700;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    color: var(--btx-blue);
+    font-size: 0.96rem;
+  }
+
+  .divider{
+    height: 1px;
+    background: var(--btx-gray-200);
+    margin: 35px 0; /* más espacio entre secciones */
+  }
+
+  .content-panel p,
+  .content-panel ul{
+    margin-bottom: 18px !important;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .health-effects {
+    background: var(--btx-gray-050);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 14px;
+    padding: 22px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+  }
+
+  .btx-list{
+    padding-left: 0;
+    list-style: none;
+    margin: 8px 0 16px;
+  }
+
+  .btx-list li{
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 6px;
+    color: var(--btx-gray-700);
+    font-size: 0.93rem;
+  }
+
+  .btx-list li::before{
+    content: "";
+    position: absolute;
+    left: 0; top: 7px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--btx-blue);
+    opacity: .88;
+  }
+
   @media (max-width: 768px) {
-    .info-box { padding: 18px; }
-    .photo-frame { aspect-ratio: 16/11; }
+    .info-box { padding: 18px 16px 22px; border-radius: 14px; }
+    .project-hero { padding: 28px 0 22px; }
+    .hero-title { font-size: 1.25rem; }
   }
 </style>
 

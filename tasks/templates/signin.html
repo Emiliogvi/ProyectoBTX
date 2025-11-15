@@ -11,41 +11,138 @@
   --btx-gray-800:#1f2937;
   --btx-shadow:0 10px 25px rgba(0,0,0,.12);
 }
-.auth-wrap{max-width:520px;margin:32px auto;padding:0 12px;}
-.auth-card{background:var(--btx-white);border:1px solid var(--btx-gray-300);border-radius:14px;box-shadow:var(--btx-shadow);overflow:hidden;}
-.auth-head{background:var(--btx-blue);color:var(--btx-white);padding:18px 22px;font-weight:700;letter-spacing:.2px;}
-.auth-body{padding:22px;}
-.auth-error{background:#fee2e2;color:#7f1d1d;border:1px solid #fecaca;border-radius:10px;padding:10px 12px;margin:6px 0 14px 0;}
-form button,button.btn,.btn.btn-primary{background:var(--btx-blue)!important;border:1px solid var(--btx-blue)!important;color:#fff!important;padding:.6rem 1rem;border-radius:10px;font-weight:600;transition:transform .05s ease,background .2s ease,box-shadow .2s ease;}
-form button:hover,.btn.btn-primary:hover{background:var(--btx-blue-d)!important;border-color:var(--btx-blue-d)!important;box-shadow:0 6px 18px rgba(40,83,126,.25);}
-input[type="text"],input[type="password"],.form-control{background:var(--btx-white);border:1px solid var(--btx-gray-300)!important;border-radius:10px!important;padding:.6rem .8rem!important;color:var(--btx-gray-800);width:100%;}
-input:focus{outline:none;border-color:var(--btx-blue)!important;box-shadow:0 0 0 .2rem rgba(40,83,126,.15)!important;}
-label{font-weight:600;color:var(--btx-gray-800);}
-form p{margin-bottom:1rem;}
-.auth-actions{display:flex;gap:10px;align-items:center;margin-top:10px;}
-.auth-body a{color:var(--btx-blue);text-decoration:none;}
-.auth-body a:hover{text-decoration:underline;}
+
+.auth-wrap{
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 0 12px;
+}
+
+.auth-card{
+  background: var(--btx-white);
+  border: 1px solid var(--btx-gray-300);
+  border-radius: 14px;
+  box-shadow: var(--btx-shadow);
+  overflow: hidden;
+}
+
+.auth-head{
+  background: var(--btx-blue);
+  color: var(--btx-white);
+  padding: 18px 22px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  font-size: 1rem;
+}
+
+.auth-body{
+  padding: 22px 22px 24px;
+}
+
+.auth-error{
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 6px 0 14px 0;
+  font-size: .9rem;
+}
+
+/* Botones */
+form button,
+button.btn,
+.btn.btn-primary{
+  background: var(--btx-blue) !important;
+  border: 1px solid var(--btx-blue) !important;
+  color: #fff !important;
+  padding: .6rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: transform .05s ease, background .2s ease, box-shadow .2s ease;
+}
+
+form button:hover,
+.btn.btn-primary:hover{
+  background: var(--btx-blue-d) !important;
+  border-color: var(--btx-blue-d) !important;
+  box-shadow: 0 6px 18px rgba(40,83,126,.25);
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+.form-control{
+  background: var(--btx-white);
+  border: 1px solid var(--btx-gray-300) !important;
+  border-radius: 10px !important;
+  padding: .6rem .8rem !important;
+  color: var(--btx-gray-800);
+  width: 100%;
+  font-size: .95rem;
+}
+
+input:focus{
+  outline: none;
+  border-color: var(--btx-blue) !important;
+  box-shadow: 0 0 0 .2rem rgba(40,83,126,.15) !important;
+}
+
+/* Labels y textos */
+label{
+  font-weight: 600;
+  color: var(--btx-gray-800);
+  font-size: .9rem;
+}
+
+form p{
+  margin-bottom: 1rem;
+}
+
+.auth-actions{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.auth-body a{
+  color: var(--btx-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-body a:hover{
+  text-decoration: underline;
+}
+
+/* Texto inferior */
+.auth-footer-text{
+  margin-top: 1.2rem;
+  font-size: .9rem;
+  color: var(--btx-gray-600);
+}
 </style>
 
 <div class="auth-wrap">
   <div class="auth-card">
-    <div class="auth-head">Iniciar Sesión</div>
+    <div class="auth-head">Iniciar sesión</div>
     <div class="auth-body">
       {% if error %}
         <div class="auth-error">{{ error }}</div>
       {% endif %}
 
-      <form action="/signin/" method="POST">
+      <form action="{% url 'signin' %}" method="POST" novalidate>
         {% csrf_token %}
         {{ form.as_p }}
         <div class="auth-actions">
-          <button type="submit">Iniciar Sesión</button>
+          <button type="submit">Iniciar sesión</button>
         </div>
       </form>
 
-      <p class="mt-3 text-center" style="margin-top:1rem;">
+      <p class="text-center auth-footer-text">
         ¿No tienes cuenta?
-        <a href="/signup/">Regístrate aquí</a>
+        <a href="{% url 'signup' %}">Regístrate aquí</a>
       </p>
     </div>
   </div>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container mt-4">
+<div class="container mt-4 mb-4">
   <div class="row justify-content-center">
     <div class="col-md-10">
 
@@ -15,8 +15,14 @@
 
       <!-- Encabezado -->
       <div class="text-center mb-4">
-        <h1 class="display-6 fw-semibold mb-2">Crear Nueva Simulación</h1>
-        <p class="text-muted mb-0">Configura tu borrador, sube los Excel por tipo de tabla y finaliza cuando todo esté válido.</p>
+        <span class="badge rounded-pill bg-light text-primary px-3 py-1 mb-2">
+          Módulo de simulación BTX
+        </span>
+        <h1 class="h3 fw-semibold mb-2 text-dark">Crear nueva simulación</h1>
+        <p class="text-muted mb-0" style="max-width: 720px; margin: 0 auto; font-size: .93rem;">
+          Define los datos básicos de la simulación, crea un borrador y sube los archivos Excel
+          correspondientes a cada tipo de tabla antes de procesar el modelo.
+        </p>
       </div>
 
       <!-- Card principal -->
@@ -25,27 +31,41 @@
 
           <!-- Form info simulación -->
           <div class="simulation-info mb-4">
+            <h6 class="text-uppercase text-muted small fw-semibold mb-3">
+              Datos generales
+            </h6>
             <div class="row g-3">
               <div class="col-md-4">
-                <label for="nombreSimulacion" class="form-label fw-semibold">Nombre de Simulación</label>
-                <input type="text" class="form-control form-control-lg pretty-input" id="nombreSimulacion" placeholder="Ej: Simulación Centro Ciudad">
+                <label for="nombreSimulacion" class="form-label fw-semibold small text-muted">Nombre de simulación</label>
+                <input type="text"
+                       class="form-control form-control-lg pretty-input"
+                       id="nombreSimulacion"
+                       placeholder="Ej: Simulación Centro Ciudad">
               </div>
               <div class="col-md-4">
-                <label for="ubicacionSimulacion" class="form-label fw-semibold">Ubicación</label>
-                <input type="text" class="form-control form-control-lg pretty-input" id="ubicacionSimulacion" placeholder="Ej: Bucaramanga, Centro">
+                <label for="ubicacionSimulacion" class="form-label fw-semibold small text-muted">Ubicación</label>
+                <input type="text"
+                       class="form-control form-control-lg pretty-input"
+                       id="ubicacionSimulacion"
+                       placeholder="Ej: Bucaramanga, Centro">
               </div>
               <div class="col-md-4">
-                <label for="descripcionSimulacion" class="form-label fw-semibold">Descripción</label>
-                <input type="text" class="form-control form-control-lg pretty-input" id="descripcionSimulacion" placeholder="Descripción opcional...">
+                <label for="descripcionSimulacion" class="form-label fw-semibold small text-muted">Descripción</label>
+                <input type="text"
+                       class="form-control form-control-lg pretty-input"
+                       id="descripcionSimulacion"
+                       placeholder="Descripción opcional...">
               </div>
             </div>
 
-            <div class="mt-3">
+            <div class="mt-3 d-flex justify-content-end">
               <button class="btn btn-primary btn-lg rounded-3 lift" id="crearBorradorBtn">
-                <i class="fas fa-plus me-2"></i>Crear Borrador
+                Crear borrador
               </button>
             </div>
           </div>
+
+          <hr class="my-4 text-muted" style="opacity: .25;">
 
           <!-- Dos columnas: subida / controles -->
           <div class="row g-4 align-items-start">
@@ -55,47 +75,64 @@
 
               <!-- Área de subida -->
               <div id="uploadArea" style="display: none;">
+                <h6 class="text-uppercase text-muted small fw-semibold mb-2">
+                  Gestión de archivos
+                </h6>
+                <p class="text-muted small mb-3">
+                  Selecciona el tipo de tabla en el panel derecho y sube el archivo correspondiente.
+                </p>
+
                 <div class="drop-zone pretty-border text-center mb-4" id="dropZone">
                   <div class="file-icon mb-3">
-                    <i class="fas fa-file-excel fa-4x text-primary"></i>
+                    <i class="fas fa-file-excel fa-3x text-primary"></i>
                   </div>
-                  <h4 class="fw-semibold mb-2">Arrastra tu archivo Excel aquí</h4>
-                  <p class="text-muted mb-1">o haz clic para seleccionar archivo</p>
-                  <p class="text-muted small">Sube un archivo a la vez</p>
+                  <h4 class="fw-semibold mb-1" style="font-size: 1.05rem;">Arrastra tu archivo Excel aquí</h4>
+                  <p class="text-muted mb-1 small">o haz clic para seleccionar archivo</p>
+                  <p class="text-muted small mb-0">Sube un archivo a la vez en formato .xlsx, .xls o .csv</p>
                   <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="d-none">
-                  <button class="btn btn-outline-primary mt-3 rounded-3 lift" onclick="document.getElementById('fileInput').click()">
-                    Seleccionar Archivo
+                  <button class="btn btn-outline-primary mt-3 rounded-3 lift"
+                          type="button"
+                          onclick="document.getElementById('fileInput').click()">
+                    Seleccionar archivo
                   </button>
                 </div>
 
                 <!-- Lista de archivos -->
                 <div class="uploaded-files mt-4">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-semibold">Archivos en Borrador</h5>
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h5 class="mb-0 fw-semibold" style="font-size: .98rem;">Archivos en borrador</h5>
                     <span class="badge bg-light text-dark border">
-                      <span id="countValid">0</span> válidos / <span id="countInvalid">0</span> inválidos
+                      <span id="countValid">0</span> válidos /
+                      <span id="countInvalid">0</span> inválidos
                     </span>
                   </div>
-                  <div id="filesList" class="mt-3"></div>
+                  <p class="text-muted small mb-2">
+                    Se requieren al menos los archivos de Emisiones, Dispersión, Exposición y Salud.
+                  </p>
+                  <div id="filesList" class="mt-2"></div>
                 </div>
 
                 <!-- Información del procesamiento -->
                 <div id="procesamientoInfo" class="mt-4" style="display: none;">
-                  <div class="alert alert-info">
-                    <h6 class="alert-heading"><i class="fas fa-cogs me-2"></i>Procesamiento de Datos BTX</h6>
-                    <p class="mb-2">Al finalizar la simulación se ejecutarán las siguientes ecuaciones:</p>
-                    <ul class="small mb-0">
-                      <li>BTX Total = 0.5×Benceno + 0.3×Tolueno + 0.2×Xileno</li>
-                      <li>BTX Ajustado = (BTX_total / (Velocidad_Viento + 0.1)) × (1 + Temperatura / 100)</li>
-                      <li>Exposición = BTX_ajustado × (Tiempo_Exposición / 10) × (1 / Tamaño_Población)</li>
-                      <li>Regresión lineal múltiple para estimar casos de salud</li>
+                  <div class="alert alert-info mb-0">
+                    <h6 class="alert-heading mb-2" style="font-size: .9rem;">
+                      <i class="fas fa-cogs me-2"></i>Procesamiento de datos BTX
+                    </h6>
+                    <p class="mb-2 small">
+                      Al finalizar la simulación se ejecutarán, entre otras, las siguientes operaciones:
+                    </p>
+                    <ul class="small mb-0 ps-3">
+                      <li>Integración de Benceno, Tolueno y Xileno en un índice BTX total.</li>
+                      <li>Ajuste por condiciones meteorológicas (velocidad del viento y temperatura).</li>
+                      <li>Cálculo de exposición poblacional según tiempo y tamaño de población.</li>
+                      <li>Modelo de regresión para estimar impactos en salud respiratoria.</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               <!-- Mensaje inicial -->
-              <div id="noBorradorMessage" class="alert alert-info text-center pretty-border">
+              <div id="noBorradorMessage" class="alert alert-info text-center pretty-border mb-0">
                 <i class="fas fa-info-circle me-2"></i>
                 Primero crea un borrador de simulación para comenzar a subir archivos.
               </div>
@@ -103,61 +140,75 @@
 
             <!-- Columna derecha -->
             <div class="col-md-4">
-              <div class="table-selection controls-sticky card border-0 soft-card">
+              <div class="table-selection controls-sticky card border-0 soft-card-secondary">
                 <div class="card-body">
-                  <h5 class="fw-semibold mb-3">Controles</h5>
+                  <h5 class="fw-semibold mb-3" style="font-size: .98rem;">Controles de simulación</h5>
 
                   <label class="form-label fw-semibold small text-muted mb-1">Tipo de tabla</label>
                   <div class="dropdown mb-3">
-                    <button class="btn btn-secondary dropdown-toggle w-100 rounded-3" type="button" id="tableDropdown" data-bs-toggle="dropdown" disabled>
+                    <button class="btn btn-outline-secondary dropdown-toggle w-100 rounded-3"
+                            type="button"
+                            id="tableDropdown"
+                            data-bs-toggle="dropdown"
+                            disabled>
                       Seleccionar tabla
                     </button>
                     <ul class="dropdown-menu w-100 shadow-sm">
                       <li><a class="dropdown-item" href="#" data-table="Emisiones">Emisiones</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Dispersión">Dispersión Atmosférica</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Exposición">Exposición Poblacional</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Salud">Salud Respiratoria</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Social">Respuesta Social y Regulatoria</a></li>
+                      <li><a class="dropdown-item" href="#" data-table="Dispersión">Dispersión atmosférica</a></li>
+                      <li><a class="dropdown-item" href="#" data-table="Exposición">Exposición poblacional</a></li>
+                      <li><a class="dropdown-item" href="#" data-table="Salud">Salud respiratoria</a></li>
+                      <li><a class="dropdown-item" href="#" data-table="Social">Respuesta social y regulatoria</a></li>
                     </ul>
                   </div>
 
                   <div class="selected-table mb-3">
                     <h6 class="fw-semibold small text-muted mb-1">Tabla seleccionada</h6>
-                    <div id="selectedTable" class="alert alert-info py-2 px-3 rounded-3 mb-0">No seleccionada</div>
+                    <div id="selectedTable"
+                         class="alert alert-info py-2 px-3 rounded-3 mb-0 small">
+                      No seleccionada
+                    </div>
                   </div>
 
                   <div class="current-file mb-3" id="currentFileInfo" style="display: none;">
                     <h6 class="fw-semibold small text-muted mb-1">Archivo seleccionado</h6>
-                    <div id="fileInfo" class="alert alert-warning py-2 px-3 rounded-3 mb-0"></div>
+                    <div id="fileInfo"
+                         class="alert alert-warning py-2 px-3 rounded-3 mb-0 small"></div>
                   </div>
 
-                  <button class="btn btn-success w-100 mb-2 rounded-3 lift" id="uploadBtn" disabled>
-                    <i class="fas fa-upload me-2"></i>Subir Archivo al Borrador
+                  <button class="btn btn-success w-100 mb-2 rounded-3 lift"
+                          id="uploadBtn"
+                          disabled>
+                    <i class="fas fa-upload me-2"></i>Subir archivo al borrador
                   </button>
 
-                  <button class="btn btn-outline-danger w-100 mb-2 rounded-3" id="removeBtn" disabled>
-                    <i class="fas fa-trash me-2"></i>Eliminar Archivo
+                  <button class="btn btn-outline-danger w-100 mb-2 rounded-3"
+                          id="removeBtn"
+                          disabled>
+                    <i class="fas fa-trash me-2"></i>Limpiar selección
                   </button>
 
                   <hr class="text-muted">
 
                   <!-- Estado del procesamiento -->
                   <div id="estadoProcesamiento" class="mb-3" style="display: none;">
-                    <h6 class="fw-semibold small text-muted mb-1">Estado del Análisis</h6>
-                    <div class="alert alert-warning py-2 px-3 rounded-3">
-                      <small>
-                        <i class="fas fa-check-circle text-success me-1"></i>
-                        <span id="archivosRequeridos">0/4</span> archivos requeridos
-                      </small>
+                    <h6 class="fw-semibold small text-muted mb-1">Estado del análisis</h6>
+                    <div class="alert alert-warning py-2 px-3 rounded-3 mb-0 small">
+                      <i class="fas fa-hourglass-half me-1"></i>
+                      <span id="archivosRequeridos">0/4</span> archivos requeridos
                     </div>
                   </div>
 
-                  <button class="btn btn-primary w-100 mt-1 rounded-3 lift" id="finalizarBtn" disabled>
-                    <i class="fas fa-calculator me-2"></i>Procesar y Finalizar
+                  <button class="btn btn-primary w-100 mt-1 rounded-3 lift"
+                          id="finalizarBtn"
+                          disabled>
+                    <i class="fas fa-calculator me-2"></i>Procesar y finalizar
                   </button>
 
-                  <button class="btn btn-outline-secondary w-100 mt-2 rounded-3" id="cancelarBtn" style="display: none;">
-                    <i class="fas fa-times me-2"></i>Cancelar Borrador
+                  <button class="btn btn-outline-secondary w-100 mt-2 rounded-3"
+                          id="cancelarBtn"
+                          style="display: none;">
+                    <i class="fas fa-times me-2"></i>Cancelar borrador
                   </button>
                 </div>
               </div>
@@ -167,22 +218,26 @@
       </div>
 
       <!-- Borrador actual -->
-      <div class="card shadow-sm border-0 soft-card mt-4" id="currentDraftSection" style="display: none;">
+      <div class="card shadow-sm border-0 soft-card mt-4"
+           id="currentDraftSection"
+           style="display: none;">
         <div class="card-body">
-          <h5 class="card-title mb-3">
-            <i class="fas fa-edit me-2"></i>Simulación en Borrador
-            <span class="badge bg-warning ms-2">Borrador</span>
+          <h5 class="card-title mb-3" style="font-size: .98rem;">
+            <i class="fas fa-edit me-2 text-warning"></i>Simulación en borrador
+            <span class="badge bg-warning text-dark ms-2">Borrador activo</span>
           </h5>
-          <div id="draftInfo"></div>
+          <div id="draftInfo" class="small text-muted"></div>
         </div>
       </div>
 
       <!-- Completadas -->
       <div class="card shadow-sm border-0 soft-card mt-4">
         <div class="card-body">
-          <h5 class="card-title fw-semibold mb-3">Simulaciones Completadas</h5>
+          <h5 class="card-title fw-semibold mb-3" style="font-size: .98rem;">
+            Simulaciones completadas
+          </h5>
           <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table align-middle table-sm mb-0">
               <thead class="table-light">
                 <tr>
                   <th>Nombre</th>
@@ -197,30 +252,41 @@
                 {% for simulacion in simulaciones %}
                 <tr>
                   <td class="fw-semibold">{{ simulacion.nombre_simulacion }}</td>
-                  <td>
+                  <td style="max-width: 220px;">
                     {% for archivo in simulacion.archivoexcel_set.all %}
-                      <span class="badge rounded-pill bg-info-subtle text-info-emphasis border me-1 mb-1">{{ archivo.tipo_tabla }}</span>
+                      <span class="badge rounded-pill bg-info-subtle text-info-emphasis border me-1 mb-1">
+                        {{ archivo.tipo_tabla }}
+                      </span>
                     {% endfor %}
                   </td>
-                  <td class="text-muted">{{ simulacion.ubicacion|default:"No especificada" }}</td>
-                  <td class="text-muted">{{ simulacion.fecha_ejecucion|date:"d/m/Y H:i" }}</td>
+                  <td class="text-muted small">
+                    {{ simulacion.ubicacion|default:"No especificada" }}
+                  </td>
+                  <td class="text-muted small">
+                    {{ simulacion.fecha_ejecucion|date:"d/m/Y H:i" }}
+                  </td>
                   <td>
-                    <span class="badge {% if simulacion.estado == 'completada' %}bg-success{% else %}bg-warning{% endif %}">
+                    <span class="badge {% if simulacion.estado == 'completada' %}bg-success{% else %}bg-warning text-dark{% endif %}">
                       {{ simulacion.estado }}
                     </span>
                   </td>
                   <td class="text-end">
-                    <a href="{% url 'simulacion_detail' simulacion.id %}" class="btn btn-sm btn-outline-primary rounded-3 me-1">
+                    <a href="{% url 'simulacion_detail' simulacion.id %}"
+                       class="btn btn-sm btn-outline-primary rounded-3 me-1">
                       <i class="fas fa-eye"></i>
                     </a>
-                    <a href="{% url 'delete_simulation' simulacion.id %}" class="btn btn-sm btn-outline-danger rounded-3" onclick="return confirm('¿Eliminar esta simulación?')">
+                    <a href="{% url 'delete_simulation' simulacion.id %}"
+                       class="btn btn-sm btn-outline-danger rounded-3"
+                       onclick="return confirm('¿Eliminar esta simulación?')">
                       <i class="fas fa-trash"></i>
                     </a>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">No hay simulaciones completadas</td>
+                  <td colspan="6" class="text-center text-muted py-4 small">
+                    No hay simulaciones completadas.
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -234,20 +300,29 @@
 </div>
 
 <script>
-  function getCookie(name){const v=`; ${document.cookie}`;const p=v.split(`; ${name}=`);if(p.length===2) return p.pop().split(';').shift();}
+  // === Utilidades ===
+  function getCookie(name){
+    const v = `; ${document.cookie}`;
+    const p = v.split(`; ${name}=`);
+    if (p.length === 2) return p.pop().split(';').shift();
+  }
   const csrftoken = getCookie('csrftoken');
-  function escapeHtml(s){return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  function escapeHtml(s){
+    return (s || '').replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
 
   let selectedTable = '';
   let currentFile = null;
   let currentDraft = null;
   let draftFiles = [];
 
-  // Archivos requeridos para el procesamiento
   const archivosRequeridos = ['Emisiones', 'Dispersión', 'Exposición', 'Salud'];
   const archivosOpcionales = ['Social'];
 
-  // dropdown tipo tabla
+  // Dropdown tipo tabla
   document.querySelectorAll('.dropdown-item').forEach(item => {
     item.addEventListener('click', function(e) {
       e.preventDefault();
@@ -261,25 +336,31 @@
     });
   });
 
-  // crear borrador
+  // Crear borrador
   document.getElementById('crearBorradorBtn').addEventListener('click', function() {
     const nombre = document.getElementById('nombreSimulacion').value.trim();
     const ubicacion = document.getElementById('ubicacionSimulacion').value.trim();
     const descripcion = document.getElementById('descripcionSimulacion').value.trim();
 
-    if (!nombre) { alert('Por favor, ingresa un nombre para la simulación'); return; }
+    if (!nombre) {
+      alert('Por favor, ingresa un nombre para la simulación');
+      return;
+    }
 
     fetch("{% url 'crear_borrador' %}", {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrftoken
+      },
       body: `nombre_simulacion=${encodeURIComponent(nombre)}&ubicacion=${encodeURIComponent(ubicacion)}&descripcion=${encodeURIComponent(descripcion)}`
     })
-    .then(r=>r.json())
-    .then(data=>{
+    .then(r => r.json())
+    .then(data => {
       if (data.success){
         currentDraft = data.simulacion;
         showDraftInfo();
-        
+
         const uploadArea = document.getElementById('uploadArea');
         const noBorradorMessage = document.getElementById('noBorradorMessage');
         const tableDropdown = document.getElementById('tableDropdown');
@@ -300,37 +381,45 @@
         alert('Error al crear borrador: ' + (data.error || ''));
       }
     })
-    .catch(()=>alert('Error al crear borrador'));
+    .catch(() => alert('Error al crear borrador'));
   });
 
-  // drag & drop
+  // Drag & drop
   const dropZone = document.getElementById('dropZone');
   const fileInput = document.getElementById('fileInput');
   
   if (dropZone) {
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
     dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      handleFile(e.dataTransfer.files[0]);
+    });
   }
   
   if (fileInput) {
-    fileInput.addEventListener('change', e => { if (e.target.files.length>0) handleFile(e.target.files[0]); });
+    fileInput.addEventListener('change', e => {
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
   }
 
   function handleFile(file){
     if (file && file.name.match(/\.(xlsx|xls|csv)$/)){
-      currentFile = file; 
-      showFileInfo(file); 
+      currentFile = file;
+      showFileInfo(file);
       updateButtons();
-    } else { 
-      alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)'); 
+    } else {
+      alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)');
     }
   }
 
   function showFileInfo(file){
     const fileInfo = document.getElementById('fileInfo');
     const currentFileInfo = document.getElementById('currentFileInfo');
-    
     if (fileInfo) fileInfo.textContent = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
     if (currentFileInfo) currentFileInfo.style.display = 'block';
   }
@@ -356,7 +445,6 @@
     const archivosFaltantes = archivosRequeridos.filter(req => !archivosSubidos.includes(req));
     const archivosCompletos = archivosFaltantes.length === 0;
     
-    // Actualizar estado
     const estadoElement = document.getElementById('estadoProcesamiento');
     const archivosRequeridosElement = document.getElementById('archivosRequeridos');
     
@@ -366,20 +454,16 @@
         archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length}`;
         
         if (archivosCompletos) {
-          estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3';
+          estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3 mb-0 small';
           estadoElement.querySelector('.alert').innerHTML = `
-            <small>
-              <i class="fas fa-check-circle me-1"></i>
-              Todos los archivos requeridos están listos
-            </small>
+            <i class="fas fa-check-circle me-1"></i>
+            Todos los archivos requeridos están listos
           `;
         } else {
-          estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3';
+          estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3 mb-0 small';
           estadoElement.querySelector('.alert').innerHTML = `
-            <small>
-              <i class="fas fa-exclamation-triangle me-1"></i>
-              Faltan ${archivosFaltantes.length} archivos requeridos
-            </small>
+            <i class="fas fa-exclamation-triangle me-1"></i>
+            Faltan ${archivosFaltantes.length} archivos requeridos
           `;
         }
       } else {
@@ -405,7 +489,7 @@
     if (finalizarBtn) finalizarBtn.disabled = !(hasDraft && archivosCompletos);
   }
 
-  // subir archivo
+  // Subir archivo
   document.getElementById('uploadBtn').addEventListener('click', function(){
     if (!currentFile || !selectedTable || !currentDraft){ 
         alert('Falta información para subir el archivo'); 
@@ -417,23 +501,13 @@
     formData.append('tipo_tabla', selectedTable);
     formData.append('simulacion_id', currentDraft.id);
 
-    console.log('DEBUG: Enviando archivo:', {
-        nombre: currentFile.name,
-        tipo: selectedTable,
-        simulacion: currentDraft.id
-    });
-
     fetch("{% url 'subir_archivo_borrador' %}", { 
         method: 'POST', 
         headers: { 'X-CSRFToken': csrftoken }, 
         body: formData 
     })
-    .then(response => {
-        console.log('DEBUG: Respuesta recibida, status:', response.status);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('DEBUG: Datos recibidos:', data);
         if (data.success){
             draftFiles.push({
                 id: data.archivo_id,
@@ -446,7 +520,6 @@
             });
             updateFilesList();
             
-            // Limpiar selección después de subir
             currentFile = null; 
             selectedTable = '';
             
@@ -471,7 +544,6 @@
         }
     })
     .catch(error => {
-        console.error('DEBUG: Error en fetch:', error);
         alert('Error de conexión al subir archivo: ' + error.message);
     });
   });
@@ -491,11 +563,8 @@
       const esOpcional = archivosOpcionales.includes(f.table);
       
       let claseEstado = '';
-      if (esRequerido) {
-        claseEstado = 'archivo-requerido';
-      } else if (esOpcional) {
-        claseEstado = 'archivo-opcional';
-      }
+      if (esRequerido) claseEstado = 'archivo-requerido';
+      else if (esOpcional) claseEstado = 'archivo-opcional';
 
       const item = document.createElement('div');
       item.className = `file-item draft-file ${claseEstado}`;
@@ -508,14 +577,16 @@
               ${esRequerido ? '<span class="badge bg-primary ms-2">Requerido</span>' : ''}
               ${esOpcional ? '<span class="badge bg-secondary ms-2">Opcional</span>' : ''}
             </div>
-            <div class="file-info text-muted">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
-            <div class="mt-1">
+            <div class="file-info text-muted small">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
+            <div class="mt-1 small">
               ${f.valido ? '<span class="badge bg-success">Válido</span>' : '<span class="badge bg-danger">Inválido</span>'}
               ${f.msg ? `<small class="text-muted ms-2">${escapeHtml(f.msg)}</small>` : ''}
               ${(!f.valido && f.errores) ? `<div class="text-danger small mt-1">${escapeHtml(f.errores)}</div>` : ''}
             </div>
           </div>
-          <button class="btn btn-sm btn-outline-danger rounded-3" onclick="eliminarArchivoBorrador(${f.id}, ${index})">
+          <button class="btn btn-sm btn-outline-danger rounded-3"
+                  type="button"
+                  onclick="eliminarArchivoBorrador(${f.id}, ${index})">
             <i class="fas fa-times"></i>
           </button>
         </div>`;
@@ -535,11 +606,14 @@
     if (!confirm('¿Eliminar este archivo del borrador?')) return;
     fetch("{% url 'eliminar_archivo_borrador' %}", {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrftoken
+      },
       body: `archivo_id=${archivoId}`
     })
-    .then(r=>r.json())
-    .then(data=>{
+    .then(r => r.json())
+    .then(data => {
       if (data.success){
         draftFiles.splice(index, 1);
         updateFilesList();
@@ -548,7 +622,7 @@
         alert('Error al eliminar archivo: ' + (data.error || 'Error desconocido')); 
       }
     })
-    .catch(()=>alert('Error de conexión al eliminar archivo'));
+    .catch(() => alert('Error de conexión al eliminar archivo'));
   }
 
   document.getElementById('finalizarBtn').addEventListener('click', function(){
@@ -564,7 +638,7 @@
     
     if (finalizarDetails) {
       finalizarDetails.innerHTML = `
-        <div class="alert alert-info">
+        <div class="alert alert-info small mb-0">
           <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
           <strong>Archivos a procesar:</strong> ${draftFiles.length} archivos<br>
           <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}<br>
@@ -583,12 +657,18 @@
     if (currentDraft){
       fetch("{% url 'cancelar_borrador' %}", {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrftoken
+        },
         body: `simulacion_id=${currentDraft.id}`
-      }).then(r=>r.json()).then(d=>{ 
+      })
+      .then(r => r.json())
+      .then(d => { 
         if (d.success) location.reload(); 
         else alert('Error al cancelar borrador: ' + (d.error || 'Error desconocido'));
-      }).catch(()=>alert('Error de conexión al cancelar borrador'));
+      })
+      .catch(() => alert('Error de conexión al cancelar borrador'));
     } else { 
       location.reload(); 
     }
@@ -596,10 +676,8 @@
 
   document.getElementById('removeBtn').addEventListener('click', function(){
     currentFile = null; 
-    
     const currentFileInfo = document.getElementById('currentFileInfo');
     if (currentFileInfo) currentFileInfo.style.display = 'none';
-    
     if (fileInput) fileInput.value = '';
     updateButtons();
   });
@@ -610,31 +688,41 @@
   <div class="modal-dialog">
     <div class="modal-content soft-card">
       <div class="modal-header">
-        <h5 class="modal-title">Procesar y Finalizar Simulación</h5>
+        <h5 class="modal-title">Procesar y finalizar simulación</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="mb-3">¿Estás seguro de que quieres procesar y finalizar esta simulación?</p>
+        <p class="mb-3 small">
+          Confirma si deseas procesar los archivos del borrador y registrar los resultados como una simulación completada.
+        </p>
         
-        <div class="alert alert-info">
-          <h6 class="alert-heading"><i class="fas fa-cogs me-2"></i>Procesamiento que se ejecutará:</h6>
-          <ul class="small mb-0">
-            <li>Análisis de concentraciones BTX (Benceno, Tolueno, Xileno)</li>
-            <li>Cálculo de exposición poblacional</li>
-            <li>Modelo de regresión para casos de salud</li>
-            <li>Generación de archivo de resultados TXT</li>
+        <div class="alert alert-info mb-3">
+          <h6 class="alert-heading mb-2" style="font-size: .9rem;">
+            <i class="fas fa-cogs me-2"></i>Procesamiento que se ejecutará
+          </h6>
+          <ul class="small mb-0 ps-3">
+            <li>Análisis de concentraciones BTX (Benceno, Tolueno, Xileno).</li>
+            <li>Cálculo de exposición poblacional.</li>
+            <li>Modelo de regresión para casos de salud.</li>
+            <li>Generación de archivo de resultados en formato TXT.</li>
           </ul>
         </div>
 
         <div id="finalizarDetails"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Seguir Editando</button>
-        <form method="POST" action="{% url 'finalizar_simulacion' %}" id="finalizarForm">
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm"
+                data-bs-dismiss="modal">
+          Seguir editando
+        </button>
+        <form method="POST"
+              action="{% url 'finalizar_simulacion' %}"
+              id="finalizarForm">
           {% csrf_token %}
           <input type="hidden" name="simulacion_id" id="simulacionIdInput">
-          <button type="submit" class="btn btn-primary">
-            <i class="fas fa-calculator me-2"></i>Procesar y Finalizar
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fas fa-calculator me-2"></i>Procesar y finalizar
           </button>
         </form>
       </div>
@@ -643,317 +731,75 @@
 </div>
 
 <style>
-  .soft-card { border-radius: 16px; box-shadow: 0 8px 24px rgba(16,24,40,.06); }
-  .pretty-input { border-radius: 12px; }
-  .lift { transition: transform .15s ease, box-shadow .15s ease; }
-  .lift:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(16,24,40,.12); }
-  .pretty-border { border: 2px dashed #e3e7ef; border-radius: 16px; }
-  .drop-zone { padding: 40px; background: linear-gradient(180deg,#fafbff 0,#fff 100%); }
-  .drop-zone.dragover { border-color: #0d6efd; background: #eef5ff; }
-  .file-item { background: #fbfcff; border: 1px solid #eef1f6; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
-  .draft-file { border-left: 4px solid #84d087; background: #f6fff7; }
-  .file-info { font-size: .9em; }
-  .controls-sticky { position: sticky; top: 16px; }
-  @media (max-width: 767.98px){ .controls-sticky { position: static; } }
-  .bg-info-subtle { background-color: #e7f1ff!important; }
-  .text-info-emphasis { color: #084298!important; }
+  .soft-card {
+    border-radius: 18px;
+    box-shadow: 0 14px 35px rgba(15,23,42,.10);
+    border: 1px solid rgba(148,163,184,.18);
+    background: #ffffff;
+  }
+  .soft-card-secondary {
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(15,23,42,.08);
+    border: 1px solid rgba(148,163,184,.18);
+    background: linear-gradient(180deg,#f9fafb 0,#ffffff 40%);
+  }
+  .pretty-input {
+    border-radius: 12px;
+    border-color: #e5e7eb;
+    font-size: .9rem;
+  }
+  .pretty-input:focus {
+    border-color: #28537E;
+    box-shadow: 0 0 0 .15rem rgba(40,83,126,.18);
+  }
+  .lift {
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(15,23,42,.18);
+  }
+  .pretty-border {
+    border: 2px dashed #d4dbe8;
+    border-radius: 16px;
+    background: linear-gradient(180deg,#f9fafb 0,#ffffff 100%);
+  }
+  .drop-zone {
+    padding: 32px;
+  }
+  .drop-zone.dragover {
+    border-color: #28537E;
+    background: #eef4ff;
+  }
+  .file-item {
+    background: #fbfcff;
+    border: 1px solid #e5e7f1;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .draft-file {
+    border-left: 4px solid #84d087;
+    background: #f6fff7;
+  }
+  .file-info {
+    font-size: .8rem;
+  }
+  .controls-sticky {
+    position: sticky;
+    top: 16px;
+  }
+  @media (max-width: 767.98px){
+    .controls-sticky { position: static; }
+  }
+  .bg-info-subtle {
+    background-color: #e7f1ff!important;
+  }
+  .text-info-emphasis {
+    color: #084298!important;
+  }
   .archivo-requerido { border-left-color: #198754 !important; }
-  .archivo-faltante { border-left-color: #dc3545 !important; }
   .archivo-opcional { border-left-color: #6c757d !important; }
 </style>
-
-<script>
-  let selectedTable = '';
-  let currentFile = null;
-  let currentDraft = null;
-  let draftFiles = [];
-
-  // Archivos requeridos para el procesamiento
-  const archivosRequeridos = ['Emisiones', 'Dispersión', 'Exposición', 'Salud'];
-  const archivosOpcionales = ['Social'];
-
-  // dropdown tipo tabla
-  document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      selectedTable = this.getAttribute('data-table');
-      document.getElementById('selectedTable').textContent = this.textContent;
-      document.getElementById('tableDropdown').textContent = this.textContent;
-      updateButtons();
-    });
-  });
-
-  // crear borrador
-  document.getElementById('crearBorradorBtn').addEventListener('click', function() {
-    const nombre = document.getElementById('nombreSimulacion').value.trim();
-    const ubicacion = document.getElementById('ubicacionSimulacion').value.trim();
-    const descripcion = document.getElementById('descripcionSimulacion').value.trim();
-
-    if (!nombre) { alert('Por favor, ingresa un nombre para la simulación'); return; }
-
-    fetch("{% url 'crear_borrador' %}", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
-      body: `nombre_simulacion=${encodeURIComponent(nombre)}&ubicacion=${encodeURIComponent(ubicacion)}&descripcion=${encodeURIComponent(descripcion)}`
-    })
-    .then(r=>r.json())
-    .then(data=>{
-      if (data.success){
-        currentDraft = data.simulacion;
-        showDraftInfo();
-        document.getElementById('uploadArea').style.display = 'block';
-        document.getElementById('noBorradorMessage').style.display = 'none';
-        document.getElementById('tableDropdown').disabled = false;
-        document.getElementById('crearBorradorBtn').disabled = true;
-        document.getElementById('cancelarBtn').style.display = 'block';
-        document.getElementById('procesamientoInfo').style.display = 'block';
-        updateButtons();
-        alert('Borrador creado. Ya puedes subir archivos.');
-      } else {
-        alert('Error al crear borrador: ' + (data.error || ''));
-      }
-    })
-    .catch(()=>alert('Error al crear borrador'));
-  });
-
-  // drag & drop
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
-  fileInput.addEventListener('change', e => { if (e.target.files.length>0) handleFile(e.target.files[0]); });
-
-  function handleFile(file){
-    if (file && file.name.match(/\.(xlsx|xls|csv)$/)){
-      currentFile = file; showFileInfo(file); updateButtons();
-    } else { alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)'); }
-  }
-
-  function showFileInfo(file){
-    document.getElementById('fileInfo').textContent = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
-    document.getElementById('currentFileInfo').style.display = 'block';
-  }
-
-  function showDraftInfo(){
-    document.getElementById('draftInfo').innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-4"><strong>Nombre:</strong> ${currentDraft.nombre_simulacion}</div>
-        <div class="col-md-4"><strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}</div>
-        <div class="col-md-4"><strong>Archivos:</strong> ${draftFiles.length}</div>
-      </div>`;
-    document.getElementById('currentDraftSection').style.display = 'block';
-  }
-
-  function verificarArchivosRequeridos() {
-    const archivosSubidos = draftFiles.map(f => f.table);
-    const archivosFaltantes = archivosRequeridos.filter(req => !archivosSubidos.includes(req));
-    const archivosCompletos = archivosFaltantes.length === 0;
-    
-    // Actualizar estado
-    const estadoElement = document.getElementById('estadoProcesamiento');
-    const archivosRequeridosElement = document.getElementById('archivosRequeridos');
-    
-    if (draftFiles.length > 0) {
-      estadoElement.style.display = 'block';
-      archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length}`;
-      
-      if (archivosCompletos) {
-        estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3';
-        estadoElement.querySelector('.alert').innerHTML = `
-          <small>
-            <i class="fas fa-check-circle me-1"></i>
-            Todos los archivos requeridos están listos
-          </small>
-        `;
-      } else {
-        estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3';
-        estadoElement.querySelector('.alert').innerHTML = `
-          <small>
-            <i class="fas fa-exclamation-triangle me-1"></i>
-            Faltan ${archivosFaltantes.length} archivos requeridos
-          </small>
-        `;
-      }
-    } else {
-      estadoElement.style.display = 'none';
-    }
-    
-    return archivosCompletos;
-  }
-
-  function updateButtons(){
-    const hasFile = currentFile !== null;
-    const hasTable = selectedTable !== '';
-    const hasDraft = currentDraft !== null;
-    const archivosCompletos = verificarArchivosRequeridos();
-
-    document.getElementById('uploadBtn').disabled = !hasFile || !hasTable || !hasDraft;
-    document.getElementById('removeBtn').disabled = !hasFile;
-    document.getElementById('finalizarBtn').disabled = !(hasDraft && archivosCompletos);
-  }
-
-  // subir archivo
-  document.getElementById('uploadBtn').addEventListener('click', function(){
-    if (!currentFile || !selectedTable || !currentDraft){ 
-        alert('Falta información para subir el archivo'); 
-        return; 
-    }
-
-    const formData = new FormData();
-    formData.append('archivo_excel', currentFile);
-    formData.append('tipo_tabla', selectedTable);
-    formData.append('simulacion_id', currentDraft.id);
-
-    console.log('DEBUG: Enviando archivo:', {
-        nombre: currentFile.name,
-        tipo: selectedTable,
-        simulacion: currentDraft.id
-    });
-
-    fetch("{% url 'subir_archivo_borrador' %}", { 
-        method: 'POST', 
-        headers: { 'X-CSRFToken': csrftoken }, 
-        body: formData 
-    })
-    .then(response => {
-        console.log('DEBUG: Respuesta recibida, status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('DEBUG: Datos recibidos:', data);
-        if (data.success){
-            draftFiles.push({
-                id: data.archivo_id,
-                name: currentFile.name,
-                table: selectedTable,
-                size: (currentFile.size/1024/1024).toFixed(2) + ' MB',
-                valido: data.valido,
-                msg: data.msg || '',
-                errores: data.errores || ''
-            });
-            updateFilesList();
-            currentFile = null; selectedTable = '';
-            document.getElementById('selectedTable').textContent = 'No seleccionada';
-            document.getElementById('tableDropdown').textContent = 'Seleccionar tabla';
-            document.getElementById('currentFileInfo').style.display = 'none';
-            updateButtons();
-            
-            if (data.valido) {
-                alert('Archivo subido y validado correctamente: ' + data.msg);
-            } else {
-                alert('Archivo subido pero con errores: ' + data.errores);
-            }
-        } else {
-            alert('Error al subir archivo: ' + (data.error || 'Error desconocido'));
-        }
-    })
-    .catch(error => {
-        console.error('DEBUG: Error en fetch:', error);
-        alert('Error de conexión al subir archivo: ' + error.message);
-    });
-  });
-
-  function updateFilesList(){
-    const filesList = document.getElementById('filesList');
-    filesList.innerHTML = '';
-
-    let valid = 0, invalid = 0;
-
-    draftFiles.forEach((f, index) => {
-      if (f.valido) valid++; else invalid++;
-      
-      const esRequerido = archivosRequeridos.includes(f.table);
-      const esOpcional = archivosOpcionales.includes(f.table);
-      
-      let claseEstado = '';
-      if (esRequerido) {
-        claseEstado = 'archivo-requerido';
-      } else if (esOpcional) {
-        claseEstado = 'archivo-opcional';
-      }
-
-      const item = document.createElement('div');
-      item.className = `file-item draft-file ${claseEstado}`;
-      item.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start gap-3">
-          <div>
-            <div class="mb-1">
-              <i class="fas fa-file-excel text-success me-2"></i>
-              <strong>${escapeHtml(f.name)}</strong>
-              ${esRequerido ? '<span class="badge bg-primary ms-2">Requerido</span>' : ''}
-              ${esOpcional ? '<span class="badge bg-secondary ms-2">Opcional</span>' : ''}
-            </div>
-            <div class="file-info text-muted">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
-            <div class="mt-1">
-              ${f.valido ? '<span class="badge bg-success">Válido</span>' : '<span class="badge bg-danger">Inválido</span>'}
-              ${f.msg ? `<small class="text-muted ms-2">${escapeHtml(f.msg)}</small>` : ''}
-              ${(!f.valido && f.errores) ? `<div class="text-danger small mt-1">${escapeHtml(f.errores)}</div>` : ''}
-            </div>
-          </div>
-          <button class="btn btn-sm btn-outline-danger rounded-3" onclick="eliminarArchivoBorrador(${f.id}, ${index})">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>`;
-      filesList.appendChild(item);
-    });
-
-    document.getElementById('countValid').textContent = valid;
-    document.getElementById('countInvalid').textContent = invalid;
-    showDraftInfo();
-  }
-
-  function eliminarArchivoBorrador(archivoId, index){
-    if (!confirm('¿Eliminar este archivo del borrador?')) return;
-    fetch("{% url 'eliminar_archivo_borrador' %}", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
-      body: `archivo_id=${archivoId}`
-    })
-    .then(r=>r.json())
-    .then(data=>{
-      if (data.success){
-        draftFiles.splice(index, 1);
-        updateFilesList();
-        updateButtons();
-      } else { alert('Error al eliminar archivo'); }
-    })
-    .catch(()=>alert('Error al eliminar archivo'));
-  }
-
-  document.getElementById('finalizarBtn').addEventListener('click', function(){
-    const archivosCompletos = verificarArchivosRequeridos();
-    
-    if (!archivosCompletos) {
-      alert('Faltan archivos requeridos para procesar la simulación. Se necesitan: ' + archivosRequeridos.join(', '));
-      return;
-    }
-
-    document.getElementById('finalizarDetails').innerHTML = `
-      <div class="alert alert-info">
-        <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
-        <strong>Archivos a procesar:</strong> ${draftFiles.length} archivos<br>
-        <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}<br>
-        <strong>Procesamiento:</strong> Análisis BTX completo con regresión lineal
-      </div>`;
-    document.getElementById('simulacionIdInput').value = currentDraft.id;
-    new bootstrap.Modal(document.getElementById('finalizarModal')).show();
-  });
-
-  document.getElementById('cancelarBtn').addEventListener('click', function(){
-    if (!confirm('¿Cancelar este borrador? Se perderán todos los archivos subidos.')) return;
-    if (currentDraft){
-      fetch("{% url 'cancelar_borrador' %}", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
-        body: `simulacion_id=${currentDraft.id}`
-      }).then(r=>r.json()).then(d=>{ if (d.success) location.reload(); });
-    } else { location.reload(); }
-  });
-
-  document.getElementById('removeBtn').addEventListener('click', function(){
-    currentFile = null; document.getElementById('currentFileInfo').style.display = 'none'; fileInput.value = ''; updateButtons();
-  });
-</script>
 
 {% endblock %}

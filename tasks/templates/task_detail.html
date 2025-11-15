@@ -2,765 +2,893 @@
 
 {% block content %}
 
-<div class="container-fluid mt-4">
-    <div class="row">
-        <!-- Columna izquierda - Gráfica del modelo causal (2/3) -->
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body text-center">
-                    <h3 class="card-title mb-4">{{task.title}}</h3>
-                    
-                    <!-- Gráfica del modelo causal -->
-                    <div class="causal-model-container">
-                        <img src="{% url 'causal_graph_jpg' %}?v={{ task.created|date:'U' }}"
-                            alt="Modelo Causal BTX"
-                            class="causal-model-img img-fluid"
-                            id="causalModel">
-                    </div>
-                    
-                    <!-- Información adicional de la tarea -->
-                    <div class="task-details mt-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="info-item">
-                                    <strong>ID del Registro:</strong> {{task.id}}
-                                </div>
-                                <div class="info-item">
-                                    <strong>Usuario Responsable:</strong> {{task.user.username}}
-                                </div>
-                                <div class="info-item">
-                                    <strong>Fecha de Creación:</strong> {{task.created|date:'d/m/Y'}}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-item">
-                                    <strong>Hora de Creación:</strong> {{task.created|date:'H:i'}}
-                                </div>
-                                {% if task.ubicacion %}
-                                <div class="info-item">
-                                    <strong>Ubicación:</strong> {{task.ubicacion}}
-                                </div>
-                                {% endif %}
-                                <div class="info-item">
-                                    <strong>Estado:</strong> 
-                                    <span class="badge {% if task.datecompleted %}bg-success{% else %}bg-warning{% endif %}">
-                                        {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container-xxl mt-4 mb-4">
+  <div class="row g-4">
+    <!-- Columna izquierda - Gráfica + resultados -->
+    <div class="col-lg-8">
 
-            <!-- NUEVA SECCIÓN: GRÁFICAS DE ANÁLISIS -->
-            {% if resultados_txt %}
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="fas fa-chart-bar me-2"></i>Análisis Visual de Datos BTX
-                    </h5>
-                    
-                    <!-- Gráfica 1: Dispersión con línea de regresión -->
-                    <div class="row mb-5">
-                        <div class="col-12">
-                            <h6 class="fw-semibold mb-3">Relación entre concentración BTX y casos respiratorios</h6>
-                            {% if datos_graficas.datos_disponibles and datos_graficas.dispersion.btx_total and datos_graficas.dispersion.casos_respiratorios %}
-                            <div class="chart-container" style="position: relative; height:400px; width:100%">
-                                <canvas id="grafico-btx-salud"></canvas>
-                            </div>
-                            {% else %}
-                            <div class="alert alert-warning text-center">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                No hay datos suficientes para generar la gráfica. Se necesitan archivos de Emisiones y Salud con datos válidos.
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
+      <!-- Card: Modelo causal + metadatos -->
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body">
 
-                    <!-- Gráfica 2: Mapa de calor de correlaciones -->
-                    <div class="row">
-                        <div class="col-12">
-                            <h6 class="fw-semibold mb-3">Mapa de correlaciones BTX vs variables ambientales y de salud</h6>
-                            {% if datos_graficas.datos_disponibles and datos_graficas.correlaciones.variables and datos_graficas.correlaciones.matriz %}
-                            <div class="chart-container" style="position: relative; height:500px; width:100%">
-                                <canvas id="grafico-correlograma"></canvas>
-                            </div>
-                            <div class="mt-3">
-                                <small class="text-muted">Los valores representan coeficientes de correlación entre -1 y 1</small>
-                            </div>
-                            {% else %}
-                            <div class="alert alert-warning text-center">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                No hay datos suficientes para generar el mapa de correlaciones. Se necesitan múltiples archivos con datos válidos.
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+          <!-- Encabezado registro -->
+          <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+            <div>
+              <h1 class="h4 fw-semibold mb-1 task-hero-title">
+                {{ task.title }}
+              </h1>
+              <p class="text-muted mb-1 small">
+                ID Registro #{{ task.id }} · Usuario {{ task.user.username }}
+              </p>
+              {% if task.ubicacion %}
+              <span class="badge rounded-pill bg-light text-muted border small">
+                <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                {{ task.ubicacion }}
+              </span>
+              {% endif %}
             </div>
-            {% endif %}
+            <div class="text-end">
+              <span class="badge rounded-pill
+                           {% if task.datecompleted %}bg-success-subtle text-success-emphasis border{% else %}bg-warning-subtle text-warning-emphasis border{% endif %}">
+                {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
+              </span>
+              <div class="mt-2 small text-muted">
+                <div>
+                  <strong>Creado:</strong>
+                  {{ task.created|date:"d/m/Y" }} · {{ task.created|date:"H:i" }}
+                </div>
+                {% if task.datecompleted %}
+                <div>
+                  <strong>Finalizado:</strong>
+                  {{ task.datecompleted|date:"d/m/Y H:i" }}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
 
-            <!-- Sección de resultados del análisis -->
-            {% if resultados_txt %}
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="fas fa-chart-line me-2"></i>Resultados del Análisis BTX
-                    </h5>
-                    
-                    <div class="resultados-container">
-                        <pre class="resultados-txt">{{ resultados_txt }}</pre>
-                    </div>
-                    
-                    <div class="mt-3 text-end">
-                        <button class="btn btn-outline-primary" id="descargarResultadosBtn">
-                            <i class="fas fa-download me-2"></i>Descargar Resultados TXT
-                        </button>
-                    </div>
-                </div>
+          <hr class="text-muted" style="opacity:.2;">
+
+          <!-- Gráfica del modelo causal -->
+          <div class="causal-model-wrapper">
+            <div class="causal-model-container">
+              <img src="{% url 'causal_graph_jpg' %}?v={{ task.created|date:'U' }}"
+                   alt="Modelo Causal BTX"
+                   class="causal-model-img img-fluid"
+                   id="causalModel">
             </div>
+            <p class="text-muted text-center small mt-2 mb-0">
+              Representación del modelo dinámico de causalidad de gases BTX y efectos en la salud.
+            </p>
+          </div>
+
+          <!-- Información adicional de la tarea -->
+          <div class="task-details mt-4">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">ID del Registro</span>
+                  <span class="info-value">#{{ task.id }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Usuario responsable</span>
+                  <span class="info-value">{{ task.user.username }}</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="info-item">
+                  <span class="info-label">Creado</span>
+                  <span class="info-value">
+                    {{ task.created|date:"d/m/Y" }} · {{ task.created|date:"H:i" }}
+                  </span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Estado</span>
+                  <span class="info-value">
+                    <span class="badge
+                      {% if task.datecompleted %}bg-success text-light{% else %}bg-warning text-dark{% endif %}">
+                      {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GRÁFICAS DE ANÁLISIS -->
+      {% if resultados_txt %}
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3 h6 fw-semibold">
+            <i class="fas fa-chart-bar me-2 text-primary"></i>Análisis visual de datos BTX
+          </h5>
+
+          <!-- Gráfica 1: Dispersión con línea de regresión -->
+          <div class="mb-4">
+            <h6 class="fw-semibold mb-2 small text-muted text-uppercase">
+              Relación BTX – Casos respiratorios
+            </h6>
+            {% if datos_graficas.datos_disponibles and datos_graficas.dispersion.btx_total and datos_graficas.dispersion.casos_respiratorios %}
+            <div class="chart-container" style="position: relative; height:360px; width:100%">
+              <canvas id="grafico-btx-salud"></canvas>
+            </div>
+            <p class="small text-muted mt-2 mb-0">
+              Cada punto representa una observación de concentración BTX frente al número de casos
+              respiratorios asociados en el periodo de análisis.
+            </p>
             {% else %}
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body text-center">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i>
-                        No hay resultados de análisis disponibles para esta simulación.
-                    </div>
-                    <p class="text-muted">Los resultados se generan automáticamente cuando se finaliza la simulación en la página de creación.</p>
-                </div>
+            <div class="alert alert-warning text-center small mb-0">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              No hay datos suficientes para generar esta gráfica. Se requieren archivos de
+              <strong>Emisiones</strong> y <strong>Salud</strong> con datos válidos.
             </div>
             {% endif %}
+          </div>
 
-            <!-- Sección de archivos de la simulación -->
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        Archivos de la Simulación: {{task.title}}
-                        <small class="text-muted">({{ archivos_simulacion|length }} archivos)</small>
-                    </h5>
-                    
-                    {% if archivos_simulacion %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Nombre del Archivo</th>
-                                    <th>Tipo</th>
-                                    <th>Fecha de Carga</th>
-                                    <th>Tamaño</th>
-                                    <th>Estado Validación</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for archivo in archivos_simulacion %}
-                                <tr>
-                                    <td>
-                                        <i class="fas fa-file-excel text-success me-2"></i>
-                                        {{ archivo.archivo.name|slice:"15:" }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ archivo.tipo_tabla }}</span>
-                                    </td>
-                                    <td>{{ archivo.fecha_carga|date:"d/m/Y H:i" }}</td>
-                                    <td>
-                                        {% if archivo.archivo.size %}
-                                            {{ archivo.archivo.size|filesizeformat }}
-                                        {% else %}
-                                            Desconocido
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if archivo.valido %}
-                                            <span class="badge bg-success">Válido</span>
-                                        {% else %}
-                                            <span class="badge bg-danger">Inválido</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <a href="{{ archivo.archivo.url }}" class="btn btn-sm btn-outline-success" download>
-                                            <i class="fas fa-download me-1"></i>Descargar
-                                        </a>
-                                        <a href="{% url 'delete_archivo' archivo.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar este archivo?')">
-                                            <i class="fas fa-trash me-1"></i>Eliminar
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+          <hr class="text-muted" style="opacity:.15;">
+
+          <!-- Gráfica 2: Mapa de calor de correlaciones -->
+          <div>
+            <h6 class="fw-semibold mb-2 small text-muted text-uppercase">
+              Mapa de correlaciones BTX vs variables ambientales y de salud
+            </h6>
+            {% if datos_graficas.datos_disponibles and datos_graficas.correlaciones.variables and datos_graficas.correlaciones.matriz %}
+            <div class="chart-container" style="position: relative; height:420px; width:100%">
+              <canvas id="grafico-correlograma"></canvas>
+            </div>
+            <p class="small text-muted mt-2 mb-0">
+              Los valores representan coeficientes de correlación entre -1 y 1. Los tonos cálidos indican
+              correlación positiva y los tonos fríos correlación negativa.
+            </p>
+            {% else %}
+            <div class="alert alert-warning text-center small mb-0">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              No hay datos suficientes para generar el mapa de correlaciones. Se requieren múltiples
+              archivos con variables ambientales y de salud.
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- RESULTADOS TXT -->
+      {% if resultados_txt %}
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="card-title mb-0 h6 fw-semibold">
+              <i class="fas fa-chart-line me-2 text-primary"></i>Resultados del análisis BTX
+            </h5>
+            <button class="btn btn-outline-primary btn-sm" id="descargarResultadosBtn">
+              <i class="fas fa-download me-2"></i>Descargar resultados TXT
+            </button>
+          </div>
+
+          <div class="resultados-container">
+            <pre class="resultados-txt">{{ resultados_txt }}</pre>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body text-center">
+          <div class="alert alert-info mb-2">
+            <i class="fas fa-info-circle me-2"></i>
+            No hay resultados de análisis disponibles para esta simulación.
+          </div>
+          <p class="text-muted small mb-0">
+            Los resultados se generan automáticamente al finalizar la simulación desde la página
+            de creación.
+          </p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ARCHIVOS DE LA SIMULACIÓN -->
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+              <h5 class="card-title mb-0 h6 fw-semibold">
+                Archivos de la simulación
+              </h5>
+              <p class="text-muted small mb-0">
+                {{ task.title }} ·
+                <span class="fw-semibold">{{ archivos_simulacion|length }}</span>
+                archivo(s) asociado(s)
+              </p>
+            </div>
+          </div>
+
+          {% if archivos_simulacion %}
+          <div class="table-responsive">
+            <table class="table align-middle table-sm mb-3">
+              <thead class="table-light">
+                <tr>
+                  <th>Nombre del archivo</th>
+                  <th>Tipo</th>
+                  <th>Fecha de carga</th>
+                  <th>Tamaño</th>
+                  <th>Validación</th>
+                  <th class="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for archivo in archivos_simulacion %}
+                <tr>
+                  <td>
+                    <i class="fas fa-file-excel text-success me-2"></i>
+                    <span class="small">{{ archivo.archivo.name|slice:"15:" }}</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-info-subtle text-info-emphasis border small">
+                      {{ archivo.tipo_tabla }}
+                    </span>
+                  </td>
+                  <td class="small text-muted">
+                    {{ archivo.fecha_carga|date:"d/m/Y H:i" }}
+                  </td>
+                  <td class="small text-muted">
+                    {% if archivo.archivo.size %}
+                      {{ archivo.archivo.size|filesizeformat }}
                     {% else %}
-                    <div class="alert alert-info text-center">
-                        <i class="fas fa-info-circle me-2"></i>
-                        No hay archivos asociados a esta simulación.
-                    </div>
+                      Desconocido
                     {% endif %}
-
-                    <!-- Formulario para agregar más archivos -->
-                    <div class="mt-4">
-                        <h6>Agregar más archivos a esta simulación</h6>
-                        <form method="POST" action="{% url 'add_archivo_simulacion' task.id %}" enctype="multipart/form-data" class="row g-3">
-                            {% csrf_token %}
-                            <div class="col-md-4">
-                                <select name="tipo_tabla" class="form-select" required>
-                                    <option value="">Seleccionar tipo...</option>
-                                    <option value="Emisiones">Emisiones</option>
-                                    <option value="Dispersión">Dispersión Atmosférica</option>
-                                    <option value="Exposición">Exposición Poblacional</option>
-                                    <option value="Salud">Salud Respiratoria</option>
-                                    <option value="Social">Respuesta Social y Regulatoria</option>
-                                </select>
-                            </div>
-                            <div class="col-md-5">
-                                <input type="file" name="archivo_excel" class="form-control" accept=".xlsx,.xls,.csv" required>
-                            </div>
-                            <div class="col-md-3">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-plus me-1"></i>Agregar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Columna derecha - Datos numéricos BTX (1/3) -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="card-title text-center mb-4">
-                        <i class="fas fa-flask me-2"></i>Datos BTX - Indicadores
-                    </h5>
-                    
-                    <!-- Datos numéricos del análisis -->
-                    <div class="btx-data">
-                        <div class="data-item">
-                            <strong>Concentración Benceno:</strong> 
-                            <span class="float-end">{{ btx_data.concentracion_benzeno|floatformat:2 }} µg/m³</span>
-                        </div>
-                        <div class="data-item">
-                            <strong>Concentración Tolueno:</strong> 
-                            <span class="float-end">{{ btx_data.concentracion_tolueno|floatformat:2 }} µg/m³</span>
-                        </div>
-                        <div class="data-item">
-                            <strong>Concentración Xileno:</strong> 
-                            <span class="float-end">{{ btx_data.concentracion_xileno|floatformat:2 }} µg/m³</span>
-                        </div>
-                        <div class="data-item">
-                            <strong>BTX Total:</strong> 
-                            <span class="float-end">{{ btx_data.btx_total|default:"8.5"|floatformat:2 }} µg/m³</span>
-                        </div>
-                        <div class="data-item">
-                            <strong>Casos Respiratorios:</strong> 
-                            <span class="float-end">{{ btx_data.casos_totales|default:"1570" }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Botones de descarga -->
-                    <div class="download-buttons mt-4">
-                        {% if archivos_simulacion %}
-                            {% for archivo in archivos_simulacion %}
-                            <a href="{{ archivo.archivo.url }}" class="btn btn-outline-success w-100 mb-2" download>
-                                <i class="fas fa-file-excel me-2"></i>Descargar {{ archivo.tipo_tabla }}
-                            </a>
-                            {% endfor %}
-                        {% else %}
-                            <button class="btn btn-outline-success w-100 mb-2" disabled>
-                                <i class="fas fa-file-excel me-2"></i>No hay archivos
-                            </button>
-                        {% endif %}
-                        
-                        <button class="btn btn-outline-primary w-100 mb-2" id="downloadJPG">
-                            <i class="fas fa-image me-2"></i>Descargar Gráfica JPG
-                        </button>
-                        
-                        {% if resultados_txt %}
-                        <button class="btn btn-outline-info w-100 mb-2" id="downloadTXT">
-                            <i class="fas fa-file-alt me-2"></i>Descargar Resultados TXT
-                        </button>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Formularios de acciones -->
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="card-title">Acciones del Registro</h6>
-                    
-                    <!-- Formulario de actualización -->
-                    {% if error %}
-                    <div class="alert alert-danger">{{ error }}</div>
+                  </td>
+                  <td>
+                    {% if archivo.valido %}
+                      <span class="badge bg-success text-light small">Válido</span>
+                    {% else %}
+                      <span class="badge bg-danger text-light small">Inválido</span>
                     {% endif %}
+                  </td>
+                  <td class="text-end">
+                    <a href="{{ archivo.archivo.url }}"
+                       class="btn btn-sm btn-outline-success rounded-3 me-1"
+                       download>
+                      <i class="fas fa-download me-1"></i>
+                    </a>
+                    <a href="{% url 'delete_archivo' archivo.id %}"
+                       class="btn btn-sm btn-outline-danger rounded-3"
+                       onclick="return confirm('¿Eliminar este archivo?')">
+                      <i class="fas fa-trash me-1"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="alert alert-info text-center small mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            No hay archivos asociados a esta simulación.
+          </div>
+          {% endif %}
 
-                    <form method="POST" class="mb-3">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            {{ form.as_p }}
-                        </div>
-                        <button class="btn btn-warning w-100">
-                            <i class="fas fa-edit me-2"></i>Actualizar
-                        </button>
-                    </form>
+          <!-- Formulario para agregar más archivos -->
+          <div class="mt-4">
+            <h6 class="fw-semibold small mb-2 text-muted text-uppercase">
+              Agregar archivos a esta simulación
+            </h6>
+            <form method="POST"
+                  action="{% url 'add_archivo_simulacion' task.id %}"
+                  enctype="multipart/form-data"
+                  class="row g-3 align-items-center">
+              {% csrf_token %}
+              <div class="col-md-4">
+                <select name="tipo_tabla" class="form-select form-select-sm" required>
+                  <option value="">Seleccionar tipo...</option>
+                  <option value="Emisiones">Emisiones</option>
+                  <option value="Dispersión">Dispersión Atmosférica</option>
+                  <option value="Exposición">Exposición Poblacional</option>
+                  <option value="Salud">Salud Respiratoria</option>
+                  <option value="Social">Respuesta Social y Regulatoria</option>
+                </select>
+              </div>
+              <div class="col-md-5">
+                <input type="file"
+                       name="archivo_excel"
+                       class="form-control form-control-sm"
+                       accept=".xlsx,.xls,.csv"
+                       required>
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-primary btn-sm w-100 rounded-3">
+                  <i class="fas fa-plus me-1"></i>Agregar archivo
+                </button>
+              </div>
+            </form>
+          </div>
 
-                    <!-- Botones de completar y eliminar -->
-                    <div class="d-grid gap-2">
-                        <form action="{% url 'complete_task' task.id %}" method="POST">
-                            {% csrf_token %}
-                            <button class="btn btn-success w-100">
-                                <i class="fas fa-check me-2"></i>Completar
-                            </button>
-                        </form>
-
-                        <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            <i class="fas fa-trash me-2"></i>Eliminar Registro
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
+      </div>
     </div>
+
+    <!-- Columna derecha - Indicadores + acciones -->
+    <div class="col-lg-4">
+      <!-- Indicadores BTX -->
+      <div class="card shadow-sm border-0 soft-card mb-4">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3 h6 fw-semibold">
+            <i class="fas fa-flask me-2 text-primary"></i>Indicadores BTX
+          </h5>
+
+          <div class="btx-data">
+            <div class="data-item">
+              <span class="data-label">Concentración Benceno</span>
+              <span class="data-value">
+                {{ btx_data.concentracion_benzeno|floatformat:2 }} µg/m³
+              </span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">Concentración Tolueno</span>
+              <span class="data-value">
+                {{ btx_data.concentracion_tolueno|floatformat:2 }} µg/m³
+              </span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">Concentración Xileno</span>
+              <span class="data-value">
+                {{ btx_data.concentracion_xileno|floatformat:2 }} µg/m³
+              </span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">BTX Total</span>
+              <span class="data-value text-primary fw-semibold">
+                {{ btx_data.btx_total|default:"8.5"|floatformat:2 }} µg/m³
+              </span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">Casos respiratorios</span>
+              <span class="data-value">
+                {{ btx_data.casos_totales|default:"1570" }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Botones de descarga (solo gráfica) -->
+          <div class="download-buttons mt-4">
+            <button class="btn btn-outline-primary w-100 mb-2 btn-sm rounded-3"
+                    id="downloadJPG">
+              <i class="fas fa-image me-2"></i>Descargar gráfica JPG
+            </button>
+            <p class="text-muted small mb-0 text-center">
+              Las descargas de Excel y TXT están disponibles en la tabla y en el bloque de resultados.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones del registro -->
+      <div class="card shadow-sm border-0 soft-card">
+        <div class="card-body">
+          <h6 class="card-title mb-3 h6 fw-semibold">
+            Acciones del registro
+          </h6>
+
+          {% if error %}
+          <div class="alert alert-danger small">{{ error }}</div>
+          {% endif %}
+
+          <!-- Formulario actualización -->
+          <form method="POST" class="mb-3">
+            {% csrf_token %}
+            <div class="mb-2 small">
+              {{ form.as_p }}
+            </div>
+            <button class="btn btn-warning w-100 btn-sm rounded-3">
+              <i class="fas fa-edit me-2"></i>Actualizar registro
+            </button>
+          </form>
+
+          <!-- Completar y eliminar -->
+          <div class="d-grid gap-2">
+            <form action="{% url 'complete_task' task.id %}" method="POST">
+              {% csrf_token %}
+              <button class="btn btn-success w-100 btn-sm rounded-3">
+                <i class="fas fa-check me-2"></i>Marcar como completado
+              </button>
+            </form>
+
+            <button class="btn btn-danger w-100 btn-sm rounded-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal">
+              <i class="fas fa-trash me-2"></i>Eliminar registro
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <!-- Modal de confirmación para eliminar -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>¡Advertencia!</strong> Esta acción no se puede deshacer.
-                </div>
-                <p>¿Estás seguro de que quieres eliminar permanentemente el registro <strong>"{{task.title}}"</strong>?</p>
-                <p class="text-muted">Se eliminarán todos los datos asociados, incluyendo archivos Excel y resultados.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form action="{% url 'delete_task' task.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Sí, Eliminar Permanentemente</button>
-                </form>
-            </div>
+  <div class="modal-dialog">
+    <div class="modal-content soft-card">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Advertencia:</strong> esta acción no se puede deshacer.
         </div>
+        <p class="mb-1">
+          ¿Estás seguro de que deseas eliminar permanentemente el registro
+          <strong>"{{ task.title }}"</strong>?
+        </p>
+        <p class="text-muted small mb-0">
+          Se eliminarán todos los datos asociados, incluyendo archivos Excel y resultados generados.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-outline-secondary btn-sm"
+                data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <form action="{% url 'delete_task' task.id %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger btn-sm">
+            Sí, eliminar definitivamente
+          </button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Scripts para gráficas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Datos para las gráficas desde Django
+// --- Datos para las gráficas desde Django ---
 const datosGraficas = {
-    dispersion: {
-        btx_total: {{ datos_graficas.dispersion.btx_total|default:"[]"|safe }},
-        casos_respiratorios: {{ datos_graficas.dispersion.casos_respiratorios|default:"[]"|safe }}
-    },
-    correlaciones: {
-        variables: {{ datos_graficas.correlaciones.variables|default:"[]"|safe }},
-        matriz: {{ datos_graficas.correlaciones.matriz|default:"[]"|safe }}
-    },
-    datos_disponibles: {{ datos_graficas.datos_disponibles|yesno:"true,false" }}
+  dispersion: {
+    btx_total: {{ datos_graficas.dispersion.btx_total|default:"[]"|safe }},
+    casos_respiratorios: {{ datos_graficas.dispersion.casos_respiratorios|default:"[]"|safe }}
+  },
+  correlaciones: {
+    variables: {{ datos_graficas.correlaciones.variables|default:"[]"|safe }},
+    matriz: {{ datos_graficas.correlaciones.matriz|default:"[]"|safe }}
+  },
+  datos_disponibles: {{ datos_graficas.datos_disponibles|yesno:"true,false" }}
 };
-
-console.log('Datos para gráficas:', datosGraficas);
 
 // Gráfica 1: Dispersión con línea de regresión
 function inicializarGraficaDispersion() {
-    const ctx = document.getElementById('grafico-btx-salud');
-    if (!ctx) {
-        console.warn('No se encontró el elemento grafico-btx-salud');
-        return;
-    }
-    
-    const ctx2d = ctx.getContext('2d');
-    
-    // Verificar que hay datos suficientes
-    if (!datosGraficas.dispersion.btx_total || !datosGraficas.dispersion.casos_respiratorios || 
-        datosGraficas.dispersion.btx_total.length < 2 || datosGraficas.dispersion.casos_respiratorios.length < 2) {
-        console.warn('Datos insuficientes para gráfica de dispersión:', datosGraficas.dispersion);
-        return;
-    }
-    
-    // Crear datos para scatter plot
-    const scatterData = [];
-    for (let i = 0; i < datosGraficas.dispersion.btx_total.length; i++) {
-        scatterData.push({
-            x: parseFloat(datosGraficas.dispersion.btx_total[i]) || 0,
-            y: parseFloat(datosGraficas.dispersion.casos_respiratorios[i]) || 0
-        });
-    }
-    
-    // Calcular línea de regresión
-    const xValues = datosGraficas.dispersion.btx_total.map(x => parseFloat(x) || 0);
-    const yValues = datosGraficas.dispersion.casos_respiratorios.map(y => parseFloat(y) || 0);
-    const regression = calcularRegresionLineal(xValues, yValues);
-    
-    // Crear puntos para la línea de regresión
-    const minX = Math.min(...xValues);
-    const maxX = Math.max(...xValues);
-    const lineData = [
-        { x: minX, y: regression.slope * minX + regression.intercept },
-        { x: maxX, y: regression.slope * maxX + regression.intercept }
-    ];
-    
-    new Chart(ctx2d, {
-        type: 'scatter',
-        data: {
-            datasets: [
-                {
-                    label: 'Datos Observados',
-                    data: scatterData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: 'Línea de Regresión',
-                    data: lineData,
-                    type: 'line',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: false,
-                    tension: 0
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Relación entre concentración BTX y casos respiratorios',
-                    font: {
-                        size: 16
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const point = context.raw;
-                            return `BTX: ${point.x.toFixed(2)} µg/m³, Casos: ${point.y.toFixed(0)}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'BTX Total (µg/m³)'
-                    },
-                    type: 'linear',
-                    position: 'bottom'
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Casos Respiratorios'
-                    },
-                    type: 'linear'
-                }
-            }
-        }
+  const canvas = document.getElementById('grafico-btx-salud');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+
+  if (!datosGraficas.dispersion.btx_total ||
+      !datosGraficas.dispersion.casos_respiratorios ||
+      datosGraficas.dispersion.btx_total.length < 2 ||
+      datosGraficas.dispersion.casos_respiratorios.length < 2) {
+    console.warn('Datos insuficientes para gráfica de dispersión', datosGraficas.dispersion);
+    return;
+  }
+
+  const scatterData = [];
+  for (let i = 0; i < datosGraficas.dispersion.btx_total.length; i++) {
+    scatterData.push({
+      x: parseFloat(datosGraficas.dispersion.btx_total[i]) || 0,
+      y: parseFloat(datosGraficas.dispersion.casos_respiratorios[i]) || 0
     });
+  }
+
+  const xValues = datosGraficas.dispersion.btx_total.map(x => parseFloat(x) || 0);
+  const yValues = datosGraficas.dispersion.casos_respiratorios.map(y => parseFloat(y) || 0);
+  const regression = calcularRegresionLineal(xValues, yValues);
+
+  const minX = Math.min(...xValues);
+  const maxX = Math.max(...xValues);
+  const lineData = [
+    { x: minX, y: regression.slope * minX + regression.intercept },
+    { x: maxX, y: regression.slope * maxX + regression.intercept }
+  ];
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [
+        {
+          label: 'Datos observados',
+          data: scatterData,
+          backgroundColor: 'rgba(54, 162, 235, 0.7)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          pointRadius: 5,
+          pointHoverRadius: 7
+        },
+        {
+          label: 'Línea de regresión',
+          data: lineData,
+          type: 'line',
+          backgroundColor: 'rgba(255, 99, 132, 0.1)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { font: { size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const p = context.raw;
+              return `BTX: ${p.x.toFixed(2)} µg/m³ · Casos: ${p.y.toFixed(0)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'BTX total (µg/m³)' },
+          type: 'linear',
+          position: 'bottom'
+        },
+        y: {
+          title: { display: true, text: 'Casos respiratorios' },
+          type: 'linear'
+        }
+      }
+    }
+  });
 }
 
 // Gráfica 2: Mapa de calor de correlaciones
 function inicializarGraficaCorrelograma() {
-    const ctx = document.getElementById('grafico-correlograma');
-    if (!ctx) {
-        console.warn('No se encontró el elemento grafico-correlograma');
-        return;
+  const canvas = document.getElementById('grafico-correlograma');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const variables = datosGraficas.correlaciones.variables;
+  const matriz = datosGraficas.correlaciones.matriz;
+
+  if (!variables || !matriz || variables.length === 0 || matriz.length === 0) {
+    console.warn('Datos insuficientes para mapa de correlaciones', datosGraficas.correlaciones);
+    return;
+  }
+
+  const labels = variables;
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'Matriz de correlación',
+      data: [],
+      backgroundColor: []
+    }]
+  };
+
+  for (let i = 0; i < variables.length; i++) {
+    for (let j = 0; j < variables.length; j++) {
+      const value = matriz[i][j];
+      data.datasets[0].data.push({
+        x: variables[j],
+        y: variables[i],
+        v: value
+      });
+      data.datasets[0].backgroundColor.push(getColorForValue(value));
     }
-    
-    const ctx2d = ctx.getContext('2d');
-    
-    const variables = datosGraficas.correlaciones.variables;
-    const matriz = datosGraficas.correlaciones.matriz;
-    
-    // Verificar que hay datos suficientes
-    if (!variables || !matriz || variables.length === 0 || matriz.length === 0) {
-        console.warn('Datos insuficientes para mapa de correlaciones:', datosGraficas.correlaciones);
-        return;
-    }
-    
-    // Preparar datos para el heatmap
-    const labels = variables;
-    const data = {
-        labels: labels,
-        datasets: [{
-            label: 'Matriz de Correlación',
-            data: [],
-            backgroundColor: []
-        }]
-    };
-    
-    // Llenar los datos para el heatmap
-    for (let i = 0; i < variables.length; i++) {
-        for (let j = 0; j < variables.length; j++) {
-            const value = matriz[i][j];
-            data.datasets[0].data.push({
-                x: variables[j],
-                y: variables[i],
-                v: value
-            });
-            data.datasets[0].backgroundColor.push(getColorForValue(value));
-        }
-    }
-    
-    new Chart(ctx2d, {
-        type: 'scatter',
-        data: data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Mapa de correlaciones BTX vs variables ambientales y de salud',
-                    font: {
-                        size: 16
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const point = context.raw;
-                            let interpretacion = '';
-                            const value = point.v;
-                            
-                            if (value >= 0.8) interpretacion = ' (Correlación muy fuerte positiva)';
-                            else if (value >= 0.6) interpretacion = ' (Correlación fuerte positiva)';
-                            else if (value >= 0.4) interpretacion = ' (Correlación moderada positiva)';
-                            else if (value >= 0.2) interpretacion = ' (Correlación débil positiva)';
-                            else if (value >= -0.2) interpretacion = ' (Sin correlación significativa)';
-                            else if (value >= -0.4) interpretacion = ' (Correlación débil negativa)';
-                            else if (value >= -0.6) interpretacion = ' (Correlación moderada negativa)';
-                            else if (value >= -0.8) interpretacion = ' (Correlación fuerte negativa)';
-                            else interpretacion = ' (Correlación muy fuerte negativa)';
-                            
-                            return `${point.y} vs ${point.x}: ${value.toFixed(2)}${interpretacion}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Variables'
-                    },
-                    type: 'category',
-                    labels: labels
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Variables'
-                    },
-                    type: 'category',
-                    labels: labels
-                }
+  }
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const p = context.raw;
+              const value = p.v;
+              let interpretacion = '';
+              if (value >= 0.8) interpretacion = ' (correlación muy fuerte positiva)';
+              else if (value >= 0.6) interpretacion = ' (correlación fuerte positiva)';
+              else if (value >= 0.4) interpretacion = ' (correlación moderada positiva)';
+              else if (value >= 0.2) interpretacion = ' (correlación débil positiva)';
+              else if (value >= -0.2) interpretacion = ' (sin correlación significativa)';
+              else if (value >= -0.4) interpretacion = ' (correlación débil negativa)';
+              else if (value >= -0.6) interpretacion = ' (correlación moderada negativa)';
+              else if (value >= -0.8) interpretacion = ' (correlación fuerte negativa)';
+              else interpretacion = ' (correlación muy fuerte negativa)';
+              return `${p.y} vs ${p.x}: ${value.toFixed(2)}${interpretacion}`;
             }
+          }
         }
-    });
+      },
+      scales: {
+        x: {
+          type: 'category',
+          labels: labels,
+          title: { display: true, text: 'Variables' }
+        },
+        y: {
+          type: 'category',
+          labels: labels,
+          title: { display: true, text: 'Variables' }
+        }
+      }
+    }
+  });
 }
 
-// Función auxiliar para calcular regresión lineal
+// Regresión lineal
 function calcularRegresionLineal(x, y) {
-    const n = x.length;
-    const sumX = x.reduce((a, b) => a + b, 0);
-    const sumY = y.reduce((a, b) => a + b, 0);
-    const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-    const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
-    
-    const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-    const intercept = (sumY - slope * sumX) / n;
-    
-    return { slope, intercept };
+  const n = x.length;
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((s, xi, i) => s + xi * y[i], 0);
+  const sumXX = x.reduce((s, xi) => s + xi * xi, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  return { slope, intercept };
 }
 
-// Función auxiliar para obtener color basado en el valor de correlación
+// Color según valor de correlación
 function getColorForValue(value) {
-    const absValue = Math.abs(value);
-    
-    if (value >= 0) {
-        // Escala de rojos para positivos (más intenso = más rojo)
-        const intensity = Math.min(200, Math.floor(value * 255));
-        return `rgba(255, ${100 - intensity}, ${100 - intensity}, 0.8)`;
-    } else {
-        // Escala de azules para negativos (más intenso = más azul)
-        const intensity = Math.min(200, Math.floor(absValue * 255));
-        return `rgba(${100 - intensity}, ${100 - intensity}, 255, 0.8)`;
-    }
+  const absValue = Math.abs(value);
+  if (value >= 0) {
+    const intensity = Math.min(200, Math.floor(absValue * 255));
+    return `rgba(255, ${120 - intensity/2}, ${120 - intensity/2}, 0.85)`;
+  } else {
+    const intensity = Math.min(200, Math.floor(absValue * 255));
+    return `rgba(${120 - intensity/2}, ${120 - intensity/2}, 255, 0.85)`;
+  }
 }
 
-// Inicializar gráficas cuando el documento esté listo
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DEBUG: Inicializando gráficas...');
-    console.log('DEBUG: Datos disponibles:', datosGraficas.datos_disponibles);
-    
-    // Solo inicializar gráficas si los elementos existen y hay datos disponibles
-    if (datosGraficas.datos_disponibles) {
-        if (document.getElementById('grafico-btx-salud')) {
-            console.log('DEBUG: Inicializando gráfica de dispersión');
-            inicializarGraficaDispersion();
-        }
-        if (document.getElementById('grafico-correlograma')) {
-            console.log('DEBUG: Inicializando gráfica de correlaciones');
-            inicializarGraficaCorrelograma();
-        }
-    } else {
-        console.log('DEBUG: No hay datos disponibles para gráficas');
+// Inicializar gráficas
+document.addEventListener('DOMContentLoaded', () => {
+  if (datosGraficas.datos_disponibles) {
+    if (document.getElementById('grafico-btx-salud')) {
+      inicializarGraficaDispersion();
     }
+    if (document.getElementById('grafico-correlograma')) {
+      inicializarGraficaCorrelograma();
+    }
+  }
 });
 </script>
 
 <style>
-    .causal-model-container {
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 15px;
-        margin-bottom: 20px;
+  :root{
+    --btx-blue:#28537E;
+    --btx-gray-050:#f9fafb;
+    --btx-gray-100:#f3f4f6;
+    --btx-gray-200:#e5e7eb;
+    --btx-gray-400:#9ca3af;
+    --btx-gray-700:#374151;
+  }
+
+  .soft-card{
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15,23,42,.08);
+    border: 1px solid rgba(148,163,184,.18);
+  }
+
+  .task-hero-title{
+    color: var(--btx-gray-700);
+  }
+
+  .causal-model-wrapper{
+    background: linear-gradient(180deg,#f9fafb 0,#ffffff 60%);
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid var(--btx-gray-200);
+  }
+
+  .causal-model-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .causal-model-img{
+    border-radius: 12px;
+    max-height: 380px;
+    width: auto;
+    box-shadow: 0 6px 18px rgba(15,23,42,.18);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+
+  .causal-model-img:hover{
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(15,23,42,.25);
+  }
+
+  .task-details .info-item{
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: var(--btx-gray-050);
+    border: 1px solid var(--btx-gray-200);
+    font-size: .87rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .task-details .info-label{
+    color: var(--btx-gray-400);
+    font-weight: 600;
+  }
+
+  .task-details .info-value{
+    color: var(--btx-gray-700);
+  }
+
+  .btx-data{
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  .data-item{
+    padding: 9px 0;
+    border-bottom: 1px solid var(--btx-gray-200);
+    font-size: .87rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .data-item:last-child{
+    border-bottom: none;
+  }
+
+  .data-label{
+    color: var(--btx-gray-400);
+    font-weight: 600;
+  }
+
+  .data-value{
+    color: var(--btx-gray-700);
+  }
+
+  .download-buttons .btn{
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .download-buttons .btn:hover:not(:disabled){
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(15,23,42,.16);
+  }
+
+  .download-buttons .btn:disabled{
+    opacity: .65;
+    cursor: not-allowed;
+  }
+
+  .resultados-container{
+    background: var(--btx-gray-050);
+    border-radius: 10px;
+    padding: 14px;
+    max-height: 380px;
+    overflow-y: auto;
+    border: 1px solid var(--btx-gray-200);
+  }
+
+  .resultados-txt{
+    font-family: "JetBrains Mono","Courier New",monospace;
+    font-size: .8rem;
+    line-height: 1.4;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .chart-container{
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(15,23,42,.08);
+    border: 1px solid var(--btx-gray-200);
+  }
+
+  .chart-container canvas{
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .bg-info-subtle{
+    background-color:#e7f1ff!important;
+  }
+  .text-info-emphasis{
+    color:#084298!important;
+  }
+  .bg-success-subtle{
+    background-color:#dcfce7!important;
+  }
+  .text-success-emphasis{
+    color:#166534!important;
+  }
+  .bg-warning-subtle{
+    background-color:#fef7c3!important;
+  }
+  .text-warning-emphasis{
+    color:#92400e!important;
+  }
+
+  @media (max-width: 767.98px){
+    .causal-model-img{
+      max-height: 260px;
     }
-    .causal-model-img {
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        max-height: 400px;
-        width: auto;
-    }
-    .causal-model-img:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    }
-    .btx-data {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    .data-item {
-        padding: 10px 0;
-        border-bottom: 1px solid #e9ecef;
-        font-size: 0.9em;
-    }
-    .data-item:last-child {
-        border-bottom: none;
-    }
-    .info-item {
-        margin-bottom: 10px;
-        padding: 8px;
-        background: #f8f9fa;
-        border-radius: 5px;
-        font-size: 0.9em;
-    }
-    .download-buttons .btn {
-        transition: all 0.3s ease;
-    }
-    .download-buttons .btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-    }
-    .download-buttons .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-    .card {
-        border-radius: 15px;
-    }
-    .card-body {
-        padding: 25px;
-    }
-    .resultados-container {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    .resultados-txt {
-        font-family: 'Courier New', monospace;
-        font-size: 0.85em;
-        line-height: 1.4;
-        margin: 0;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
-    .chart-container {
-        background: white;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        border: 1px solid #e9ecef;
-    }
-    .chart-container canvas {
-        width: 100% !important;
-        height: 100% !important;
-    }
+  }
 </style>
 
 <script>
-    // Funcionalidad para las descargas
-    document.getElementById('downloadJPG').addEventListener('click', function() {
-        const imageUrl = document.getElementById('causalModel').src;
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = 'modelo_causal_btx.jpg';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+  // --- Descarga JPG ---
+  const btnJpg = document.getElementById('downloadJPG');
+  if (btnJpg) {
+    btnJpg.addEventListener('click', () => {
+      const img = document.getElementById('causalModel');
+      if (!img) return;
+      const link = document.createElement('a');
+      link.href = img.src;
+      link.download = 'modelo_causal_btx.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
+  }
 
-    document.getElementById('downloadTXT').addEventListener('click', function() {
-        const resultadosTxt = `{{ resultados_txt|escapejs }}`;
-        const blob = new Blob([resultadosTxt], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `resultados_btx_{{task.title}}_{{task.id}}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+  // --- Descarga TXT (bloque principal) ---
+  const btnTxtMain = document.getElementById('descargarResultadosBtn');
+  if (btnTxtMain) {
+    btnTxtMain.addEventListener('click', () => {
+      const resultadosTxt = `{{ resultados_txt|escapejs }}`;
+      const blob = new Blob([resultadosTxt], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `analisis_btx_{{task.title}}_{{task.id}}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
+  }
 
-    document.getElementById('descargarResultadosBtn').addEventListener('click', function() {
-        const resultadosTxt = `{{ resultados_txt|escapejs }}`;
-        const blob = new Blob([resultadosTxt], { type: 'text/plain' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `analisis_btx_{{task.title}}_{{task.id}}.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+  // --- Efecto zoom en imagen causal ---
+  const causalImage = document.getElementById('causalModel');
+  if (causalImage) {
+    causalImage.addEventListener('mouseenter', function(){
+      this.style.cursor = 'zoom-in';
     });
-
-    // Efecto de hover mejorado para la imagen
-    const causalImage = document.getElementById('causalModel');
-    causalImage.addEventListener('mouseenter', function() {
-        this.style.cursor = 'zoom-in';
+    causalImage.addEventListener('mouseleave', function(){
+      this.style.cursor = 'default';
     });
-    
-    causalImage.addEventListener('mouseleave', function() {
-        this.style.cursor = 'default';
+    causalImage.addEventListener('click', function(){
+      if (this.classList.contains('zoomed')) {
+        this.classList.remove('zoomed');
+        this.style.transform = '';
+        this.style.zIndex = '';
+        this.style.position = '';
+      } else {
+        this.classList.add('zoomed');
+        this.style.transform = 'scale(1.5)';
+        this.style.zIndex = '1000';
+        this.style.position = 'relative';
+      }
     });
-
-    causalImage.addEventListener('click', function() {
-        if (this.style.transform === 'scale(1.8)') {
-            this.style.transform = 'scale(1)';
-            this.style.zIndex = '1';
-        } else {
-            this.style.transform = 'scale(1.8)';
-            this.style.zIndex = '1000';
-            this.style.position = 'relative';
-        }
-    });
+  }
 </script>
 
 {% endblock %}

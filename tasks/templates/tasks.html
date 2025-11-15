@@ -1,100 +1,142 @@
 {% extends 'base.html' %} 
 {% block content %}
 
-<div class="container mt-4">
-    <h1 class="mb-4">Registros de Procesamiento</h1>
+<div class="container mt-3 mb-4">
 
-    <div class="row">
-        {% for task in tasks %}
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title">
-                            {% if task.important %}
-                            <strong>{{task.title}}</strong>
-                            {% else %} 
-                            {{task.title}} 
-                            {% endif %}
-                        </h5>
-                        <span class="badge bg-{% if task.datecompleted %}success{% else %}warning{% endif %}">
-                            {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
-                        </span>
-                    </div>
-                    
-                    <div class="task-info">
-                        <div class="row">
-                            <div class="col-6">
-                                <small class="text-muted">ID:</small>
-                                <p class="mb-2">{{task.id}}</p>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted">Usuario:</small>
-                                <p class="mb-2">{{task.user.username}}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-6">
-                                <small class="text-muted">Fecha:</small>
-                                <p class="mb-2">{{task.created|date:'d/m/Y'}}</p>
-                            </div>
-                            <div class="col-6">
-                                <small class="text-muted">Hora:</small>
-                                <p class="mb-2">{{task.created|date:'H:i'}}</p>
-                            </div>
-                        </div>
-
-                        <!-- Nueva información de ubicación -->
-                        {% if task.ubicacion %}
-                        <div class="row">
-                            <div class="col-12">
-                                <small class="text-muted">Ubicación:</small>
-                                <p class="mb-2">{{task.ubicacion}}</p>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if task.description %}
-                        <small class="text-muted">Descripción:</small>
-                        <p class="mb-2">{{task.description|truncatewords:20}}</p>
-                        {% endif %}
-                        
-                        {% if task.datecompleted %}
-                        <small class="text-muted">Completado:</small>
-                        <p class="mb-0">{{task.datecompleted|date:'d/m/Y H:i'}}</p>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="mt-3">
-                        <a href="{% url 'task_detail' task.id %}" class="btn btn-outline-primary btn-sm">
-                            Ver Detalles
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info text-center">
-                No hay registros de procesamiento disponibles.
-            </div>
-        </div>
-        {% endfor %}
+  <!-- Encabezado -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <div>
+      <h1 class="h4 mb-1">Registros de procesamiento</h1>
+      <p class="text-muted mb-0" style="font-size: .9rem;">
+        Visualiza y gestiona las simulaciones creadas en el sistema.
+      </p>
     </div>
+    <div>
+      <a href="{% url 'create_task' %}" class="btn btn-primary btn-sm">
+        + Crear nueva simulación
+      </a>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="row g-3">
+    {% for task in tasks %}
+      <div class="col-md-6">
+        <div class="card task-card h-100 border-0 shadow-sm">
+          <div class="card-body">
+
+            <!-- Título y estado -->
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h5 class="card-title mb-1" style="font-size: 1rem;">
+                  {% if task.important %}
+                    <strong>{{ task.title }}</strong>
+                  {% else %}
+                    {{ task.title }}
+                  {% endif %}
+                </h5>
+                <p class="mb-0 text-muted" style="font-size: .8rem;">
+                  ID #{{ task.id }} · {{ task.user.username }}
+                </p>
+              </div>
+
+              <span class="badge rounded-pill 
+                          {% if task.datecompleted %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %}">
+                {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
+              </span>
+            </div>
+
+            <hr class="mt-2 mb-3">
+
+            <!-- Información de fecha -->
+            <div class="row small text-muted mb-2">
+              <div class="col-6">
+                <span class="d-block">Fecha de creación</span>
+                <span class="fw-semibold text-body-tertiary">
+                  {{ task.created|date:'d/m/Y' }}
+                </span>
+              </div>
+              <div class="col-6">
+                <span class="d-block">Hora</span>
+                <span class="fw-semibold text-body-tertiary">
+                  {{ task.created|date:'H:i' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Ubicación -->
+            {% if task.ubicacion %}
+            <div class="mb-2">
+              <small class="text-muted d-block">Ubicación</small>
+              <p class="mb-1 task-text">{{ task.ubicacion }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Descripción -->
+            {% if task.description %}
+            <div class="mb-2">
+              <small class="text-muted d-block">Descripción</small>
+              <p class="mb-1 task-text">
+                {{ task.description|truncatewords:22 }}
+              </p>
+            </div>
+            {% endif %}
+
+            <!-- Fecha de completado -->
+            {% if task.datecompleted %}
+            <div class="mb-2">
+              <small class="text-muted d-block">Completado</small>
+              <p class="mb-0 task-text">
+                {{ task.datecompleted|date:'d/m/Y H:i' }}
+              </p>
+            </div>
+            {% endif %}
+
+            <!-- Acción -->
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+              <a href="{% url 'task_detail' task.id %}"
+                 class="btn btn-outline-primary btn-sm">
+                Ver detalles
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info text-center mb-0">
+          No hay registros de procesamiento disponibles.
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 
 <style>
-    .task-info p {
-        margin-bottom: 0.5rem;
-        font-size: 0.9em;
-    }
-    .card {
-        transition: transform 0.2s;
-    }
-    .card:hover {
-        transform: translateY(-2px);
-    }
+  .task-card {
+    border-radius: 14px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(15,23,42,0.12);
+  }
+
+  .task-text {
+    font-size: 0.9rem;
+    color: #374151;
+  }
+
+  /* Badges suaves (por si tu Bootstrap no tiene las -subtle) */
+  .bg-success-subtle {
+    background: rgba(25, 135, 84, 0.1) !important;
+  }
+
+  .bg-warning-subtle {
+    background: rgba(255, 193, 7, 0.1) !important;
+  }
 </style>
 
 {% endblock %}
