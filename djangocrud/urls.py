@@ -32,6 +32,9 @@ urlpatterns = [
 
     # Nueva ruta para la gráfica causal
     path('grafica/causal.jpg', views.causal_graph_jpg, name='causal_graph_jpg'),
+    path('guest/', views.guest_access, name='guest_access'),
+    path('guest/tasks/', views.guest_tasks, name='guest_tasks'),
+    path('guest/tasks/<int:task_id>/', views.guest_task_detail, name='guest_task_detail'),
 ]
 
 if settings.DEBUG:

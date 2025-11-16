@@ -6,17 +6,25 @@
 <!-- ======================================== -->
 <section class="project-hero">
   <div class="container">
-    <span class="hero-pill">Proyecto académico · Modelación ambiental</span>
+    <div class="hero-content">
+      <span class="hero-pill">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="6" cy="6" r="2" fill="currentColor"/>
+        </svg>
+        Proyecto académico · Modelación ambiental
+      </span>
 
-    <h1 class="hero-title">
-      Simulador del modelo dinámico de causalidad de gases BTX y sus efectos en la salud humana
-      en una zona de alto tráfico vehicular en Bucaramanga
-    </h1>
+      <h1 class="hero-title">
+        Simulador del modelo dinámico de causalidad de gases BTX y sus efectos en la salud humana
+        en una zona de alto tráfico vehicular en Bucaramanga
+      </h1>
 
-    <p class="hero-subtitle">
-      Un sistema computacional para analizar emisiones, dispersión atmosférica, exposición poblacional
-      y riesgos respiratorios asociados al Benceno, Tolueno y Xileno.
-    </p>
+      <p class="hero-subtitle">
+        Un sistema computacional para analizar emisiones, dispersión atmosférica, exposición poblacional
+        y riesgos respiratorios asociados al Benceno, Tolueno y Xileno.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -25,33 +33,42 @@
 <!-- ======================================== -->
 <div class="container">
   <section class="info-box">
-    <div class="row g-5 align-items-start">
+    <div class="row g-0 align-items-start">
 
       <!-- ====================== -->
       <!-- COLUMNA IZQUIERDA: FOTOS -->
       <!-- ====================== -->
-      <div class="col-md-5">
+      <div class="col-lg-4">
         <aside class="photos-panel">
 
-          <h2 class="panel-title">Galería del proyecto</h2>
-          <p class="panel-description">
-            Registro visual del contexto urbano, el flujo vehicular y las visualizaciones creadas durante el estudio.
-          </p>
+          <div class="panel-header">
+            <h2 class="panel-title">Galería del proyecto</h2>
+            <p class="panel-description">
+              Registro visual del contexto urbano, el flujo vehicular y las visualizaciones creadas durante el estudio.
+            </p>
+          </div>
 
           <div class="photos-grid">
             <figure class="photo-frame">
-              <img src="/static/media/foto1.jpg" alt="Imagen del proyecto 1" class="project-photo">
+              <div class="photo-overlay"></div>
+              <img src="/static/media/foto1.jpeg" alt="Modelo causal de relaciones BTX - Salud" class="project-photo">
             </figure>
             <figure class="photo-frame">
-              <img src="/static/media/foto2.jpg" alt="Imagen del proyecto 2" class="project-photo">
+              <div class="photo-overlay"></div>
+              <img src="/static/media/foto2.jpeg" alt="Análisis de dispersión atmosférica de contaminantes" class="project-photo">
             </figure>
             <figure class="photo-frame">
-              <img src="/static/media/foto3.jpg" alt="Imagen del proyecto 3" class="project-photo">
+              <div class="photo-overlay"></div>
+              <img src="/static/media/foto3.jpeg" alt="Resultados de simulación y correlaciones" class="project-photo">
             </figure>
           </div>
 
           <p class="photo-note">
-            *Material ilustrativo del desarrollo del modelo, procesamiento de datos e interpretación de resultados.
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 4V4.01M7 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Material ilustrativo del desarrollo del modelo, procesamiento de datos e interpretación de resultados.
           </p>
         </aside>
       </div>
@@ -59,154 +76,247 @@
       <!-- ====================== -->
       <!-- COLUMNA DERECHA: CONTENIDO -->
       <!-- ====================== -->
-      <div class="col-md-7">
+      <div class="col-lg-8">
         <article class="content-panel">
 
           <!-- ====================== -->
           <!-- 1. INTRODUCCIÓN -->
           <!-- ====================== -->
-          <h2 class="section-title">Introducción al proyecto</h2>
-          <p>
-            En zonas de alto tráfico vehicular, las emisiones de compuestos orgánicos volátiles como el
-            <strong>Benceno, Tolueno y Xileno (BTX)</strong>
-            representan un riesgo significativo para la salud pública. Estos contaminantes están asociados a
-            alteraciones respiratorias, disminución del rendimiento cognitivo, daños en órganos vitales y, en el
-            caso del benceno, efectos cancerígenos.
-          </p>
-          <p>
-            El objetivo de este proyecto es desarrollar un simulador capaz de modelar la dinámica del BTX desde su
-            emisión hasta su impacto en la salud humana, integrando un enfoque sistémico que permita visualizar
-            relaciones causales, retroalimentaciones y comportamientos temporales a lo largo del tiempo.
-          </p>
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">01</div>
+              <h2 class="section-title">Introducción al proyecto</h2>
+            </div>
+            <div class="section-body">
+              <p>
+                En zonas de alto tráfico vehicular, las emisiones de compuestos orgánicos volátiles como el
+                <strong>Benceno, Tolueno y Xileno (BTX)</strong>
+                representan un riesgo significativo para la salud pública. Estos contaminantes están asociados a
+                alteraciones respiratorias, disminución del rendimiento cognitivo, daños en órganos vitales y, en el
+                caso del benceno, efectos cancerígenos.
+              </p>
+              <p>
+                El objetivo de este proyecto es desarrollar un simulador capaz de modelar la dinámica del BTX desde su
+                emisión hasta su impacto en la salud humana, integrando un enfoque sistémico que permita visualizar
+                relaciones causales, retroalimentaciones y comportamientos temporales a lo largo del tiempo.
+              </p>
+            </div>
+          </section>
 
           <!-- ====================== -->
           <!-- 2. GLOSARIO Y CONCEPTOS -->
           <!-- ====================== -->
-          <div class="divider"></div>
-          <h2 class="section-title">Glosario y conceptos clave</h2>
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">02</div>
+              <h2 class="section-title">Glosario y conceptos clave</h2>
+            </div>
+            <div class="section-body">
+              <div class="definition-box">
+                <strong>BTX:</strong> Conjunto de compuestos derivados del petróleo que se liberan durante la combustión
+                vehicular y se acumulan en el aire, especialmente en zonas con alta congestión.
+              </div>
 
-          <p>
-            <strong>BTX:</strong> Conjunto de compuestos derivados del petróleo que se liberan durante la combustión
-            vehicular y se acumulan en el aire, especialmente en zonas con alta congestión.
-          </p>
+              <div class="health-effects">
+                <div class="effect-card">
+                  <div class="effect-header">
+                    <div class="effect-icon">B</div>
+                    <h3 class="effect-title">Efectos del Benceno</h3>
+                  </div>
+                  <ul class="btx-list">
+                    <li>Produce irritación de ojos, piel y vías respiratorias.</li>
+                    <li>Provoca somnolencia, dolor de cabeza y mareos.</li>
+                    <li>Puede generar anemia, alteraciones del sistema inmunológico y daño genético.</li>
+                    <li>Su exposición prolongada está asociada a leucemia y otros tipos de cáncer.</li>
+                  </ul>
+                </div>
 
-          <div class="health-effects">
-            <p class="subsection-title">Efectos del Benceno</p>
-            <ul class="btx-list">
-              <li>Produce irritación de ojos, piel y vías respiratorias.</li>
-              <li>Provoca somnolencia, dolor de cabeza y mareos.</li>
-              <li>Puede generar anemia, alteraciones del sistema inmunológico y daño genético.</li>
-              <li>Su exposición prolongada está asociada a leucemia y otros tipos de cáncer.</li>
-            </ul>
+                <div class="effect-card">
+                  <div class="effect-header">
+                    <div class="effect-icon">T</div>
+                    <h3 class="effect-title">Efectos del Tolueno</h3>
+                  </div>
+                  <ul class="btx-list">
+                    <li>Irritación nasal y ocular.</li>
+                    <li>Afecta el sistema nervioso central, causando confusión, debilidad y fatiga.</li>
+                    <li>La exposición crónica puede comprometer hígado y riñones.</li>
+                  </ul>
+                </div>
 
-            <p class="subsection-title">Efectos del Tolueno</p>
-            <ul class="btx-list">
-              <li>Irritación nasal y ocular.</li>
-              <li>Afecta el sistema nervioso central, causando confusión, debilidad y fatiga.</li>
-              <li>La exposición crónica puede comprometer hígado y riñones.</li>
-            </ul>
-
-            <p class="subsection-title">Efectos del Xileno</p>
-            <ul class="btx-list">
-              <li>Causa dolor de cabeza, náuseas y pérdida de coordinación.</li>
-              <li>Puede producir daños respiratorios y alteraciones cardiovasculares.</li>
-              <li>La exposición prolongada incrementa el riesgo de problemas hepáticos y renales.</li>
-            </ul>
-          </div>
+                <div class="effect-card">
+                  <div class="effect-header">
+                    <div class="effect-icon">X</div>
+                    <h3 class="effect-title">Efectos del Xileno</h3>
+                  </div>
+                  <ul class="btx-list">
+                    <li>Causa dolor de cabeza, náuseas y pérdida de coordinación.</li>
+                    <li>Puede producir daños respiratorios y alteraciones cardiovasculares.</li>
+                    <li>La exposición prolongada incrementa el riesgo de problemas hepáticos y renales.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <!-- ====================== -->
           <!-- 3. PROPÓSITO DEL SIMULADOR -->
           <!-- ====================== -->
-          <div class="divider"></div>
-          <h2 class="section-title">Propósito del simulador</h2>
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">03</div>
+              <h2 class="section-title">Propósito del simulador</h2>
+            </div>
+            <div class="section-body">
+              <p>
+                El simulador permite analizar el comportamiento dinámico de los gases BTX mediante la integración de
+                <strong>cinco grupos de variables fundamentales</strong>:
+              </p>
 
-          <p>
-            El simulador permite analizar el comportamiento dinámico de los gases BTX mediante la integración de
-            <strong>cinco grupos de variables fundamentales</strong>:
-          </p>
+              <div class="variables-grid">
+                <div class="variable-card">
+                  <div class="variable-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 2L12 8H18L13 12L15 18L10 14L5 18L7 12L2 8H8L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <h4>Emisiones</h4>
+                  <p>Cantidad de BTX generada por vehículos, fuentes móviles y actividades urbanas.</p>
+                </div>
 
-          <ul class="btx-list">
-            <li>
-              <strong>Emisiones:</strong> Cantidad de BTX generada por vehículos, fuentes móviles y actividades urbanas.
-            </li>
-            <li>
-              <strong>Dispersión atmosférica:</strong> Movimiento, dilución y acumulación de los contaminantes en el aire
-              según condiciones meteorológicas y características del entorno.
-            </li>
-            <li>
-              <strong>Exposición poblacional:</strong> Nivel de contacto de las personas con los gases emitidos en
-              función del tiempo de permanencia y la concentración ambiental.
-            </li>
-            <li>
-              <strong>Salud respiratoria:</strong> Efectos biológicos, síntomas y cambios en indicadores de salud
-              asociados a la exposición al BTX.
-            </li>
-            <li>
-              <strong>Respuesta regulatoria:</strong> Acciones institucionales, políticas públicas, monitoreo y educación
-              ambiental orientadas a reducir el riesgo.
-            </li>
-          </ul>
+                <div class="variable-card">
+                  <div class="variable-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 10C4 10 6 6 10 6C14 6 16 10 16 10C16 10 14 14 10 14C6 14 4 10 4 10Z" stroke="currentColor" stroke-width="1.5"/>
+                      <circle cx="10" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <h4>Dispersión atmosférica</h4>
+                  <p>Movimiento, dilución y acumulación de los contaminantes en el aire según condiciones meteorológicas.</p>
+                </div>
 
-          <p>
-            El sistema permite ingresar y almacenar datos mediante archivos Excel, ejecutar simulaciones y visualizar
-            los resultados en diagramas y tablas, facilitando el análisis de escenarios y el seguimiento de indicadores.
-          </p>
+                <div class="variable-card">
+                  <div class="variable-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M3 18C3 14.6863 6.13401 12 10 12C13.866 12 17 14.6863 17 18" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <h4>Exposición poblacional</h4>
+                  <p>Nivel de contacto de las personas con los gases emitidos en función del tiempo de permanencia.</p>
+                </div>
+
+                <div class="variable-card">
+                  <div class="variable-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 2C10 2 7 5 7 8C7 9.65685 8.34315 11 10 11C11.6569 11 13 9.65685 13 8C13 5 10 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M5 14H15C15 16.2091 13.2091 18 11 18H9C6.79086 18 5 16.2091 5 14Z" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <h4>Salud respiratoria</h4>
+                  <p>Efectos biológicos, síntomas y cambios en indicadores de salud asociados a la exposición al BTX.</p>
+                </div>
+
+                <div class="variable-card">
+                  <div class="variable-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M7 3V17M13 3V17M3 10H17" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                  </div>
+                  <h4>Respuesta regulatoria</h4>
+                  <p>Acciones institucionales, políticas públicas, monitoreo y educación ambiental orientadas a reducir el riesgo.</p>
+                </div>
+              </div>
+
+              <p class="mt-4">
+                El sistema permite ingresar y almacenar datos mediante archivos Excel, ejecutar simulaciones y visualizar
+                los resultados en diagramas y tablas, facilitando el análisis de escenarios y el seguimiento de indicadores.
+              </p>
+            </div>
+          </section>
 
           <!-- ====================== -->
           <!-- 4. METODOLOGÍA -->
           <!-- ====================== -->
-          <div class="divider"></div>
-          <h2 class="section-title">Metodología del modelo dinámico</h2>
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">04</div>
+              <h2 class="section-title">Metodología del modelo dinámico</h2>
+            </div>
+            <div class="section-body">
+              <p>
+                El modelo se basa en principios de <strong>Dinámica de Sistemas</strong>, que permiten representar
+                relaciones complejas entre variables ambientales y de salud. Entre los componentes clave se incluyen:
+              </p>
 
-          <p>
-            El modelo se basa en principios de <strong>Dinámica de Sistemas</strong>, que permiten representar
-            relaciones complejas entre variables ambientales y de salud. Entre los componentes clave se incluyen:
-          </p>
+              <div class="methodology-list">
+                <div class="methodology-item">
+                  <div class="methodology-bullet"></div>
+                  <div>
+                    <strong>Variables de nivel:</strong> Representan acumulaciones (por ejemplo, concentración de BTX en el aire).
+                  </div>
+                </div>
+                <div class="methodology-item">
+                  <div class="methodology-bullet"></div>
+                  <div>
+                    <strong>Variables de flujo:</strong> Describen tasas de cambio (emisión, ventilación, dispersión).
+                  </div>
+                </div>
+                <div class="methodology-item">
+                  <div class="methodology-bullet"></div>
+                  <div>
+                    <strong>Retardos temporales:</strong> Consideran el tiempo entre la exposición y la aparición de síntomas.
+                  </div>
+                </div>
+                <div class="methodology-item">
+                  <div class="methodology-bullet"></div>
+                  <div>
+                    <strong>Bucles de retroalimentación:</strong> Modelan cómo las decisiones y respuestas influyen en el sistema
+                    (por ejemplo, restricciones de tráfico o campañas de salud).
+                  </div>
+                </div>
+              </div>
 
-          <ul class="btx-list">
-            <li>
-              <strong>Variables de nivel:</strong> Representan acumulaciones (por ejemplo, concentración de BTX en el aire).
-            </li>
-            <li>
-              <strong>Variables de flujo:</strong> Describen tasas de cambio (emisión, ventilación, dispersión).
-            </li>
-            <li>
-              <strong>Retardos temporales:</strong> Consideran el tiempo entre la exposición y la aparición de síntomas.
-            </li>
-            <li>
-              <strong>Bucles de retroalimentación:</strong> Modelan cómo las decisiones y respuestas influyen en el sistema
-              (por ejemplo, restricciones de tráfico o campañas de salud).
-            </li>
-          </ul>
-
-          <p>
-            Los parámetros del modelo se alimentan a partir de datos locales, literatura científica y supuestos de
-            simulación, lo que permite explorar distintos escenarios de tráfico y calidad del aire.
-          </p>
+              <p>
+                Los parámetros del modelo se alimentan a partir de datos locales, literatura científica y supuestos de
+                simulación, lo que permite explorar distintos escenarios de tráfico y calidad del aire.
+              </p>
+            </div>
+          </section>
 
           <!-- ====================== -->
           <!-- 5. BENEFICIOS DEL SISTEMA -->
           <!-- ====================== -->
-          <div class="divider"></div>
-          <h2 class="section-title">Beneficios del simulador</h2>
-
-          <ul class="btx-list">
-            <li>
-              Permite analizar escenarios hipotéticos modificando tráfico, velocidad o intensidad vehicular.
-            </li>
-            <li>
-              Facilita decisiones informadas en salud pública, planeación urbana y control ambiental.
-            </li>
-            <li>
-              Integra datos reales y visualizaciones personalizadas del modelo causal de BTX.
-            </li>
-            <li>
-              Ofrece una vista clara y estructurada del impacto respiratorio relacionado con la exposición a BTX.
-            </li>
-            <li>
-              Registra simulaciones previas para análisis comparativo y seguimiento en el tiempo.
-            </li>
-          </ul>
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">05</div>
+              <h2 class="section-title">Beneficios del simulador</h2>
+            </div>
+            <div class="section-body">
+              <div class="benefits-grid">
+                <div class="benefit-card">
+                  <div class="benefit-number">1</div>
+                  <p>Permite analizar escenarios hipotéticos modificando tráfico, velocidad o intensidad vehicular.</p>
+                </div>
+                <div class="benefit-card">
+                  <div class="benefit-number">2</div>
+                  <p>Facilita decisiones informadas en salud pública, planeación urbana y control ambiental.</p>
+                </div>
+                <div class="benefit-card">
+                  <div class="benefit-number">3</div>
+                  <p>Integra datos reales y visualizaciones personalizadas del modelo causal de BTX.</p>
+                </div>
+                <div class="benefit-card">
+                  <div class="benefit-number">4</div>
+                  <p>Ofrece una vista clara y estructurada del impacto respiratorio relacionado con la exposición a BTX.</p>
+                </div>
+                <div class="benefit-card">
+                  <div class="benefit-number">5</div>
+                  <p>Registra simulaciones previas para análisis comparativo y seguimiento en el tiempo.</p>
+                </div>
+              </div>
+            </div>
+          </section>
 
         </article>
       </div>
@@ -221,108 +331,164 @@
 <style>
   :root{
     --btx-blue:#28537E;
+    --btx-blue-light:#3d6a9e;
+    --btx-blue-dark:#1f3f5f;
     --btx-white:#ffffff;
     --btx-gray-050:#f9fafb;
     --btx-gray-100:#f3f4f6;
     --btx-gray-200:#e5e7eb;
+    --btx-gray-300:#d1d5db;
     --btx-gray-400:#9ca3af;
     --btx-gray-600:#6b7280;
     --btx-gray-700:#374151;
     --btx-gray-800:#1f2937;
     --btx-gray-900:#020617;
-    --btx-shadow:0 16px 40px rgba(15,23,42,0.12);
+    --btx-shadow-sm:0 2px 8px rgba(15,23,42,0.04);
+    --btx-shadow-md:0 4px 16px rgba(15,23,42,0.08);
+    --btx-shadow-lg:0 12px 32px rgba(15,23,42,0.12);
+    --btx-shadow-xl:0 20px 48px rgba(15,23,42,0.16);
   }
 
   /* Hero superior */
   .project-hero{
-    padding: 40px 0 32px;
-    margin-bottom: 24px;
+    padding: 72px 0 64px;
+    margin-bottom: 48px;
     background:
-      radial-gradient(circle at top left, rgba(40, 83, 126, 0.16), transparent 55%),
-      linear-gradient(to bottom, #e5e7eb 0%, #f9fafb 45%, #ffffff 100%);
+      radial-gradient(circle at 20% 20%, rgba(40, 83, 126, 0.08), transparent 60%),
+      radial-gradient(circle at 80% 80%, rgba(40, 83, 126, 0.06), transparent 60%),
+      linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 25%, #f9fafb 60%, #ffffff 100%);
     border-bottom: 1px solid var(--btx-gray-200);
+    position: relative;
+  }
+
+  .project-hero::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--btx-blue), transparent);
+    opacity: 0.3;
+  }
+
+  .hero-content{
+    max-width: 960px;
+    margin: 0 auto;
   }
 
   .hero-pill{
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
+    gap: 8px;
+    padding: 6px 16px;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    background: rgba(40, 83, 126, 0.06);
+    letter-spacing: 0.08em;
+    background: var(--btx-white);
     color: var(--btx-blue);
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(40, 83, 126, 0.15);
+    box-shadow: var(--btx-shadow-sm);
+  }
+
+  .hero-pill svg{
+    flex-shrink: 0;
   }
 
   .hero-title{
-    font-size: clamp(1.35rem, 2.3vw, 1.9rem);
-    line-height: 1.35;
-    font-weight: 800;
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    line-height: 1.25;
+    font-weight: 700;
     margin: 0;
     color: var(--btx-gray-900);
+    letter-spacing: -0.02em;
   }
 
   .hero-subtitle{
-    margin-top: 10px;
+    margin-top: 20px;
     color: var(--btx-gray-600);
-    font-weight: 500;
-    font-size: 0.98rem;
+    font-weight: 400;
+    font-size: 1.05rem;
+    line-height: 1.6;
     max-width: 880px;
   }
 
   /* Caja principal */
   .info-box {
     background-color: var(--btx-white);
-    border-radius: 18px;
-    box-shadow: var(--btx-shadow);
-    padding: 28px;
-    margin: 24px auto 40px;
-    max-width: 1200px;
-    border: 1px solid rgba(15, 23, 42, 0.04);
+    border-radius: 24px;
+    box-shadow: var(--btx-shadow-xl);
+    padding: 0;
+    margin: 0 auto 64px;
+    max-width: 1280px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    overflow: hidden;
   }
 
   /* Panel izquierdo – fotos */
   .photos-panel {
-    padding-right: 0;
+    padding: 48px 40px;
+    background: linear-gradient(180deg, var(--btx-gray-050) 0%, var(--btx-white) 100%);
+    height: 100%;
+    border-right: 1px solid var(--btx-gray-200);
+  }
+
+  .panel-header{
+    margin-bottom: 32px;
   }
 
   .panel-title{
     font-weight: 700;
-    color: var(--btx-gray-800);
-    font-size: 1.05rem;
-    margin-bottom: 6px;
+    color: var(--btx-gray-900);
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
   }
 
   .panel-description{
-    font-size: 0.9rem;
+    font-size: 0.9375rem;
     color: var(--btx-gray-600);
-    margin-bottom: 18px;
+    line-height: 1.6;
   }
 
   .photos-grid{
     display: grid;
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 24px;
+    margin-bottom: 24px;
   }
 
   .photo-frame {
+    position: relative;
     width: 100%;
-    aspect-ratio: 4/3; /* más pequeño y equilibrado */
-    border-radius: 12px;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--btx-gray-200);
     background: var(--btx-gray-100);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    transition: transform .18s ease, box-shadow .18s ease;
+    box-shadow: var(--btx-shadow-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .photo-frame:hover{
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+    box-shadow: var(--btx-shadow-lg);
+  }
+
+  .photo-frame:hover .photo-overlay{
+    opacity: 0;
+  }
+
+  .photo-overlay{
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.05) 100%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1;
   }
 
   .project-photo {
@@ -333,95 +499,440 @@
   }
 
   .photo-note{
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
     color: var(--btx-gray-400);
-    font-size: 0.85rem;
-    margin-top: 10px;
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 
-  @media (min-width: 992px) {
-    .photo-frame {
-      max-height: 220px; /* limita altura en pantallas grandes */
-    }
-    .info-box .row > .col-md-5{
-      border-right: 1px dashed var(--btx-gray-200);
-      padding-right: 20px;
-    }
-    .info-box .row > .col-md-7{
-      padding-left: 24px;
-    }
+  .photo-note svg{
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   /* Panel derecho – contenido */
   .content-panel{
+    padding: 48px 56px;
     color: var(--btx-gray-700);
+  }
+
+  .content-section{
+    margin-bottom: 56px;
+  }
+
+  .content-section:last-child{
+    margin-bottom: 0;
+  }
+
+  .section-header{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--btx-gray-100);
+  }
+
+  .section-number{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    font-weight: 700;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.2);
   }
 
   .section-title{
     color: var(--btx-gray-900);
     font-weight: 700;
-    margin-bottom: 15px;
-    margin-top: 10px;
-    font-size: 1.05rem;
+    margin: 0;
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
   }
 
-  .subsection-title{
-    font-weight: 700;
-    margin-top: 22px;
-    margin-bottom: 10px;
-    color: var(--btx-blue);
-    font-size: 0.96rem;
+  .section-body{
+    padding-left: 64px;
   }
 
-  .divider{
-    height: 1px;
-    background: var(--btx-gray-200);
-    margin: 35px 0; /* más espacio entre secciones */
+  .section-body p{
+    margin-bottom: 20px;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--btx-gray-700);
   }
 
-  .content-panel p,
-  .content-panel ul{
-    margin-bottom: 18px !important;
-    font-size: 0.95rem;
-    line-height: 1.55;
+  .section-body p:last-child{
+    margin-bottom: 0;
   }
 
+  /* Definition box */
+  .definition-box{
+    background: linear-gradient(135deg, rgba(40, 83, 126, 0.04) 0%, rgba(40, 83, 126, 0.02) 100%);
+    border-left: 4px solid var(--btx-blue);
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  /* Health effects */
   .health-effects {
-    background: var(--btx-gray-050);
+    display: grid;
+    gap: 20px;
+    margin: 32px 0;
+  }
+
+  .effect-card{
+    background: var(--btx-white);
     border: 1px solid var(--btx-gray-200);
-    border-radius: 14px;
-    padding: 22px;
-    margin-top: 18px;
-    margin-bottom: 18px;
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+  }
+
+  .effect-card:hover{
+    box-shadow: var(--btx-shadow-md);
+    border-color: var(--btx-blue);
+  }
+
+  .effect-header{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .effect-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    font-weight: 700;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  .effect-title{
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--btx-gray-900);
+    margin: 0;
   }
 
   .btx-list{
     padding-left: 0;
     list-style: none;
-    margin: 8px 0 16px;
+    margin: 0;
   }
 
   .btx-list li{
     position: relative;
-    padding-left: 26px;
-    margin-bottom: 6px;
+    padding-left: 28px;
+    margin-bottom: 10px;
     color: var(--btx-gray-700);
-    font-size: 0.93rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  .btx-list li:last-child{
+    margin-bottom: 0;
   }
 
   .btx-list li::before{
     content: "";
     position: absolute;
-    left: 0; top: 7px;
-    width: 9px; height: 9px;
+    left: 0;
+    top: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--btx-blue);
-    opacity: .88;
+  }
+
+  /* Variables grid */
+  .variables-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 32px 0;
+  }
+
+  .variable-card{
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+  }
+
+  .variable-card:hover{
+    box-shadow: var(--btx-shadow-md);
+    border-color: var(--btx-blue);
+    transform: translateY(-2px);
+  }
+
+  .variable-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(40, 83, 126, 0.1) 0%, rgba(40, 83, 126, 0.05) 100%);
+    color: var(--btx-blue);
+    margin-bottom: 16px;
+  }
+
+  .variable-card h4{
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--btx-gray-900);
+    margin: 0 0 8px 0;
+  }
+
+  .variable-card p{
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--btx-gray-600);
+    margin: 0;
+  }
+
+  /* Methodology list */
+  .methodology-list{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .methodology-item{
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .methodology-bullet{
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--btx-blue);
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+
+  .methodology-item > div{
+    flex: 1;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  /* Benefits grid */
+  .benefits-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin: 32px 0 0 0;
+  }
+
+  .benefit-card{
+    position: relative;
+    background: linear-gradient(135deg, var(--btx-white) 0%, var(--btx-gray-050) 100%);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+  }
+
+  .benefit-card:hover{
+    box-shadow: var(--btx-shadow-md);
+    border-color: var(--btx-blue);
+    transform: translateY(-2px);
+  }
+
+  .benefit-number{
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.25);
+  }
+
+  .benefit-card p{
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--btx-gray-700);
+    margin: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 991px) {
+    .info-box .col-lg-4{
+      border-right: none;
+      border-bottom: 1px solid var(--btx-gray-200);
+    }
+
+    .photos-panel{
+      padding: 32px 24px;
+    }
+
+    .content-panel{
+      padding: 40px 24px;
+    }
+
+    .section-body{
+      padding-left: 0;
+    }
+
+    .section-header{
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .variables-grid,
+    .benefits-grid{
+      grid-template-columns: 1fr;
+    }
   }
 
   @media (max-width: 768px) {
-    .info-box { padding: 18px 16px 22px; border-radius: 14px; }
-    .project-hero { padding: 28px 0 22px; }
-    .hero-title { font-size: 1.25rem; }
+    .project-hero{
+      padding: 48px 0 40px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title{
+      font-size: 1.5rem;
+    }
+
+    .hero-subtitle{
+      font-size: 0.9375rem;
+    }
+
+    .info-box{
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+
+    .photos-panel{
+      padding: 24px 20px;
+    }
+
+    .content-panel{
+      padding: 32px 20px;
+    }
+
+    .panel-title{
+      font-size: 1.125rem;
+    }
+
+    .section-title{
+      font-size: 1.125rem;
+    }
+
+    .section-number{
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .content-section{
+      margin-bottom: 40px;
+    }
+
+    .variables-grid{
+      gap: 16px;
+    }
+
+    .benefits-grid{
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-pill{
+      font-size: 0.6875rem;
+      padding: 5px 12px;
+    }
+
+    .hero-title{
+      font-size: 1.25rem;
+    }
+
+    .section-body p,
+    .definition-box,
+    .methodology-item > div{
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Utility classes */
+  .mt-4{
+    margin-top: 24px;
+  }
+
+  /* Animaciones sutiles */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .content-section{
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .content-section:nth-child(1) { animation-delay: 0.1s; }
+  .content-section:nth-child(2) { animation-delay: 0.2s; }
+  .content-section:nth-child(3) { animation-delay: 0.3s; }
+  .content-section:nth-child(4) { animation-delay: 0.4s; }
+  .content-section:nth-child(5) { animation-delay: 0.5s; }
+
+  /* Print styles */
+  @media print {
+    .project-hero{
+      background: var(--btx-white);
+      padding: 20px 0;
+    }
+
+    .info-box{
+      box-shadow: none;
+      border: 1px solid var(--btx-gray-300);
+    }
+
+    .photo-frame,
+    .benefit-card,
+    .variable-card,
+    .effect-card{
+      break-inside: avoid;
+    }
   }
 </style>
 

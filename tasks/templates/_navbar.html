@@ -1,77 +1,289 @@
 <style>
 /* ===============================
-   NAVBAR PERSONALIZADO (BTX)
+   NAVBAR BTX PREMIUM
    =============================== */
 
 .navbar {
-  background-color: #28537E !important;   /* Azul principal */
-  border-bottom: 2px solid rgba(255,255,255,0.08);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-  padding: 0.6rem 1rem;
-  transition: background 0.3s ease;
+  background: linear-gradient(135deg, #28537E 0%, #1f3f5f 100%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+  padding: 0.5rem 0;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1000;
 }
 
-/* Marca del proyecto */
+/* Efecto de borde sutil en la parte inferior */
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+}
+
+/* Contenedor principal */
+.navbar .container {
+  max-width: 1400px;
+  padding: 0 2rem;
+}
+
+/* Marca del proyecto - Mejorada */
 .navbar-brand {
   color: #ffffff !important;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.navbar-brand:hover {
-  color: #d0d6db !important;
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
 }
 
-/* Links del menú */
+.navbar-brand::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
+  mask: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M16 2L20 8H28L22 12L24 18L16 14L8 18L10 12L4 8H12L16 2Z' stroke='currentColor' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M16 2L20 8H28L22 12L24 18L16 14L8 18L10 12L4 8H12L16 2Z' stroke='currentColor' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+.navbar-brand:hover {
+  color: #f8fafc !important;
+  transform: translateY(-1px);
+}
+
+.navbar-brand:hover::before {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Links del menú - Diseño premium */
 .navbar-nav .nav-link {
-  color: #eaeaea !important;
-  font-weight: 500;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  color: #e2e8f0 !important;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  margin: 0 0.15rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.navbar-nav .nav-link:hover::before {
+  left: 100%;
 }
 
 .navbar-nav .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Estado activo mejorado */
 .navbar-nav .nav-link.active,
 .navbar-nav .nav-link:focus,
 .navbar-nav .nav-link[aria-current="page"] {
-  background-color: #1b3a5a;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.1) 100%);
   color: #ffffff !important;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* Toggler (hamburguesa en móvil) */
+/* Indicador de página activa */
+.navbar-nav .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  border-radius: 2px;
+}
+
+/* Toggler (hamburguesa) mejorado */
 .navbar-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.navbar-toggler:hover {
+  background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  padding: 0.25rem 0.5rem;
+  transform: scale(1.05);
 }
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
 .navbar-toggler-icon {
-  filter: brightness(0) invert(1); /* ícono blanco */
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 12H21M3 6H21M3 18H21' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  transition: transform 0.3s ease;
 }
 
-/* Fondo del menú desplegable (en móvil) */
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+  transform: rotate(90deg);
+}
+
+/* Menú desplegable en móvil - Mejorado */
 .navbar-collapse {
-  background-color: #28537E;
+  background: linear-gradient(135deg, #28537E 0%, #1f3f5f 100%);
   border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 0.5rem;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
 }
 
-/* Pequeños ajustes responsivos */
+/* Items del menú en móvil */
 @media (max-width: 991px) {
   .navbar-nav .nav-link {
     text-align: center;
-    padding: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+  
+  .navbar-nav .nav-link.active::after {
+    bottom: 8px;
+    width: 40px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.4rem;
+  }
+}
+
+/* Efectos de animación suave */
+.navbar-nav {
+  gap: 0.25rem;
+}
+
+.nav-item {
+  position: relative;
+}
+
+/* Badge para elementos nuevos (opcional) */
+.nav-link .badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 10px;
+  border: 2px solid #28537E;
+}
+
+/* Transiciones mejoradas */
+.navbar,
+.navbar-brand,
+.navbar-nav .nav-link,
+.navbar-toggler {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de desenfoque de fondo cuando se desplaza */
+.navbar.scrolled {
+  background: linear-gradient(135deg, rgba(40, 83, 126, 0.95) 0%, rgba(31, 63, 95, 0.95) 100%) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Responsive para tablets */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .navbar-nav .nav-link {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mejoras para pantallas muy grandes */
+@media (min-width: 1400px) {
+  .navbar .container {
+    padding: 0 3rem;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* Estados de foco mejorados para accesibilidad */
+.navbar-nav .nav-link:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Animación de entrada para el menú móvil */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar-collapse.collapsing,
+.navbar-collapse.show {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* Efecto de brillo al hover */
+.navbar-nav .nav-link:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%);
+}
+
+/* Separador sutil entre items en desktop */
+@media (min-width: 992px) {
+  .navbar-nav .nav-link:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
   }
 }
 </style>
 
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container">
-    <a class="navbar-brand" href="/">Proyecto BTX</a>
+    <a class="navbar-brand" href="/">
+      Simulador BTX
+    </a>
+    
     <button
       class="navbar-toggler"
       type="button"
@@ -83,30 +295,90 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a href="/" class="nav-link">Inicio</a>
+          <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+            Inicio
+          </a>
         </li>
+        
         {% if user.is_authenticated %}
         <li class="nav-item">
-          <a href="{% url 'tasks' %}" class="nav-link">Simulaciones</a>
+          <a href="{% url 'tasks' %}" class="nav-link {% if 'tasks' in request.path %}active{% endif %}">
+            Simulaciones
+          </a>
         </li>
+        
         <li class="nav-item">
-          <a href="{% url 'create_task' %}" class="nav-link">Crear simulación</a>
+          <a href="{% url 'create_task' %}" class="nav-link {% if 'create' in request.path %}active{% endif %}">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+              <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Crear simulación
+          </a>
         </li>
+        
         <li class="nav-item">
-          <a class="nav-link" href="/logout">Cerrar Sesión</a>
+          <a class="nav-link" href="/logout">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+              <path d="M6 12H11C11.5523 12 12 11.5523 12 11V5C12 4.44772 11.5523 4 11 4H6M6 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M9 8L11 6L9 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Cerrar Sesión
+          </a>
         </li>
         {% else %}
         <li class="nav-item">
-          <a href="/signin" class="nav-link">Iniciar Sesión</a>
+          <a href="/signin" class="nav-link {% if 'signin' in request.path %}active{% endif %}">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+              <path d="M13 8L11 6M13 8L11 10M13 8H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 13H5C3.89543 13 3 12.1046 3 11V5C3 3.89543 3.89543 3 5 3H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Iniciar Sesión
+          </a>
         </li>
+        
         <li class="nav-item">
-          <a href="/signup" class="nav-link">Registrarse</a>
+          <a href="/signup" class="nav-link {% if 'signup' in request.path %}active{% endif %}">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 6px;">
+              <path d="M8 8C10.2091 8 12 6.20914 12 4C12 1.79086 10.2091 0 8 0C5.79086 0 4 1.79086 4 4C4 6.20914 5.79086 8 8 8Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M16 16C16 12.6863 12.4183 10 8 10C3.58172 10 0 12.6863 0 16" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Registrarse
+          </a>
         </li>
         {% endif %}
       </ul>
     </div>
   </div>
 </nav>
+
+<script>
+// Efecto de scroll para el navbar
+document.addEventListener('DOMContentLoaded', function() {
+  const navbar = document.querySelector('.navbar');
+  
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  // Cerrar menú móvil al hacer clic en un link
+  const navLinks = document.querySelectorAll('.nav-link');
+  const navbarCollapse = document.querySelector('.navbar-collapse');
+  
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (navbarCollapse.classList.contains('show')) {
+        const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+        bsCollapse.hide();
+      }
+    });
+  });
+});
+</script>

@@ -22,16 +22,12 @@
               </p>
               {% if task.ubicacion %}
               <span class="badge rounded-pill bg-light text-muted border small">
-                <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                <i class="fas fa-map-marker-alt me-1 text-primary"></i>
                 {{ task.ubicacion }}
               </span>
               {% endif %}
             </div>
             <div class="text-end">
-              <span class="badge rounded-pill
-                           {% if task.datecompleted %}bg-success-subtle text-success-emphasis border{% else %}bg-warning-subtle text-warning-emphasis border{% endif %}">
-                {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
-              </span>
               <div class="mt-2 small text-muted">
                 <div>
                   <strong>Creado:</strong>
@@ -83,12 +79,9 @@
                   </span>
                 </div>
                 <div class="info-item">
-                  <span class="info-label">Estado</span>
+                  <span class="info-label">Tipo de simulación</span>
                   <span class="info-value">
-                    <span class="badge
-                      {% if task.datecompleted %}bg-success text-light{% else %}bg-warning text-dark{% endif %}">
-                      {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
-                    </span>
+                    <span class="badge bg-primary text-light">BTX</span>
                   </span>
                 </div>
               </div>
@@ -163,8 +156,8 @@
             <h5 class="card-title mb-0 h6 fw-semibold">
               <i class="fas fa-chart-line me-2 text-primary"></i>Resultados del análisis BTX
             </h5>
-            <button class="btn btn-outline-primary btn-sm" id="descargarResultadosBtn">
-              <i class="fas fa-download me-2"></i>Descargar resultados TXT
+            <button class="btn btn-primary btn-sm" id="descargarResultadosBtn">
+              <i class="fas fa-download me-2"></i>Descargar TXT
             </button>
           </div>
 
@@ -248,14 +241,14 @@
                   </td>
                   <td class="text-end">
                     <a href="{{ archivo.archivo.url }}"
-                       class="btn btn-sm btn-outline-success rounded-3 me-1"
+                       class="btn btn-sm btn-primary rounded-3 me-1"
                        download>
-                      <i class="fas fa-download me-1"></i>
+                      <i class="fas fa-download me-1"></i>Descargar
                     </a>
                     <a href="{% url 'delete_archivo' archivo.id %}"
                        class="btn btn-sm btn-outline-danger rounded-3"
                        onclick="return confirm('¿Eliminar este archivo?')">
-                      <i class="fas fa-trash me-1"></i>
+                      <i class="fas fa-trash me-1"></i>Eliminar
                     </a>
                   </td>
                 </tr>
@@ -309,97 +302,60 @@
       </div>
     </div>
 
-    <!-- Columna derecha - Indicadores + acciones -->
+    <!-- Columna derecha - Acciones -->
     <div class="col-lg-4">
-      <!-- Indicadores BTX -->
+      <!-- Acciones de descarga -->
       <div class="card shadow-sm border-0 soft-card mb-4">
         <div class="card-body">
           <h5 class="card-title text-center mb-3 h6 fw-semibold">
-            <i class="fas fa-flask me-2 text-primary"></i>Indicadores BTX
+            <i class="fas fa-download me-2 text-primary"></i>Descargas disponibles
           </h5>
 
-          <div class="btx-data">
-            <div class="data-item">
-              <span class="data-label">Concentración Benceno</span>
-              <span class="data-value">
-                {{ btx_data.concentracion_benzeno|floatformat:2 }} µg/m³
-              </span>
-            </div>
-            <div class="data-item">
-              <span class="data-label">Concentración Tolueno</span>
-              <span class="data-value">
-                {{ btx_data.concentracion_tolueno|floatformat:2 }} µg/m³
-              </span>
-            </div>
-            <div class="data-item">
-              <span class="data-label">Concentración Xileno</span>
-              <span class="data-value">
-                {{ btx_data.concentracion_xileno|floatformat:2 }} µg/m³
-              </span>
-            </div>
-            <div class="data-item">
-              <span class="data-label">BTX Total</span>
-              <span class="data-value text-primary fw-semibold">
-                {{ btx_data.btx_total|default:"8.5"|floatformat:2 }} µg/m³
-              </span>
-            </div>
-            <div class="data-item">
-              <span class="data-label">Casos respiratorios</span>
-              <span class="data-value">
-                {{ btx_data.casos_totales|default:"1570" }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Botones de descarga (solo gráfica) -->
-          <div class="download-buttons mt-4">
-            <button class="btn btn-outline-primary w-100 mb-2 btn-sm rounded-3"
+          <!-- Botones de descarga -->
+          <div class="download-buttons">
+            <button class="btn btn-primary w-100 mb-3 btn-sm rounded-3"
                     id="downloadJPG">
               <i class="fas fa-image me-2"></i>Descargar gráfica JPG
             </button>
+            
+            {% if resultados_txt %}
+            <button class="btn btn-primary w-100 mb-3 btn-sm rounded-3"
+                    id="descargarTxtSidebar">
+              <i class="fas fa-file-alt me-2"></i>Descargar resultados TXT
+            </button>
+            {% endif %}
+
             <p class="text-muted small mb-0 text-center">
-              Las descargas de Excel y TXT están disponibles en la tabla y en el bloque de resultados.
+              Descarga la gráfica del modelo causal y los resultados del análisis.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Acciones del registro -->
+      <!-- Gestión del registro -->
       <div class="card shadow-sm border-0 soft-card">
         <div class="card-body">
-          <h6 class="card-title mb-3 h6 fw-semibold">
-            Acciones del registro
+          <h6 class="card-title mb-3 h6 fw-semibold text-center">
+            Gestión del registro
           </h6>
 
           {% if error %}
           <div class="alert alert-danger small">{{ error }}</div>
           {% endif %}
 
-          <!-- Formulario actualización -->
-          <form method="POST" class="mb-3">
-            {% csrf_token %}
-            <div class="mb-2 small">
-              {{ form.as_p }}
-            </div>
-            <button class="btn btn-warning w-100 btn-sm rounded-3">
-              <i class="fas fa-edit me-2"></i>Actualizar registro
-            </button>
-          </form>
-
-          <!-- Completar y eliminar -->
+          <!-- Eliminar registro -->
           <div class="d-grid gap-2">
-            <form action="{% url 'complete_task' task.id %}" method="POST">
-              {% csrf_token %}
-              <button class="btn btn-success w-100 btn-sm rounded-3">
-                <i class="fas fa-check me-2"></i>Marcar como completado
-              </button>
-            </form>
-
             <button class="btn btn-danger w-100 btn-sm rounded-3"
                     data-bs-toggle="modal"
                     data-bs-target="#deleteModal">
               <i class="fas fa-trash me-2"></i>Eliminar registro
             </button>
+          </div>
+
+          <div class="mt-3 text-center">
+            <p class="text-muted small mb-0">
+              Esta acción eliminará permanentemente la simulación y todos sus archivos asociados.
+            </p>
           </div>
         </div>
       </div>
@@ -673,27 +629,40 @@ document.addEventListener('DOMContentLoaded', () => {
 <style>
   :root{
     --btx-blue:#28537E;
+    --btx-blue-light:#3d6a9e;
+    --btx-blue-dark:#1f3f5f;
+    --btx-white:#ffffff;
     --btx-gray-050:#f9fafb;
     --btx-gray-100:#f3f4f6;
     --btx-gray-200:#e5e7eb;
     --btx-gray-400:#9ca3af;
     --btx-gray-700:#374151;
+    --btx-shadow-sm:0 2px 8px rgba(15,23,42,0.04);
+    --btx-shadow-md:0 4px 16px rgba(15,23,42,0.08);
+    --btx-shadow-lg:0 12px 32px rgba(15,23,42,0.12);
   }
 
   .soft-card{
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(15,23,42,.08);
-    border: 1px solid rgba(148,163,184,.18);
+    box-shadow: var(--btx-shadow-md);
+    border: 1px solid rgba(148,163,184,.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .soft-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--btx-shadow-lg);
   }
 
   .task-hero-title{
     color: var(--btx-gray-700);
+    font-weight: 700;
   }
 
   .causal-model-wrapper{
-    background: linear-gradient(180deg,#f9fafb 0,#ffffff 60%);
+    background: linear-gradient(180deg, var(--btx-gray-050) 0%, var(--btx-white) 60%);
     border-radius: 14px;
-    padding: 18px;
+    padding: 20px;
     border: 1px solid var(--btx-gray-200);
   }
 
@@ -707,25 +676,40 @@ document.addEventListener('DOMContentLoaded', () => {
     border-radius: 12px;
     max-height: 380px;
     width: auto;
-    box-shadow: 0 6px 18px rgba(15,23,42,.18);
-    transition: transform .25s ease, box-shadow .25s ease;
+    box-shadow: var(--btx-shadow-lg);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
 
   .causal-model-img:hover{
     transform: scale(1.02);
-    box-shadow: 0 12px 30px rgba(15,23,42,.25);
+    box-shadow: 0 16px 40px rgba(15,23,42,0.2);
+    cursor: zoom-in;
+  }
+
+  .causal-model-img.zoomed{
+    transform: scale(1.8);
+    z-index: 1000;
+    position: relative;
+    cursor: zoom-out;
   }
 
   .task-details .info-item{
-    padding: 8px 10px;
-    border-radius: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
     background: var(--btx-gray-050);
     border: 1px solid var(--btx-gray-200);
     font-size: .87rem;
     display: flex;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .task-details .info-item:hover{
+    background: var(--btx-white);
+    border-color: var(--btx-blue);
+    box-shadow: var(--btx-shadow-sm);
   }
 
   .task-details .info-label{
@@ -735,53 +719,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   .task-details .info-value{
     color: var(--btx-gray-700);
-  }
-
-  .btx-data{
-    max-height: 360px;
-    overflow-y: auto;
-  }
-
-  .data-item{
-    padding: 9px 0;
-    border-bottom: 1px solid var(--btx-gray-200);
-    font-size: .87rem;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .data-item:last-child{
-    border-bottom: none;
-  }
-
-  .data-label{
-    color: var(--btx-gray-400);
-    font-weight: 600;
-  }
-
-  .data-value{
-    color: var(--btx-gray-700);
+    font-weight: 500;
   }
 
   .download-buttons .btn{
-    transition: transform .15s ease, box-shadow .15s ease;
+    transition: all 0.2s ease;
+    font-weight: 500;
   }
 
-  .download-buttons .btn:hover:not(:disabled){
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(15,23,42,.16);
-  }
-
-  .download-buttons .btn:disabled{
-    opacity: .65;
-    cursor: not-allowed;
+  .download-buttons .btn:hover{
+    transform: translateY(-2px);
+    box-shadow: var(--btx-shadow-md);
   }
 
   .resultados-container{
     background: var(--btx-gray-050);
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 16px;
     max-height: 380px;
     overflow-y: auto;
     border: 1px solid var(--btx-gray-200);
@@ -794,13 +748,14 @@ document.addEventListener('DOMContentLoaded', () => {
     margin: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
+    color: var(--btx-gray-700);
   }
 
   .chart-container{
-    background: #ffffff;
+    background: var(--btx-white);
     border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0 4px 12px rgba(15,23,42,.08);
+    padding: 16px;
+    box-shadow: var(--btx-shadow-sm);
     border: 1px solid var(--btx-gray-200);
   }
 
@@ -810,28 +765,60 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   .bg-info-subtle{
-    background-color:#e7f1ff!important;
+    background-color: rgba(40, 83, 126, 0.1) !important;
   }
   .text-info-emphasis{
-    color:#084298!important;
+    color: var(--btx-blue) !important;
   }
-  .bg-success-subtle{
-    background-color:#dcfce7!important;
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    border: none;
+    font-weight: 500;
   }
-  .text-success-emphasis{
-    color:#166534!important;
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--btx-blue-dark) 0%, var(--btx-blue) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.3);
   }
-  .bg-warning-subtle{
-    background-color:#fef7c3!important;
+
+  .btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    font-weight: 500;
   }
-  .text-warning-emphasis{
-    color:#92400e!important;
+
+  .btn-outline-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: translateY(-1px);
   }
 
   @media (max-width: 767.98px){
     .causal-model-img{
       max-height: 260px;
     }
+    
+    .soft-card {
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Animaciones sutiles */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .soft-card {
+    animation: fadeIn 0.5s ease-out;
   }
 </style>
 
@@ -866,6 +853,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- Descarga TXT (sidebar) ---
+  const btnTxtSidebar = document.getElementById('descargarTxtSidebar');
+  if (btnTxtSidebar) {
+    btnTxtSidebar.addEventListener('click', () => {
+      const resultadosTxt = `{{ resultados_txt|escapejs }}`;
+      const blob = new Blob([resultadosTxt], { type: 'text/plain' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `analisis_btx_{{task.title}}_{{task.id}}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  }
+
   // --- Efecto zoom en imagen causal ---
   const causalImage = document.getElementById('causalModel');
   if (causalImage) {
@@ -873,7 +875,9 @@ document.addEventListener('DOMContentLoaded', () => {
       this.style.cursor = 'zoom-in';
     });
     causalImage.addEventListener('mouseleave', function(){
-      this.style.cursor = 'default';
+      if (!this.classList.contains('zoomed')) {
+        this.style.cursor = 'default';
+      }
     });
     causalImage.addEventListener('click', function(){
       if (this.classList.contains('zoomed')) {
@@ -881,11 +885,13 @@ document.addEventListener('DOMContentLoaded', () => {
         this.style.transform = '';
         this.style.zIndex = '';
         this.style.position = '';
+        this.style.cursor = 'zoom-in';
       } else {
         this.classList.add('zoomed');
-        this.style.transform = 'scale(1.5)';
+        this.style.transform = 'scale(1.8)';
         this.style.zIndex = '1000';
         this.style.position = 'relative';
+        this.style.cursor = 'zoom-out';
       }
     });
   }

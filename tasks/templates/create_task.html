@@ -1,304 +1,1480 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container mt-4 mb-4">
-  <div class="row justify-content-center">
-    <div class="col-md-10">
+<!-- ======================================== -->
+<!-- HERO SUPERIOR -->
+<!-- ======================================== -->
+<section class="project-hero">
+  <div class="container">
+    <div class="hero-content">
+      <span class="hero-pill">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="6" cy="6" r="2" fill="currentColor"/>
+        </svg>
+        Módulo de simulación · Carga de datos BTX
+      </span>
 
-      <!-- Errores -->
-      {% if error %}
-      <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-        {{ error }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-      {% endif %}
+      <h1 class="hero-title">
+        Crear nueva simulación BTX
+      </h1>
 
-      <!-- Encabezado -->
-      <div class="text-center mb-4">
-        <span class="badge rounded-pill bg-light text-primary px-3 py-1 mb-2">
-          Módulo de simulación BTX
-        </span>
-        <h1 class="h3 fw-semibold mb-2 text-dark">Crear nueva simulación</h1>
-        <p class="text-muted mb-0" style="max-width: 720px; margin: 0 auto; font-size: .93rem;">
-          Define los datos básicos de la simulación, crea un borrador y sube los archivos Excel
-          correspondientes a cada tipo de tabla antes de procesar el modelo.
-        </p>
-      </div>
+      <p class="hero-subtitle">
+        Define los parámetros de tu simulación, carga los archivos Excel correspondientes y procesa el modelo dinámico 
+        de causalidad de gases BTX y sus efectos en la salud.
+      </p>
+    </div>
+  </div>
+</section>
 
-      <!-- Card principal -->
-      <div class="card border-0 soft-card">
-        <div class="card-body p-4 p-md-5">
+<!-- ======================================== -->
+<!-- CONTENIDO PRINCIPAL -->
+<!-- ======================================== -->
+<div class="container">
+  <section class="info-box">
+    <div class="row g-0 align-items-start">
 
-          <!-- Form info simulación -->
-          <div class="simulation-info mb-4">
-            <h6 class="text-uppercase text-muted small fw-semibold mb-3">
-              Datos generales
-            </h6>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label for="nombreSimulacion" class="form-label fw-semibold small text-muted">Nombre de simulación</label>
-                <input type="text"
-                       class="form-control form-control-lg pretty-input"
-                       id="nombreSimulacion"
-                       placeholder="Ej: Simulación Centro Ciudad">
-              </div>
-              <div class="col-md-4">
-                <label for="ubicacionSimulacion" class="form-label fw-semibold small text-muted">Ubicación</label>
-                <input type="text"
-                       class="form-control form-control-lg pretty-input"
-                       id="ubicacionSimulacion"
-                       placeholder="Ej: Bucaramanga, Centro">
-              </div>
-              <div class="col-md-4">
-                <label for="descripcionSimulacion" class="form-label fw-semibold small text-muted">Descripción</label>
-                <input type="text"
-                       class="form-control form-control-lg pretty-input"
-                       id="descripcionSimulacion"
-                       placeholder="Descripción opcional...">
-              </div>
+      <!-- ====================== -->
+      <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+      <!-- ====================== -->
+      <div class="col-lg-8">
+        <article class="content-panel">
+
+          <!-- ====================== -->
+          <!-- 1. DATOS GENERALES -->
+          <!-- ====================== -->
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">01</div>
+              <h2 class="section-title">Configuración de la simulación</h2>
             </div>
+            <div class="section-body">
+              
+              <!-- Errores -->
+              {% if error %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                    <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M10 6V10M10 14V14.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  {{ error }}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+              {% endif %}
 
-            <div class="mt-3 d-flex justify-content-end">
-              <button class="btn btn-primary btn-lg rounded-3 lift" id="crearBorradorBtn">
-                Crear borrador
-              </button>
-            </div>
-          </div>
-
-          <hr class="my-4 text-muted" style="opacity: .25;">
-
-          <!-- Dos columnas: subida / controles -->
-          <div class="row g-4 align-items-start">
-
-            <!-- Columna izquierda -->
-            <div class="col-md-8">
-
-              <!-- Área de subida -->
-              <div id="uploadArea" style="display: none;">
-                <h6 class="text-uppercase text-muted small fw-semibold mb-2">
-                  Gestión de archivos
-                </h6>
-                <p class="text-muted small mb-3">
-                  Selecciona el tipo de tabla en el panel derecho y sube el archivo correspondiente.
-                </p>
-
-                <div class="drop-zone pretty-border text-center mb-4" id="dropZone">
-                  <div class="file-icon mb-3">
-                    <i class="fas fa-file-excel fa-3x text-primary"></i>
-                  </div>
-                  <h4 class="fw-semibold mb-1" style="font-size: 1.05rem;">Arrastra tu archivo Excel aquí</h4>
-                  <p class="text-muted mb-1 small">o haz clic para seleccionar archivo</p>
-                  <p class="text-muted small mb-0">Sube un archivo a la vez en formato .xlsx, .xls o .csv</p>
-                  <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="d-none">
-                  <button class="btn btn-outline-primary mt-3 rounded-3 lift"
-                          type="button"
-                          onclick="document.getElementById('fileInput').click()">
-                    Seleccionar archivo
-                  </button>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Nombre de simulación</label>
+                  <input type="text"
+                         class="form-control pretty-input"
+                         id="nombreSimulacion"
+                         placeholder="Ej: Simulación Centro Ciudad - Tráfico Intenso">
+                  <div class="form-hint">Identificador único para tu simulación</div>
                 </div>
 
-                <!-- Lista de archivos -->
-                <div class="uploaded-files mt-4">
-                  <div class="d-flex justify-content-between align-items-center mb-1">
-                    <h5 class="mb-0 fw-semibold" style="font-size: .98rem;">Archivos en borrador</h5>
-                    <span class="badge bg-light text-dark border">
-                      <span id="countValid">0</span> válidos /
-                      <span id="countInvalid">0</span> inválidos
-                    </span>
+                <div class="form-group">
+                  <label class="form-label">Ubicación geográfica</label>
+                  <input type="text"
+                         class="form-control pretty-input"
+                         id="ubicacionSimulacion"
+                         placeholder="Ej: Bucaramanga, Centro - Carrera 27">
+                  <div class="form-hint">Zona específica de análisis</div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Descripción (opcional)</label>
+                  <input type="text"
+                         class="form-control pretty-input"
+                         id="descripcionSimulacion"
+                         placeholder="Ej: Análisis de tráfico vespertino con alta congestión vehicular">
+                  <div class="form-hint">Contexto adicional sobre la simulación</div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn-primary-action" id="crearBorradorBtn">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 4L7 11L4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                  Crear borrador de simulación
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====================== -->
+          <!-- 2. GESTIÓN DE ARCHIVOS -->
+          <!-- ====================== -->
+          <section class="content-section">
+            <div class="section-header">
+              <div class="section-number">02</div>
+              <h2 class="section-title">Carga de archivos de datos</h2>
+            </div>
+            <div class="section-body">
+
+              <!-- Área de subida (inicialmente oculta) -->
+              <div id="uploadArea" style="display: none;">
+                <div class="upload-description">
+                  <p>Selecciona el tipo de tabla en el panel derecho y sube el archivo Excel correspondiente. 
+                     Los archivos marcados como <span class="required-marker">requeridos</span> son esenciales para el procesamiento.</p>
+                </div>
+
+                <!-- Zona de drag & drop -->
+                <div class="drop-zone pretty-border" id="dropZone">
+                  <div class="drop-zone-content">
+                    <div class="file-icon">
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M28 8H16C13.7909 8 12 9.79086 12 12V36C12 38.2091 13.7909 40 16 40H32C34.2091 40 36 38.2091 36 36V16M28 8L36 16M28 8V16H36" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20 24H28M20 30H32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <h4>Arrastra tu archivo Excel aquí</h4>
+                    <p class="text-muted">o haz clic para seleccionar archivo</p>
+                    <p class="text-muted small">Formatos soportados: .xlsx, .xls, .csv</p>
+                    <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">
+                      Seleccionar archivo
+                    </button>
+                    <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" class="d-none">
                   </div>
-                  <p class="text-muted small mb-2">
-                    Se requieren al menos los archivos de Emisiones, Dispersión, Exposición y Salud.
-                  </p>
-                  <div id="filesList" class="mt-2"></div>
+                </div>
+
+                <!-- Lista de archivos subidos -->
+                <div class="uploaded-files-section">
+                  <div class="section-header-mini">
+                    <h5>Archivos en borrador</h5>
+                    <div class="file-stats">
+                      <span class="stat-valid" id="countValid">0</span>
+                      <span class="stat-separator">/</span>
+                      <span class="stat-invalid" id="countInvalid">0</span>
+                    </div>
+                  </div>
+                  
+                  <div class="requirements-note">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="currentColor" stroke-width="1.5"/>
+                      <path d="M7 4V4.01M7 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Se requieren los archivos de Emisiones, Dispersión, Exposición y Salud para procesar
+                  </div>
+
+                  <div id="filesList" class="files-grid"></div>
                 </div>
 
                 <!-- Información del procesamiento -->
-                <div id="procesamientoInfo" class="mt-4" style="display: none;">
-                  <div class="alert alert-info mb-0">
-                    <h6 class="alert-heading mb-2" style="font-size: .9rem;">
-                      <i class="fas fa-cogs me-2"></i>Procesamiento de datos BTX
-                    </h6>
-                    <p class="mb-2 small">
-                      Al finalizar la simulación se ejecutarán, entre otras, las siguientes operaciones:
-                    </p>
-                    <ul class="small mb-0 ps-3">
-                      <li>Integración de Benceno, Tolueno y Xileno en un índice BTX total.</li>
-                      <li>Ajuste por condiciones meteorológicas (velocidad del viento y temperatura).</li>
-                      <li>Cálculo de exposición poblacional según tiempo y tamaño de población.</li>
-                      <li>Modelo de regresión para estimar impactos en salud respiratoria.</li>
+                <div class="processing-info" id="procesamientoInfo" style="display: none;">
+                  <div class="info-card">
+                    <div class="info-header">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 12C16 14.2091 14.2091 16 12 16H8C5.79086 16 4 14.2091 4 12V8C4 5.79086 5.79086 4 8 4H12C14.2091 4 16 5.79086 16 8" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 7V10L12 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                      <h6>Procesamiento de datos BTX</h6>
+                    </div>
+                    <p>Al finalizar la simulación se ejecutarán las siguientes operaciones:</p>
+                    <ul>
+                      <li>Integración de Benceno, Tolueno y Xileno en índice BTX total</li>
+                      <li>Ajuste por condiciones meteorológicas (viento y temperatura)</li>
+                      <li>Cálculo de exposición poblacional por tiempo y densidad</li>
+                      <li>Modelo de regresión para impactos en salud respiratoria</li>
+                      <li>Generación de correlaciones entre variables ambientales y de salud</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               <!-- Mensaje inicial -->
-              <div id="noBorradorMessage" class="alert alert-info text-center pretty-border mb-0">
-                <i class="fas fa-info-circle me-2"></i>
-                Primero crea un borrador de simulación para comenzar a subir archivos.
+              <div id="noBorradorMessage" class="empty-state">
+                <div class="empty-icon">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M42 24L32 34L22 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </div>
+                <h3>Comienza creando un borrador</h3>
+                <p>Configura los datos básicos de tu simulación para habilitar la carga de archivos.</p>
+              </div>
+
+            </div>
+          </section>
+
+        </article>
+      </div>
+
+      <!-- ====================== -->
+      <!-- COLUMNA DERECHA: CONTROLES -->
+      <!-- ====================== -->
+      <div class="col-lg-4">
+        <aside class="controls-panel">
+
+          <div class="panel-header">
+            <h2 class="panel-title">Controles de simulación</h2>
+            <p class="panel-description">
+              Gestiona los tipos de tabla, archivos y el estado de tu simulación BTX.
+            </p>
+          </div>
+
+          <!-- Selección de tabla -->
+          <div class="control-group">
+            <label class="control-label">Tipo de tabla</label>
+            <div class="dropdown custom-dropdown">
+              <button class="dropdown-toggle" id="tableDropdown" disabled>
+                <span class="dropdown-text">Seleccionar tabla</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#" data-table="Emisiones">
+                  <div class="table-option">
+                    <span class="table-name">Emisiones</span>
+                    <span class="table-badge required">Requerido</span>
+                  </div>
+                </a>
+                <a class="dropdown-item" href="#" data-table="Dispersión">
+                  <div class="table-option">
+                    <span class="table-name">Dispersión atmosférica</span>
+                    <span class="table-badge required">Requerido</span>
+                  </div>
+                </a>
+                <a class="dropdown-item" href="#" data-table="Exposición">
+                  <div class="table-option">
+                    <span class="table-name">Exposición poblacional</span>
+                    <span class="table-badge required">Requerido</span>
+                  </div>
+                </a>
+                <a class="dropdown-item" href="#" data-table="Salud">
+                  <div class="table-option">
+                    <span class="table-name">Salud respiratoria</span>
+                    <span class="table-badge required">Requerido</span>
+                  </div>
+                </a>
+                <a class="dropdown-item" href="#" data-table="Social">
+                  <div class="table-option">
+                    <span class="table-name">Respuesta social</span>
+                    <span class="table-badge optional">Opcional</span>
+                  </div>
+                </a>
               </div>
             </div>
+          </div>
 
-            <!-- Columna derecha -->
-            <div class="col-md-4">
-              <div class="table-selection controls-sticky card border-0 soft-card-secondary">
-                <div class="card-body">
-                  <h5 class="fw-semibold mb-3" style="font-size: .98rem;">Controles de simulación</h5>
+          <!-- Tabla seleccionada -->
+          <div class="control-group">
+            <label class="control-label">Tabla seleccionada</label>
+            <div class="selected-item" id="selectedTable">
+              <div class="selected-content">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 4H14M2 8H14M2 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>No seleccionada</span>
+              </div>
+            </div>
+          </div>
 
-                  <label class="form-label fw-semibold small text-muted mb-1">Tipo de tabla</label>
-                  <div class="dropdown mb-3">
-                    <button class="btn btn-outline-secondary dropdown-toggle w-100 rounded-3"
-                            type="button"
-                            id="tableDropdown"
-                            data-bs-toggle="dropdown"
-                            disabled>
-                      Seleccionar tabla
-                    </button>
-                    <ul class="dropdown-menu w-100 shadow-sm">
-                      <li><a class="dropdown-item" href="#" data-table="Emisiones">Emisiones</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Dispersión">Dispersión atmosférica</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Exposición">Exposición poblacional</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Salud">Salud respiratoria</a></li>
-                      <li><a class="dropdown-item" href="#" data-table="Social">Respuesta social y regulatoria</a></li>
-                    </ul>
-                  </div>
-
-                  <div class="selected-table mb-3">
-                    <h6 class="fw-semibold small text-muted mb-1">Tabla seleccionada</h6>
-                    <div id="selectedTable"
-                         class="alert alert-info py-2 px-3 rounded-3 mb-0 small">
-                      No seleccionada
-                    </div>
-                  </div>
-
-                  <div class="current-file mb-3" id="currentFileInfo" style="display: none;">
-                    <h6 class="fw-semibold small text-muted mb-1">Archivo seleccionado</h6>
-                    <div id="fileInfo"
-                         class="alert alert-warning py-2 px-3 rounded-3 mb-0 small"></div>
-                  </div>
-
-                  <button class="btn btn-success w-100 mb-2 rounded-3 lift"
-                          id="uploadBtn"
-                          disabled>
-                    <i class="fas fa-upload me-2"></i>Subir archivo al borrador
-                  </button>
-
-                  <button class="btn btn-outline-danger w-100 mb-2 rounded-3"
-                          id="removeBtn"
-                          disabled>
-                    <i class="fas fa-trash me-2"></i>Limpiar selección
-                  </button>
-
-                  <hr class="text-muted">
-
-                  <!-- Estado del procesamiento -->
-                  <div id="estadoProcesamiento" class="mb-3" style="display: none;">
-                    <h6 class="fw-semibold small text-muted mb-1">Estado del análisis</h6>
-                    <div class="alert alert-warning py-2 px-3 rounded-3 mb-0 small">
-                      <i class="fas fa-hourglass-half me-1"></i>
-                      <span id="archivosRequeridos">0/4</span> archivos requeridos
-                    </div>
-                  </div>
-
-                  <button class="btn btn-primary w-100 mt-1 rounded-3 lift"
-                          id="finalizarBtn"
-                          disabled>
-                    <i class="fas fa-calculator me-2"></i>Procesar y finalizar
-                  </button>
-
-                  <button class="btn btn-outline-secondary w-100 mt-2 rounded-3"
-                          id="cancelarBtn"
-                          style="display: none;">
-                    <i class="fas fa-times me-2"></i>Cancelar borrador
-                  </button>
+          <!-- Archivo seleccionado -->
+          <div class="control-group" id="currentFileInfo" style="display: none;">
+            <label class="control-label">Archivo seleccionado</label>
+            <div class="file-selected" id="fileInfo">
+              <div class="file-preview">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 2L12 4L14 4C14.5523 4 15 4.44772 15 5V13C15 13.5523 14.5523 14 14 14H2C1.44772 14 1 13.5523 1 13V3C1 2.44772 1.44772 2 2 2H10Z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M10 2V4H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="file-details">
+                  <span class="file-name" id="fileName"></span>
+                  <span class="file-size" id="fileSize"></span>
                 </div>
               </div>
             </div>
-          </div> <!-- row -->
-        </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="action-buttons">
+            <button class="btn-success w-100" id="uploadBtn" disabled>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 12V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M6 6L9 3M9 3L12 6M9 3V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Subir archivo al borrador
+            </button>
+
+            <button class="btn-outline w-100" id="removeBtn" disabled>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 6V4C7 3.44772 7.44772 3 8 3H10C10.5523 3 11 3.44772 11 4V6M13 6V14C13 14.5523 12.5523 15 12 15H6C5.44772 15 5 14.5523 5 14V6H13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Limpiar selección
+            </button>
+          </div>
+
+          <!-- Estado del procesamiento -->
+          <div class="status-group" id="estadoProcesamiento" style="display: none;">
+            <label class="control-label">Estado del análisis</label>
+            <div class="status-indicator">
+              <div class="status-icon">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 4V8L10 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="status-content">
+                <span class="status-title" id="statusTitle">Archivos requeridos</span>
+                <span class="status-subtitle" id="archivosRequeridos">0/4 completados</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Acciones finales -->
+          <div class="final-actions">
+            <button class="btn-primary w-100" id="finalizarBtn" disabled>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 4L7 11L4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Procesar y finalizar simulación
+            </button>
+
+            <button class="btn-outline w-100" id="cancelarBtn" style="display: none;">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 5L5 13M5 5L13 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Cancelar borrador
+            </button>
+          </div>
+
+        </aside>
       </div>
 
-      <!-- Borrador actual -->
-      <div class="card shadow-sm border-0 soft-card mt-4"
-           id="currentDraftSection"
-           style="display: none;">
-        <div class="card-body">
-          <h5 class="card-title mb-3" style="font-size: .98rem;">
-            <i class="fas fa-edit me-2 text-warning"></i>Simulación en borrador
-            <span class="badge bg-warning text-dark ms-2">Borrador activo</span>
-          </h5>
-          <div id="draftInfo" class="small text-muted"></div>
-        </div>
-      </div>
+    </div>
+  </section>
+</div>
 
-      <!-- Completadas -->
-      <div class="card shadow-sm border-0 soft-card mt-4">
-        <div class="card-body">
-          <h5 class="card-title fw-semibold mb-3" style="font-size: .98rem;">
-            Simulaciones completadas
-          </h5>
-          <div class="table-responsive">
-            <table class="table align-middle table-sm mb-0">
-              <thead class="table-light">
-                <tr>
-                  <th>Nombre</th>
-                  <th>Archivos</th>
-                  <th>Ubicación</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th class="text-end">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for simulacion in simulaciones %}
-                <tr>
-                  <td class="fw-semibold">{{ simulacion.nombre_simulacion }}</td>
-                  <td style="max-width: 220px;">
-                    {% for archivo in simulacion.archivoexcel_set.all %}
-                      <span class="badge rounded-pill bg-info-subtle text-info-emphasis border me-1 mb-1">
-                        {{ archivo.tipo_tabla }}
-                      </span>
-                    {% endfor %}
-                  </td>
-                  <td class="text-muted small">
-                    {{ simulacion.ubicacion|default:"No especificada" }}
-                  </td>
-                  <td class="text-muted small">
-                    {{ simulacion.fecha_ejecucion|date:"d/m/Y H:i" }}
-                  </td>
-                  <td>
-                    <span class="badge {% if simulacion.estado == 'completada' %}bg-success{% else %}bg-warning text-dark{% endif %}">
-                      {{ simulacion.estado }}
-                    </span>
-                  </td>
-                  <td class="text-end">
-                    <a href="{% url 'simulacion_detail' simulacion.id %}"
-                       class="btn btn-sm btn-outline-primary rounded-3 me-1">
-                      <i class="fas fa-eye"></i>
-                    </a>
-                    <a href="{% url 'delete_simulation' simulacion.id %}"
-                       class="btn btn-sm btn-outline-danger rounded-3"
-                       onclick="return confirm('¿Eliminar esta simulación?')">
-                      <i class="fas fa-trash"></i>
-                    </a>
-                  </td>
-                </tr>
-                {% empty %}
-                <tr>
-                  <td colspan="6" class="text-center text-muted py-4 small">
-                    No hay simulaciones completadas.
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+<!-- ======================================== -->
+<!-- SECCIÓN BORRADOR ACTUAL -->
+<!-- ======================================== -->
+<div class="container" id="currentDraftSection" style="display: none;">
+  <section class="draft-section">
+    <div class="draft-header">
+      <div class="draft-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 4L10 10M10 10L4 16M10 10V2M10 10H18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="draft-info">
+        <h3>Simulación en borrador</h3>
+        <div id="draftInfo"></div>
+      </div>
+      <span class="draft-badge">Borrador activo</span>
+    </div>
+  </section>
+</div>
+
+<!-- ======================================== -->
+<!-- SECCIÓN SIMULACIONES COMPLETADAS -->
+<!-- ======================================== -->
+<div class="container">
+  <section class="completed-section">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <h2 class="section-title">Simulaciones completadas</h2>
+    </div>
+
+    {% if simulaciones %}
+    <div class="simulations-grid">
+      {% for simulacion in simulaciones %}
+      <div class="simulation-card">
+        <div class="simulation-header">
+          <h4>{{ simulacion.nombre_simulacion }}</h4>
+          <span class="status-badge {% if simulacion.estado == 'completada' %}completed{% else %}draft{% endif %}">
+            {{ simulacion.estado }}
+          </span>
+        </div>
+        
+        <div class="simulation-meta">
+          <div class="meta-item">
+            <span class="meta-label">Ubicación</span>
+            <span class="meta-value">{{ simulacion.ubicacion|default:"No especificada" }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Fecha</span>
+            <span class="meta-value">{{ simulacion.fecha_ejecucion|date:"d/m/Y H:i" }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Archivos</span>
+            <span class="meta-value">{{ simulacion.archivoexcel_set.count }}</span>
           </div>
         </div>
-      </div>
 
+        <div class="simulation-tags">
+          {% for archivo in simulacion.archivoexcel_set.all %}
+          <span class="file-tag">{{ archivo.tipo_tabla }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="simulation-actions">
+          <a href="{% url 'simulacion_detail' simulacion.id %}" class="btn-outline">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 13C10.7614 13 13 10.7614 13 8C13 5.23858 10.7614 3 8 3C5.23858 3 3 5.23858 3 8C3 10.7614 5.23858 13 8 13Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8.5 5C8.5 5.27614 8.27614 5.5 8 5.5C7.72386 5.5 7.5 5.27614 7.5 5C7.5 4.72386 7.72386 4.5 8 4.5C8.27614 4.5 8.5 4.72386 8.5 5Z" fill="currentColor" stroke="currentColor"/>
+            </svg>
+            Ver detalles
+          </a>
+          <a href="{% url 'delete_simulation' simulacion.id %}" class="btn-outline danger" onclick="return confirm('¿Eliminar esta simulación?')">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6H5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 6V4C7 3.44772 7.44772 3 8 3H10C10.5523 3 11 3.44772 11 4V6M13 6V14C13 14.5523 12.5523 15 12 15H6C5.44772 15 5 14.5523 5 14V6H13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Eliminar
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M42 24L32 34L22 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      <h3>No hay simulaciones completadas</h3>
+      <p>Crea tu primera simulación para ver los resultados aquí.</p>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<!-- ======================================== -->
+<!-- MODAL FINALIZAR SIMULACIÓN -->
+<!-- ======================================== -->
+<div class="modal fade" id="finalizarModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content soft-card">
+      <div class="modal-header">
+        <h5 class="modal-title">Procesar y finalizar simulación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Confirma si deseas procesar los archivos del borrador y registrar los resultados como una simulación completada.</p>
+        
+        <div class="info-card">
+          <div class="info-header">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 12C16 14.2091 14.2091 16 12 16H8C5.79086 16 4 14.2091 4 12V8C4 5.79086 5.79086 4 8 4H12C14.2091 4 16 5.79086 16 8" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 7V10L12 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <h6>Procesamiento que se ejecutará</h6>
+          </div>
+          <ul>
+            <li>Análisis de concentraciones BTX (Benceno, Tolueno, Xileno)</li>
+            <li>Cálculo de exposición poblacional</li>
+            <li>Modelo de regresión para casos de salud</li>
+            <li>Generación de archivo de resultados en formato TXT</li>
+          </ul>
+        </div>
+
+        <div id="finalizarDetails"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" data-bs-dismiss="modal">
+          Seguir editando
+        </button>
+        <form method="POST" action="{% url 'finalizar_simulacion' %}" id="finalizarForm">
+          {% csrf_token %}
+          <input type="hidden" name="simulacion_id" id="simulacionIdInput">
+          <button type="submit" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 4L7 11L4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/>
+            </svg>
+            Procesar y finalizar
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ======================================== -->
+<!-- ESTILOS MEJORADOS -->
+<!-- ======================================== -->
+<style>
+  :root{
+    --btx-blue:#28537E;
+    --btx-blue-light:#3d6a9e;
+    --btx-blue-dark:#1f3f5f;
+    --btx-white:#ffffff;
+    --btx-gray-050:#f9fafb;
+    --btx-gray-100:#f3f4f6;
+    --btx-gray-200:#e5e7eb;
+    --btx-gray-300:#d1d5db;
+    --btx-gray-400:#9ca3af;
+    --btx-gray-600:#6b7280;
+    --btx-gray-700:#374151;
+    --btx-gray-800:#1f2937;
+    --btx-gray-900:#020617;
+    --btx-shadow-sm:0 2px 8px rgba(15,23,42,0.04);
+    --btx-shadow-md:0 4px 16px rgba(15,23,42,0.08);
+    --btx-shadow-lg:0 12px 32px rgba(15,23,42,0.12);
+    --btx-shadow-xl:0 20px 48px rgba(15,23,42,0.16);
+  }
+
+  /* Hero superior */
+  .project-hero{
+    padding: 72px 0 64px;
+    margin-bottom: 48px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(40, 83, 126, 0.08), transparent 60%),
+      radial-gradient(circle at 80% 80%, rgba(40, 83, 126, 0.06), transparent 60%),
+      linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 25%, #f9fafb 60%, #ffffff 100%);
+    border-bottom: 1px solid var(--btx-gray-200);
+    position: relative;
+  }
+
+  .project-hero::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--btx-blue), transparent);
+    opacity: 0.3;
+  }
+
+  .hero-content{
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--btx-white);
+    color: var(--btx-blue);
+    font-weight: 600;
+    margin-bottom: 20px;
+    border: 1px solid rgba(40, 83, 126, 0.15);
+    box-shadow: var(--btx-shadow-sm);
+  }
+
+  .hero-title{
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    line-height: 1.25;
+    font-weight: 700;
+    margin: 0;
+    color: var(--btx-gray-900);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-subtitle{
+    margin-top: 20px;
+    color: var(--btx-gray-600);
+    font-weight: 400;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 880px;
+  }
+
+  /* Caja principal */
+  .info-box {
+    background-color: var(--btx-white);
+    border-radius: 24px;
+    box-shadow: var(--btx-shadow-xl);
+    padding: 0;
+    margin: 0 auto 64px;
+    max-width: 1280px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+  }
+
+  /* Panel izquierdo - contenido */
+  .content-panel{
+    padding: 48px 56px;
+    color: var(--btx-gray-700);
+  }
+
+  .content-section{
+    margin-bottom: 56px;
+  }
+
+  .content-section:last-child{
+    margin-bottom: 0;
+  }
+
+  .section-header{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--btx-gray-100);
+  }
+
+  .section-number{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    font-weight: 700;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.2);
+  }
+
+  .section-title{
+    color: var(--btx-gray-900);
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-body{
+    padding-left: 0;
+  }
+
+  /* Formulario */
+  .form-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .form-group{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-label{
+    font-weight: 600;
+    color: var(--btx-gray-700);
+    font-size: 0.875rem;
+  }
+
+  .pretty-input{
+    padding: 12px 16px;
+    border: 1px solid var(--btx-gray-300);
+    border-radius: 12px;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+    background: var(--btx-white);
+  }
+
+  .pretty-input:focus{
+    outline: none;
+    border-color: var(--btx-blue);
+    box-shadow: 0 0 0 3px rgba(40, 83, 126, 0.1);
+  }
+
+  .form-hint{
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+    line-height: 1.4;
+  }
+
+  .form-actions{
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Botones */
+  .btn-primary-action{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.25);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary-action:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(40, 83, 126, 0.35);
+  }
+
+  .btn-primary-action:disabled{
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Drop zone */
+  .drop-zone{
+    border: 2px dashed var(--btx-gray-300);
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    background: var(--btx-gray-050);
+    transition: all 0.3s ease;
+    margin-bottom: 32px;
+  }
+
+  .drop-zone.dragover{
+    border-color: var(--btx-blue);
+    background: rgba(40, 83, 126, 0.05);
+  }
+
+  .drop-zone-content .file-icon{
+    color: var(--btx-blue);
+    margin-bottom: 16px;
+  }
+
+  .drop-zone h4{
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin-bottom: 8px;
+  }
+
+  .btn-secondary{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--btx-white);
+    color: var(--btx-blue);
+    border: 1px solid var(--btx-blue);
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover{
+    background: var(--btx-blue);
+    color: var(--btx-white);
+  }
+
+  /* Archivos subidos */
+  .uploaded-files-section{
+    margin-top: 32px;
+  }
+
+  .section-header-mini{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .section-header-mini h5{
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin: 0;
+  }
+
+  .file-stats{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .stat-valid{
+    color: #059669;
+  }
+
+  .stat-invalid{
+    color: #dc2626;
+  }
+
+  .stat-separator{
+    color: var(--btx-gray-400);
+  }
+
+  .requirements-note{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--btx-gray-050);
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    color: var(--btx-gray-600);
+    margin-bottom: 16px;
+  }
+
+  .files-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .file-item{
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .file-item:hover{
+    border-color: var(--btx-blue);
+    box-shadow: var(--btx-shadow-sm);
+  }
+
+  .required-marker{
+    color: #dc2626;
+    font-weight: 600;
+  }
+
+  /* Panel derecho - controles */
+  .controls-panel {
+    padding: 48px 40px;
+    background: linear-gradient(180deg, var(--btx-gray-050) 0%, var(--btx-white) 100%);
+    height: 100%;
+    border-left: 1px solid var(--btx-gray-200);
+  }
+
+  .panel-header{
+    margin-bottom: 32px;
+  }
+
+  .panel-title{
+    font-weight: 700;
+    color: var(--btx-gray-900);
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .panel-description{
+    font-size: 0.9375rem;
+    color: var(--btx-gray-600);
+    line-height: 1.6;
+  }
+
+  .control-group{
+    margin-bottom: 24px;
+  }
+
+  .control-label{
+    display: block;
+    font-weight: 600;
+    color: var(--btx-gray-700);
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+  }
+
+  /* Dropdown personalizado */
+  .custom-dropdown{
+    position: relative;
+  }
+
+  .dropdown-toggle{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-300);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: var(--btx-gray-700);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .dropdown-toggle:not(:disabled):hover{
+    border-color: var(--btx-blue);
+  }
+
+  .dropdown-toggle:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 10px;
+    box-shadow: var(--btx-shadow-lg);
+    z-index: 1000;
+    display: none;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+
+  .dropdown-menu.show{
+    display: block;
+  }
+
+  .dropdown-item{
+    display: block;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--btx-gray-700);
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--btx-gray-100);
+  }
+
+  .dropdown-item:last-child{
+    border-bottom: none;
+  }
+
+  .dropdown-item:hover{
+    background: var(--btx-gray-050);
+  }
+
+  .table-option{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-name{
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .table-badge{
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  .table-badge.required{
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .table-badge.optional{
+    background: var(--btx-gray-100);
+    color: var(--btx-gray-600);
+  }
+
+  /* Elementos seleccionados */
+  .selected-item{
+    padding: 12px 16px;
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-300);
+    border-radius: 10px;
+  }
+
+  .selected-content{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--btx-gray-700);
+  }
+
+  .file-selected{
+    padding: 12px 16px;
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-300);
+    border-radius: 10px;
+  }
+
+  .file-preview{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .file-details{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .file-name{
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--btx-gray-900);
+  }
+
+  .file-size{
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+  }
+
+  /* Botones de acción */
+  .action-buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .btn-success, .btn-primary, .btn-outline{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+  }
+
+  .btn-success{
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: var(--btx-white);
+  }
+
+  .btn-success:hover:not(:disabled){
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+  }
+
+  .btn-primary{
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+  }
+
+  .btn-primary:hover:not(:disabled){
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.3);
+  }
+
+  .btn-outline{
+    background: var(--btx-white);
+    color: var(--btx-gray-700);
+    border: 1px solid var(--btx-gray-300);
+  }
+
+  .btn-outline:hover:not(:disabled){
+    background: var(--btx-gray-050);
+    border-color: var(--btx-gray-400);
+  }
+
+  .btn-outline.danger{
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+
+  .btn-outline.danger:hover{
+    background: #fef2f2;
+    border-color: #dc2626;
+  }
+
+  .btn-success:disabled, .btn-primary:disabled, .btn-outline:disabled{
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Estado del procesamiento */
+  .status-group{
+    margin-bottom: 24px;
+  }
+
+  .status-indicator{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-300);
+    border-radius: 10px;
+  }
+
+  .status-icon{
+    color: var(--btx-blue);
+  }
+
+  .status-content{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .status-title{
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+  }
+
+  .status-subtitle{
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+  }
+
+  .final-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Estado vacío */
+  .empty-state{
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .empty-icon{
+    margin: 0 auto 20px;
+    color: var(--btx-gray-300);
+  }
+
+  .empty-state h3{
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--btx-gray-700);
+    margin-bottom: 8px;
+  }
+
+  .empty-state p{
+    font-size: 0.9375rem;
+    color: var(--btx-gray-500);
+    line-height: 1.6;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  /* Sección borrador actual */
+  .draft-section{
+    margin-bottom: 32px;
+  }
+
+  .draft-header{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    background: linear-gradient(135deg, #fff7ed 0%, #fffbeb 100%);
+    border: 1px solid #fed7aa;
+    border-radius: 16px;
+  }
+
+  .draft-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: var(--btx-white);
+  }
+
+  .draft-info h3{
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin: 0 0 4px 0;
+  }
+
+  .draft-badge{
+    padding: 6px 12px;
+    background: #f59e0b;
+    color: var(--btx-white);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* Simulaciones completadas */
+  .completed-section{
+    margin-bottom: 64px;
+  }
+
+  .simulations-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .simulation-card{
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+  }
+
+  .simulation-card:hover{
+    border-color: var(--btx-blue);
+    box-shadow: var(--btx-shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .simulation-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .simulation-header h4{
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .status-badge{
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-badge.completed{
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .status-badge.draft{
+    background: #fef7c3;
+    color: #92400e;
+  }
+
+  .simulation-meta{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .meta-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .meta-label{
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+    font-weight: 500;
+  }
+
+  .meta-value{
+    font-size: 0.875rem;
+    color: var(--btx-gray-700);
+    font-weight: 500;
+  }
+
+  .simulation-tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .file-tag{
+    padding: 4px 8px;
+    background: var(--btx-gray-100);
+    color: var(--btx-gray-700);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .simulation-actions{
+    display: flex;
+    gap: 8px;
+  }
+
+  .simulation-actions .btn-outline{
+    flex: 1;
+    font-size: 0.8125rem;
+  }
+
+  /* Información de procesamiento */
+  .processing-info{
+    margin-top: 32px;
+  }
+
+  .info-card{
+    background: var(--btx-gray-050);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .info-header{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .info-header h6{
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin: 0;
+  }
+
+  .info-card p{
+    font-size: 0.875rem;
+    color: var(--btx-gray-600);
+    margin-bottom: 12px;
+  }
+
+  .info-card ul{
+    padding-left: 16px;
+    margin: 0;
+  }
+
+  .info-card li{
+    font-size: 0.875rem;
+    color: var(--btx-gray-600);
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  /* Responsive */
+  @media (max-width: 991px) {
+    .info-box .col-lg-4{
+      border-left: none;
+      border-top: 1px solid var(--btx-gray-200);
+    }
+
+    .controls-panel{
+      padding: 32px 24px;
+    }
+
+    .content-panel{
+      padding: 40px 24px;
+    }
+
+    .simulations-grid{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-hero{
+      padding: 48px 0 40px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title{
+      font-size: 1.5rem;
+    }
+
+    .hero-subtitle{
+      font-size: 0.9375rem;
+    }
+
+    .info-box{
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+
+    .controls-panel{
+      padding: 24px 20px;
+    }
+
+    .content-panel{
+      padding: 32px 20px;
+    }
+
+    .section-title{
+      font-size: 1.125rem;
+    }
+
+    .section-number{
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .content-section{
+      margin-bottom: 40px;
+    }
+
+    .draft-header{
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .draft-badge{
+      margin-left: 0;
+      align-self: flex-start;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-pill{
+      font-size: 0.6875rem;
+      padding: 5px 12px;
+    }
+
+    .hero-title{
+      font-size: 1.25rem;
+    }
+
+    .drop-zone{
+      padding: 32px 20px;
+    }
+
+    .simulation-actions{
+      flex-direction: column;
+    }
+  }
+
+  /* Animaciones */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .content-section{
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .simulation-card{
+    animation: fadeIn 0.6s ease-out;
+  }
+</style>
+
+<!-- ======================================== -->
+<!-- JAVASCRIPT (se mantiene igual) -->
+<!-- ======================================== -->
 <script>
   // === Utilidades ===
   function getCookie(name){
@@ -330,10 +1506,28 @@
       const selectedTableElement = document.getElementById('selectedTable');
       const tableDropdown = document.getElementById('tableDropdown');
       
-      if (selectedTableElement) selectedTableElement.textContent = this.textContent;
-      if (tableDropdown) tableDropdown.textContent = this.textContent;
+      if (selectedTableElement) selectedTableElement.querySelector('span').textContent = this.querySelector('.table-name').textContent;
+      if (tableDropdown) tableDropdown.querySelector('.dropdown-text').textContent = this.querySelector('.table-name').textContent;
       updateButtons();
     });
+  });
+
+  // Toggle dropdown
+  document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      if (this.disabled) return;
+      const menu = this.nextElementSibling;
+      menu.classList.toggle('show');
+    });
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.matches('.dropdown-toggle')) {
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.classList.remove('show');
+      });
+    }
   });
 
   // Crear borrador
@@ -376,12 +1570,14 @@
         if (procesamientoInfo) procesamientoInfo.style.display = 'block';
         
         updateButtons();
-        alert('Borrador creado. Ya puedes subir archivos.');
+        
+        // Mostrar notificación de éxito
+        showNotification('Borrador creado correctamente', 'success');
       } else {
-        alert('Error al crear borrador: ' + (data.error || ''));
+        showNotification('Error al crear borrador: ' + (data.error || ''), 'error');
       }
     })
-    .catch(() => alert('Error al crear borrador'));
+    .catch(() => showNotification('Error de conexión al crear borrador', 'error'));
   });
 
   // Drag & drop
@@ -413,14 +1609,20 @@
       showFileInfo(file);
       updateButtons();
     } else {
-      alert('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)');
+      showNotification('Por favor, selecciona un archivo Excel válido (.xlsx, .xls, .csv)', 'error');
     }
   }
 
   function showFileInfo(file){
     const fileInfo = document.getElementById('fileInfo');
     const currentFileInfo = document.getElementById('currentFileInfo');
-    if (fileInfo) fileInfo.textContent = `${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    
+    if (fileInfo && fileName && fileSize) {
+      fileName.textContent = file.name;
+      fileSize.textContent = `(${(file.size/1024/1024).toFixed(2)} MB)`;
+    }
     if (currentFileInfo) currentFileInfo.style.display = 'block';
   }
 
@@ -430,10 +1632,10 @@
     
     if (draftInfo) {
       draftInfo.innerHTML = `
-        <div class="row g-3">
-          <div class="col-md-4"><strong>Nombre:</strong> ${currentDraft.nombre_simulacion}</div>
-          <div class="col-md-4"><strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}</div>
-          <div class="col-md-4"><strong>Archivos:</strong> ${draftFiles.length}</div>
+        <div class="draft-details">
+          <div class="draft-field"><strong>Nombre:</strong> ${currentDraft.nombre_simulacion}</div>
+          <div class="draft-field"><strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}</div>
+          <div class="draft-field"><strong>Archivos cargados:</strong> ${draftFiles.length}</div>
         </div>`;
     }
     
@@ -447,24 +1649,21 @@
     
     const estadoElement = document.getElementById('estadoProcesamiento');
     const archivosRequeridosElement = document.getElementById('archivosRequeridos');
+    const statusTitle = document.getElementById('statusTitle');
     
-    if (estadoElement && archivosRequeridosElement) {
+    if (estadoElement && archivosRequeridosElement && statusTitle) {
       if (draftFiles.length > 0) {
         estadoElement.style.display = 'block';
-        archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length}`;
+        archivosRequeridosElement.textContent = `${archivosRequeridos.length - archivosFaltantes.length}/${archivosRequeridos.length} completados`;
         
         if (archivosCompletos) {
-          estadoElement.querySelector('.alert').className = 'alert alert-success py-2 px-3 rounded-3 mb-0 small';
-          estadoElement.querySelector('.alert').innerHTML = `
-            <i class="fas fa-check-circle me-1"></i>
-            Todos los archivos requeridos están listos
-          `;
+          statusTitle.textContent = 'Listo para procesar';
+          estadoElement.querySelector('.status-indicator').style.borderColor = '#10b981';
+          estadoElement.querySelector('.status-icon').style.color = '#10b981';
         } else {
-          estadoElement.querySelector('.alert').className = 'alert alert-warning py-2 px-3 rounded-3 mb-0 small';
-          estadoElement.querySelector('.alert').innerHTML = `
-            <i class="fas fa-exclamation-triangle me-1"></i>
-            Faltan ${archivosFaltantes.length} archivos requeridos
-          `;
+          statusTitle.textContent = 'Archivos requeridos';
+          estadoElement.querySelector('.status-indicator').style.borderColor = '#f59e0b';
+          estadoElement.querySelector('.status-icon').style.color = '#f59e0b';
         }
       } else {
         estadoElement.style.display = 'none';
@@ -492,7 +1691,7 @@
   // Subir archivo
   document.getElementById('uploadBtn').addEventListener('click', function(){
     if (!currentFile || !selectedTable || !currentDraft){ 
-        alert('Falta información para subir el archivo'); 
+        showNotification('Falta información para subir el archivo', 'error');
         return; 
     }
 
@@ -527,24 +1726,24 @@
             const tableDropdown = document.getElementById('tableDropdown');
             const currentFileInfo = document.getElementById('currentFileInfo');
             
-            if (selectedTableElement) selectedTableElement.textContent = 'No seleccionada';
-            if (tableDropdown) tableDropdown.textContent = 'Seleccionar tabla';
+            if (selectedTableElement) selectedTableElement.querySelector('span').textContent = 'No seleccionada';
+            if (tableDropdown) tableDropdown.querySelector('.dropdown-text').textContent = 'Seleccionar tabla';
             if (currentFileInfo) currentFileInfo.style.display = 'none';
             if (fileInput) fileInput.value = '';
             
             updateButtons();
             
             if (data.valido) {
-                alert('Archivo subido y validado correctamente: ' + data.msg);
+                showNotification('Archivo subido y validado correctamente', 'success');
             } else {
-                alert('Archivo subido pero con errores: ' + data.errores);
+                showNotification('Archivo subido pero con errores: ' + data.errores, 'warning');
             }
         } else {
-            alert('Error al subir archivo: ' + (data.error || 'Error desconocido'));
+            showNotification('Error al subir archivo: ' + (data.error || 'Error desconocido'), 'error');
         }
     })
     .catch(error => {
-        alert('Error de conexión al subir archivo: ' + error.message);
+        showNotification('Error de conexión al subir archivo: ' + error.message, 'error');
     });
   });
 
@@ -567,28 +1766,39 @@
       else if (esOpcional) claseEstado = 'archivo-opcional';
 
       const item = document.createElement('div');
-      item.className = `file-item draft-file ${claseEstado}`;
+      item.className = `file-item ${claseEstado}`;
       item.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start gap-3">
-          <div>
-            <div class="mb-1">
-              <i class="fas fa-file-excel text-success me-2"></i>
-              <strong>${escapeHtml(f.name)}</strong>
-              ${esRequerido ? '<span class="badge bg-primary ms-2">Requerido</span>' : ''}
-              ${esOpcional ? '<span class="badge bg-secondary ms-2">Opcional</span>' : ''}
+        <div class="file-item-content">
+          <div class="file-header">
+            <div class="file-name-section">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2L12 4L14 4C14.5523 4 15 4.44772 15 5V13C15 13.5523 14.5523 14 14 14H2C1.44772 14 1 13.5523 1 13V3C1 2.44772 1.44772 2 2 2H10Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M10 2V4H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div>
+                <div class="file-main-info">
+                  <strong>${escapeHtml(f.name)}</strong>
+                  ${esRequerido ? '<span class="file-badge required">Requerido</span>' : ''}
+                  ${esOpcional ? '<span class="file-badge optional">Opcional</span>' : ''}
+                </div>
+                <div class="file-meta">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
+              </div>
             </div>
-            <div class="file-info text-muted small">${escapeHtml(f.table)} · ${escapeHtml(f.size)}</div>
-            <div class="mt-1 small">
-              ${f.valido ? '<span class="badge bg-success">Válido</span>' : '<span class="badge bg-danger">Inválido</span>'}
-              ${f.msg ? `<small class="text-muted ms-2">${escapeHtml(f.msg)}</small>` : ''}
-              ${(!f.valido && f.errores) ? `<div class="text-danger small mt-1">${escapeHtml(f.errores)}</div>` : ''}
-            </div>
+            <button class="btn-remove" onclick="eliminarArchivoBorrador(${f.id}, ${index})">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H5H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 6V4C7 3.44772 7.44772 3 8 3H10C10.5523 3 11 3.44772 11 4V6M13 6V14C13 14.5523 12.5523 15 12 15H6C5.44772 15 5 14.5523 5 14V6H13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
-          <button class="btn btn-sm btn-outline-danger rounded-3"
-                  type="button"
-                  onclick="eliminarArchivoBorrador(${f.id}, ${index})">
-            <i class="fas fa-times"></i>
-          </button>
+          <div class="file-status">
+            ${f.valido ? 
+              '<span class="status-valid"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 4L5 10L3 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Válido</span>' : 
+              '<span class="status-invalid"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 11L11 3M3 3L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Inválido</span>'
+            }
+            ${f.msg ? `<span class="file-message">${escapeHtml(f.msg)}</span>` : ''}
+          </div>
+          ${(!f.valido && f.errores) ? `<div class="file-errors">${escapeHtml(f.errores)}</div>` : ''}
         </div>`;
       filesList.appendChild(item);
     });
@@ -618,18 +1828,19 @@
         draftFiles.splice(index, 1);
         updateFilesList();
         updateButtons();
+        showNotification('Archivo eliminado correctamente', 'success');
       } else { 
-        alert('Error al eliminar archivo: ' + (data.error || 'Error desconocido')); 
+        showNotification('Error al eliminar archivo: ' + (data.error || 'Error desconocido'), 'error');
       }
     })
-    .catch(() => alert('Error de conexión al eliminar archivo'));
+    .catch(() => showNotification('Error de conexión al eliminar archivo', 'error'));
   }
 
   document.getElementById('finalizarBtn').addEventListener('click', function(){
     const archivosCompletos = verificarArchivosRequeridos();
     
     if (!archivosCompletos) {
-      alert('Faltan archivos requeridos para procesar la simulación. Se necesitan: ' + archivosRequeridos.join(', '));
+      showNotification('Faltan archivos requeridos para procesar la simulación. Se necesitan: ' + archivosRequeridos.join(', '), 'warning');
       return;
     }
 
@@ -638,11 +1849,20 @@
     
     if (finalizarDetails) {
       finalizarDetails.innerHTML = `
-        <div class="alert alert-info small mb-0">
-          <strong>Simulación:</strong> ${currentDraft.nombre_simulacion}<br>
-          <strong>Archivos a procesar:</strong> ${draftFiles.length} archivos<br>
-          <strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}<br>
-          <strong>Procesamiento:</strong> Análisis BTX completo con regresión lineal
+        <div class="info-card">
+          <div class="info-header">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 13C10.7614 13 13 10.7614 13 8C13 5.23858 10.7614 3 8 3C5.23858 3 3 5.23858 3 8C3 10.7614 5.23858 13 8 13Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8.5 5C8.5 5.27614 8.27614 5.5 8 5.5C7.72386 5.5 7.5 5.27614 7.5 5C7.5 4.72386 7.72386 4.5 8 4.5C8.27614 4.5 8.5 4.72386 8.5 5Z" fill="currentColor" stroke="currentColor"/>
+            </svg>
+            <h6>Detalles de la simulación</h6>
+          </div>
+          <div class="simulation-details">
+            <div><strong>Simulación:</strong> ${currentDraft.nombre_simulacion}</div>
+            <div><strong>Archivos a procesar:</strong> ${draftFiles.length} archivos</div>
+            <div><strong>Ubicación:</strong> ${currentDraft.ubicacion || 'No especificada'}</div>
+          </div>
         </div>`;
     }
     
@@ -665,10 +1885,14 @@
       })
       .then(r => r.json())
       .then(d => { 
-        if (d.success) location.reload(); 
-        else alert('Error al cancelar borrador: ' + (d.error || 'Error desconocido'));
+        if (d.success) {
+          showNotification('Borrador cancelado correctamente', 'success');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showNotification('Error al cancelar borrador: ' + (d.error || 'Error desconocido'), 'error');
+        }
       })
-      .catch(() => alert('Error de conexión al cancelar borrador'));
+      .catch(() => showNotification('Error de conexión al cancelar borrador', 'error'));
     } else { 
       location.reload(); 
     }
@@ -681,125 +1905,84 @@
     if (fileInput) fileInput.value = '';
     updateButtons();
   });
+
+  // Función para mostrar notificaciones
+  function showNotification(message, type = 'info') {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <div class="notification-content">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          ${type === 'success' ? '<path d="M11 4L5 10L3 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+          ${type === 'error' ? '<path d="M3 11L11 3M3 3L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
+          ${type === 'warning' ? '<path d="M8 4V8M8 12V12.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>' : ''}
+          ${type === 'info' ? '<path d="M8 13C10.7614 13 13 10.7614 13 8C13 5.23858 10.7614 3 8 3C5.23858 3 3 5.23858 3 8C3 10.7614 5.23858 13 8 13Z" stroke="currentColor" stroke-width="1.5"/><path d="M8 6V6.01M8 8V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' : ''}
+        </svg>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    // Agregar estilos para la notificación
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: ${type === 'success' ? '#dcfce7' : type === 'error' ? '#fef2f2' : type === 'warning' ? '#fef7c3' : '#e0f2fe'};
+      border: 1px solid ${type === 'success' ? '#bbf7d0' : type === 'error' ? '#fecaca' : type === 'warning' ? '#fde68a' : '#bae6fd'};
+      color: ${type === 'success' ? '#166534' : type === 'error' ? '#dc2626' : type === 'warning' ? '#92400e' : '#0369a1'};
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 10000;
+      animation: slideIn 0.3s ease-out;
+      max-width: 320px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover después de 4 segundos
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease-in';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 4000);
+  }
+
+  // Agregar estilos de animación para notificaciones
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  `;
+  document.head.appendChild(style);
 </script>
-
-<!-- Modal Finalizar -->
-<div class="modal fade" id="finalizarModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content soft-card">
-      <div class="modal-header">
-        <h5 class="modal-title">Procesar y finalizar simulación</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-3 small">
-          Confirma si deseas procesar los archivos del borrador y registrar los resultados como una simulación completada.
-        </p>
-        
-        <div class="alert alert-info mb-3">
-          <h6 class="alert-heading mb-2" style="font-size: .9rem;">
-            <i class="fas fa-cogs me-2"></i>Procesamiento que se ejecutará
-          </h6>
-          <ul class="small mb-0 ps-3">
-            <li>Análisis de concentraciones BTX (Benceno, Tolueno, Xileno).</li>
-            <li>Cálculo de exposición poblacional.</li>
-            <li>Modelo de regresión para casos de salud.</li>
-            <li>Generación de archivo de resultados en formato TXT.</li>
-          </ul>
-        </div>
-
-        <div id="finalizarDetails"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button"
-                class="btn btn-outline-secondary btn-sm"
-                data-bs-dismiss="modal">
-          Seguir editando
-        </button>
-        <form method="POST"
-              action="{% url 'finalizar_simulacion' %}"
-              id="finalizarForm">
-          {% csrf_token %}
-          <input type="hidden" name="simulacion_id" id="simulacionIdInput">
-          <button type="submit" class="btn btn-primary btn-sm">
-            <i class="fas fa-calculator me-2"></i>Procesar y finalizar
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<style>
-  .soft-card {
-    border-radius: 18px;
-    box-shadow: 0 14px 35px rgba(15,23,42,.10);
-    border: 1px solid rgba(148,163,184,.18);
-    background: #ffffff;
-  }
-  .soft-card-secondary {
-    border-radius: 16px;
-    box-shadow: 0 10px 28px rgba(15,23,42,.08);
-    border: 1px solid rgba(148,163,184,.18);
-    background: linear-gradient(180deg,#f9fafb 0,#ffffff 40%);
-  }
-  .pretty-input {
-    border-radius: 12px;
-    border-color: #e5e7eb;
-    font-size: .9rem;
-  }
-  .pretty-input:focus {
-    border-color: #28537E;
-    box-shadow: 0 0 0 .15rem rgba(40,83,126,.18);
-  }
-  .lift {
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .lift:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(15,23,42,.18);
-  }
-  .pretty-border {
-    border: 2px dashed #d4dbe8;
-    border-radius: 16px;
-    background: linear-gradient(180deg,#f9fafb 0,#ffffff 100%);
-  }
-  .drop-zone {
-    padding: 32px;
-  }
-  .drop-zone.dragover {
-    border-color: #28537E;
-    background: #eef4ff;
-  }
-  .file-item {
-    background: #fbfcff;
-    border: 1px solid #e5e7f1;
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
-  }
-  .draft-file {
-    border-left: 4px solid #84d087;
-    background: #f6fff7;
-  }
-  .file-info {
-    font-size: .8rem;
-  }
-  .controls-sticky {
-    position: sticky;
-    top: 16px;
-  }
-  @media (max-width: 767.98px){
-    .controls-sticky { position: static; }
-  }
-  .bg-info-subtle {
-    background-color: #e7f1ff!important;
-  }
-  .text-info-emphasis {
-    color: #084298!important;
-  }
-  .archivo-requerido { border-left-color: #198754 !important; }
-  .archivo-opcional { border-left-color: #6c757d !important; }
-</style>
 
 {% endblock %}

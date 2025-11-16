@@ -2198,3 +2198,71 @@ def guardar_resultados_txt(resultados, simulacion):
 def preparar_datos_graficas(simulacion):
     """Función de respaldo que llama a la versión mejorada"""
     return preparar_datos_graficas_mejorado(simulacion)
+# =========================
+# MODO INVITADO - NUEVAS FUNCIONES
+# =========================
+
+def guest_access(request):
+    """Acceso de invitado - puede ver simulaciones pero no crear"""
+    # Crear usuario temporal de invitado o usar sesión anónima
+    request.session['guest_mode'] = True
+    return redirect('guest_tasks')
+
+def guest_tasks(request):
+    """Mostrar simulaciones públicas para invitados"""
+    if not request.session.get('guest_mode'):
+        return redirect('home')
+    
+    # Obtener algunas simulaciones públicas o recientes
+    tasks_qs = Task.objects.filter(datecompleted__isnull=False).order_by('-datecompleted')[:10]
+    return render(request, 'tasks.html', {
+        "tasks": tasks_qs,
+        "guest_mode": True
+    })
+
+def guest_task_detail(request, task_id):
+    """Detalle de simulación para invitados"""
+    if not request.session.get('guest_mode'):
+        return redirect('home')
+    
+    task = get_object_or_404(Task, pk=task_id, datecompleted__isnull=False)
+    
+    # Archivos de la simulación asociada
+    archivos_simulacion = ArchivoExcel.objects.filter(
+        simulacion__nombre_simulacion=task.title
+    ).order_by('-fecha_carga')
+
+    # Buscar la simulación asociada
+    simulacion = Simulacion.objects.filter(
+        nombre_simulacion=task.title
+    ).first()
+
+    # Leer resultados existentes
+    resultados_txt = None
+    if simulacion:
+        resultados_txt = leer_resultados_txt(simulacion)
+        datos_graficas = preparar_datos_graficas_mejorado(simulacion)
+    else:
+        datos_graficas = {'datos_disponibles': False}
+
+    # Datos BTX para mostrar
+    btx_data = {
+        'concentracion_benzeno': 4.8,
+        'concentracion_tolueno': 15.2,
+        'concentracion_xileno': 8.7,
+        'btx_total': 8.5,
+        'casos_totales': 1570,
+    }
+
+    return render(
+        request,
+        'task_detail.html',
+        {
+            'task': task, 
+            'btx_data': btx_data, 
+            'archivos_simulacion': archivos_simulacion, 
+            'resultados_txt': resultados_txt,
+            'datos_graficas': datos_graficas,
+            'guest_mode': True  # Indicar que es modo invitado
+        }
+    )

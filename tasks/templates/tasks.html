@@ -1,141 +1,751 @@
 {% extends 'base.html' %} 
 {% block content %}
 
-<div class="container mt-3 mb-4">
+<div class="container project-container">
 
-  <!-- Encabezado -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-    <div>
-      <h1 class="h4 mb-1">Registros de procesamiento</h1>
-      <p class="text-muted mb-0" style="font-size: .9rem;">
-        Visualiza y gestiona las simulaciones creadas en el sistema.
-      </p>
+  <!-- ======================================== -->
+  <!-- ENCABEZADO MEJORADO -->
+  <!-- ======================================== -->
+  <section class="project-hero">
+    <div class="container">
+      <div class="hero-content">
+        <span class="hero-pill">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="6" cy="6" r="2" fill="currentColor"/>
+          </svg>
+          Sistema de simulaciones · Modelación ambiental
+        </span>
+
+        <h1 class="hero-title">
+          Registros de procesamiento BTX
+        </h1>
+
+        <p class="hero-subtitle">
+          Visualiza y gestiona las simulaciones creadas en el sistema de análisis de Benceno, Tolueno y Xileno.
+        </p>
+      </div>
     </div>
-    <div>
-      <a href="{% url 'create_task' %}" class="btn btn-primary btn-sm">
-        + Crear nueva simulación
-      </a>
-    </div>
-  </div>
+  </section>
 
-  <!-- Contenido principal -->
-  <div class="row g-3">
-    {% for task in tasks %}
-      <div class="col-md-6">
-        <div class="card task-card h-100 border-0 shadow-sm">
-          <div class="card-body">
+  <!-- ======================================== -->
+  <!-- CONTENIDO PRINCIPAL MEJORADO -->
+  <!-- ======================================== -->
+  <div class="container">
+    <section class="info-box">
+      <div class="row g-0 align-items-start">
 
-            <!-- Título y estado -->
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div>
-                <h5 class="card-title mb-1" style="font-size: 1rem;">
-                  {% if task.important %}
-                    <strong>{{ task.title }}</strong>
-                  {% else %}
-                    {{ task.title }}
-                  {% endif %}
-                </h5>
-                <p class="mb-0 text-muted" style="font-size: .8rem;">
-                  ID #{{ task.id }} · {{ task.user.username }}
-                </p>
-              </div>
+        <!-- ====================== -->
+        <!-- COLUMNA IZQUIERDA: ACCIONES -->
+        <!-- ====================== -->
+        <div class="col-lg-4">
+          <aside class="actions-panel">
 
-              <span class="badge rounded-pill 
-                          {% if task.datecompleted %}bg-success-subtle text-success{% else %}bg-warning-subtle text-warning{% endif %}">
-                {% if task.datecompleted %}Completado{% else %}Pendiente{% endif %}
-              </span>
-            </div>
-
-            <hr class="mt-2 mb-3">
-
-            <!-- Información de fecha -->
-            <div class="row small text-muted mb-2">
-              <div class="col-6">
-                <span class="d-block">Fecha de creación</span>
-                <span class="fw-semibold text-body-tertiary">
-                  {{ task.created|date:'d/m/Y' }}
-                </span>
-              </div>
-              <div class="col-6">
-                <span class="d-block">Hora</span>
-                <span class="fw-semibold text-body-tertiary">
-                  {{ task.created|date:'H:i' }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Ubicación -->
-            {% if task.ubicacion %}
-            <div class="mb-2">
-              <small class="text-muted d-block">Ubicación</small>
-              <p class="mb-1 task-text">{{ task.ubicacion }}</p>
-            </div>
-            {% endif %}
-
-            <!-- Descripción -->
-            {% if task.description %}
-            <div class="mb-2">
-              <small class="text-muted d-block">Descripción</small>
-              <p class="mb-1 task-text">
-                {{ task.description|truncatewords:22 }}
+            <div class="panel-header">
+              <h2 class="panel-title">Gestión de simulaciones</h2>
+              <p class="panel-description">
+                Crea nuevas simulaciones o gestiona las existentes del modelo dinámico de BTX.
               </p>
             </div>
-            {% endif %}
 
-            <!-- Fecha de completado -->
-            {% if task.datecompleted %}
-            <div class="mb-2">
-              <small class="text-muted d-block">Completado</small>
-              <p class="mb-0 task-text">
-                {{ task.datecompleted|date:'d/m/Y H:i' }}
-              </p>
-            </div>
-            {% endif %}
-
-            <!-- Acción -->
-            <div class="mt-3 d-flex justify-content-between align-items-center">
-              <a href="{% url 'task_detail' task.id %}"
-                 class="btn btn-outline-primary btn-sm">
-                Ver detalles
+            <div class="action-buttons">
+              <a href="{% url 'create_task' %}" class="btn-primary-action">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Nueva simulación
               </a>
+              
+              <div class="stats-card">
+                <div class="stat-item">
+                  <span class="stat-number">{{ tasks|length }}</span>
+                  <span class="stat-label">Total simulaciones</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number">{{ tasks|length }}</span>
+                  <span class="stat-label">Simulaciones activas</span>
+                </div>
+              </div>
             </div>
 
-          </div>
+            <div class="info-note">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 4V4.01M7 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Las simulaciones se ordenan desde la más reciente hasta la más antigua.
+            </div>
+          </aside>
         </div>
-      </div>
-    {% empty %}
-      <div class="col-12">
-        <div class="alert alert-info text-center mb-0">
-          No hay registros de procesamiento disponibles.
+
+        <!-- ====================== -->
+        <!-- COLUMNA DERECHA: LISTA DE SIMULACIONES -->
+        <!-- ====================== -->
+        <div class="col-lg-8">
+          <article class="simulations-panel">
+
+            <!-- ====================== -->
+            <!-- LISTA DE SIMULACIONES -->
+            <!-- ====================== -->
+            <section class="content-section">
+              <div class="section-header">
+                <div class="section-number">01</div>
+                <h2 class="section-title">Simulaciones registradas</h2>
+              </div>
+              <div class="section-body">
+                {% if tasks %}
+                <div class="simulations-grid">
+                  {% for task in tasks reversed %}
+                  <div class="simulation-card">
+                    <div class="simulation-header">
+                      <div class="simulation-title-section">
+                        <h3 class="simulation-title">
+                          {% if task.important %}
+                            <strong>{{ task.title }}</strong>
+                          {% else %}
+                            {{ task.title }}
+                          {% endif %}
+                        </h3>
+                        <span class="simulation-id">ID #{{ task.id }}</span>
+                      </div>
+                      <span class="status-badge {% if task.datecompleted %}completed{% else %}btx{% endif %}">
+                        {% if task.datecompleted %}Completado{% else %}BTX{% endif %}
+                      </span>
+                    </div>
+
+                    <div class="simulation-meta">
+                      <div class="meta-item">
+                        <span class="meta-label">Creado por</span>
+                        <span class="meta-value">{{ task.user.username }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <span class="meta-label">Fecha</span>
+                        <span class="meta-value">{{ task.created|date:'d/m/Y' }}</span>
+                      </div>
+                      <div class="meta-item">
+                        <span class="meta-label">Hora</span>
+                        <span class="meta-value">{{ task.created|date:'H:i' }}</span>
+                      </div>
+                    </div>
+
+                    {% if task.ubicacion %}
+                    <div class="simulation-detail">
+                      <span class="detail-label">Ubicación</span>
+                      <p class="detail-value">{{ task.ubicacion }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if task.description %}
+                    <div class="simulation-detail">
+                      <span class="detail-label">Descripción</span>
+                      <p class="detail-value">
+                        {{ task.description|truncatewords:22 }}
+                      </p>
+                    </div>
+                    {% endif %}
+
+                    {% if task.datecompleted %}
+                    <div class="simulation-detail">
+                      <span class="detail-label">Completado</span>
+                      <p class="detail-value">
+                        {{ task.datecompleted|date:'d/m/Y H:i' }}
+                      </p>
+                    </div>
+                    {% endif %}
+
+                    <div class="simulation-actions">
+                      <a href="{% url 'task_detail' task.id %}" class="btn-details">
+                        Ver detalles
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M24 32V24M24 16V16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                  </div>
+                  <h3 class="empty-title">No hay simulaciones registradas</h3>
+                  <p class="empty-description">
+                    Comienza creando tu primera simulación del modelo BTX.
+                  </p>
+                  <a href="{% url 'create_task' %}" class="btn-primary-action">
+                    Crear primera simulación
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            </section>
+
+          </article>
         </div>
+
       </div>
-    {% endfor %}
+    </section>
   </div>
 </div>
 
+<!-- ======================================== -->
+<!-- ESTILOS MEJORADOS -->
+<!-- ======================================== -->
 <style>
-  .task-card {
-    border-radius: 14px;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  :root{
+    --btx-blue:#28537E;
+    --btx-blue-light:#3d6a9e;
+    --btx-blue-dark:#1f3f5f;
+    --btx-white:#ffffff;
+    --btx-gray-050:#f9fafb;
+    --btx-gray-100:#f3f4f6;
+    --btx-gray-200:#e5e7eb;
+    --btx-gray-300:#d1d5db;
+    --btx-gray-400:#9ca3af;
+    --btx-gray-600:#6b7280;
+    --btx-gray-700:#374151;
+    --btx-gray-800:#1f2937;
+    --btx-gray-900:#020617;
+    --btx-shadow-sm:0 2px 8px rgba(15,23,42,0.04);
+    --btx-shadow-md:0 4px 16px rgba(15,23,42,0.08);
+    --btx-shadow-lg:0 12px 32px rgba(15,23,42,0.12);
+    --btx-shadow-xl:0 20px 48px rgba(15,23,42,0.16);
   }
 
-  .task-card:hover {
+  .project-container {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* Hero superior */
+  .project-hero{
+    padding: 72px 0 64px;
+    margin-bottom: 48px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(40, 83, 126, 0.08), transparent 60%),
+      radial-gradient(circle at 80% 80%, rgba(40, 83, 126, 0.06), transparent 60%),
+      linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 25%, #f9fafb 60%, #ffffff 100%);
+    border-bottom: 1px solid var(--btx-gray-200);
+    position: relative;
+  }
+
+  .project-hero::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--btx-blue), transparent);
+    opacity: 0.3;
+  }
+
+  .hero-content{
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--btx-white);
+    color: var(--btx-blue);
+    font-weight: 600;
+    margin-bottom: 20px;
+    border: 1px solid rgba(40, 83, 126, 0.15);
+    box-shadow: var(--btx-shadow-sm);
+  }
+
+  .hero-pill svg{
+    flex-shrink: 0;
+  }
+
+  .hero-title{
+    font-size: clamp(1.5rem, 2.8vw, 2.25rem);
+    line-height: 1.25;
+    font-weight: 700;
+    margin: 0;
+    color: var(--btx-gray-900);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-subtitle{
+    margin-top: 20px;
+    color: var(--btx-gray-600);
+    font-weight: 400;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 880px;
+  }
+
+  /* Caja principal */
+  .info-box {
+    background-color: var(--btx-white);
+    border-radius: 24px;
+    box-shadow: var(--btx-shadow-xl);
+    padding: 0;
+    margin: 0 auto 64px;
+    max-width: 1280px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+  }
+
+  /* Panel izquierdo - acciones */
+  .actions-panel {
+    padding: 48px 40px;
+    background: linear-gradient(180deg, var(--btx-gray-050) 0%, var(--btx-white) 100%);
+    height: 100%;
+    border-right: 1px solid var(--btx-gray-200);
+  }
+
+  .panel-header{
+    margin-bottom: 32px;
+  }
+
+  .panel-title{
+    font-weight: 700;
+    color: var(--btx-gray-900);
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .panel-description{
+    font-size: 0.9375rem;
+    color: var(--btx-gray-600);
+    line-height: 1.6;
+  }
+
+  .action-buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .btn-primary-action{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.25);
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary-action:hover{
     transform: translateY(-2px);
-    box-shadow: 0 10px 26px rgba(15,23,42,0.12);
+    box-shadow: 0 8px 20px rgba(40, 83, 126, 0.35);
+    color: var(--btx-white);
+    text-decoration: none;
   }
 
-  .task-text {
-    font-size: 0.9rem;
-    color: #374151;
+  .stats-card{
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--btx-shadow-sm);
   }
 
-  /* Badges suaves (por si tu Bootstrap no tiene las -subtle) */
-  .bg-success-subtle {
-    background: rgba(25, 135, 84, 0.1) !important;
+  .stat-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
   }
 
-  .bg-warning-subtle {
-    background: rgba(255, 193, 7, 0.1) !important;
+  .stat-item:not(:last-child){
+    border-bottom: 1px solid var(--btx-gray-100);
+  }
+
+  .stat-number{
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--btx-blue);
+  }
+
+  .stat-label{
+    font-size: 0.875rem;
+    color: var(--btx-gray-600);
+  }
+
+  .info-note{
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--btx-gray-400);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .info-note svg{
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Panel derecho - simulaciones */
+  .simulations-panel{
+    padding: 48px 56px;
+    color: var(--btx-gray-700);
+  }
+
+  .content-section{
+    margin-bottom: 0;
+  }
+
+  .section-header{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--btx-gray-100);
+  }
+
+  .section-number{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--btx-blue) 0%, var(--btx-blue-light) 100%);
+    color: var(--btx-white);
+    font-weight: 700;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.2);
+  }
+
+  .section-title{
+    color: var(--btx-gray-900);
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+  }
+
+  .section-body{
+    padding-left: 0;
+  }
+
+  /* Grid de simulaciones */
+  .simulations-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .simulation-card{
+    background: var(--btx-white);
+    border: 1px solid var(--btx-gray-200);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.3s ease;
+    box-shadow: var(--btx-shadow-sm);
+  }
+
+  .simulation-card:hover{
+    box-shadow: var(--btx-shadow-md);
+    border-color: var(--btx-blue);
+    transform: translateY(-2px);
+  }
+
+  .simulation-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .simulation-title-section{
+    flex: 1;
+  }
+
+  .simulation-title{
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--btx-gray-900);
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+  }
+
+  .simulation-id{
+    font-size: 0.8125rem;
+    color: var(--btx-gray-500);
+    font-weight: 500;
+  }
+
+  .status-badge{
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+
+  .status-badge.completed{
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+    border: 1px solid rgba(25, 135, 84, 0.2);
+  }
+
+  .status-badge.btx{
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+  }
+
+  .simulation-meta{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: var(--btx-gray-050);
+    border-radius: 12px;
+  }
+
+  .meta-item{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label{
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .meta-value{
+    font-size: 0.875rem;
+    color: var(--btx-gray-700);
+    font-weight: 500;
+  }
+
+  .simulation-detail{
+    margin-bottom: 12px;
+  }
+
+  .detail-label{
+    display: block;
+    font-size: 0.75rem;
+    color: var(--btx-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .detail-value{
+    font-size: 0.875rem;
+    color: var(--btx-gray-700);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .simulation-actions{
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--btx-gray-200);
+  }
+
+  .btn-details{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--btx-blue);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    border: 1px solid var(--btx-blue);
+  }
+
+  .btn-details:hover{
+    background: var(--btx-blue);
+    color: var(--btx-white);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 83, 126, 0.25);
+  }
+
+  /* Estado vacío */
+  .empty-state{
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .empty-icon{
+    margin: 0 auto 20px;
+    color: var(--btx-gray-300);
+  }
+
+  .empty-title{
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--btx-gray-700);
+    margin-bottom: 8px;
+  }
+
+  .empty-description{
+    font-size: 0.9375rem;
+    color: var(--btx-gray-500);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 991px) {
+    .info-box .col-lg-4{
+      border-right: none;
+      border-bottom: 1px solid var(--btx-gray-200);
+    }
+
+    .actions-panel{
+      padding: 32px 24px;
+    }
+
+    .simulations-panel{
+      padding: 40px 24px;
+    }
+
+    .simulation-header{
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .status-badge{
+      margin-left: 0;
+      align-self: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-hero{
+      padding: 48px 0 40px;
+      margin-bottom: 32px;
+    }
+
+    .hero-title{
+      font-size: 1.5rem;
+    }
+
+    .hero-subtitle{
+      font-size: 0.9375rem;
+    }
+
+    .info-box{
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+
+    .actions-panel{
+      padding: 24px 20px;
+    }
+
+    .simulations-panel{
+      padding: 32px 20px;
+    }
+
+    .panel-title{
+      font-size: 1.125rem;
+    }
+
+    .section-title{
+      font-size: 1.125rem;
+    }
+
+    .section-number{
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+
+    .simulation-meta{
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .hero-pill{
+      font-size: 0.6875rem;
+      padding: 5px 12px;
+    }
+
+    .hero-title{
+      font-size: 1.25rem;
+    }
+
+    .simulation-card{
+      padding: 20px;
+    }
+  }
+
+  /* Animaciones sutiles */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .simulation-card{
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  /* Print styles */
+  @media print {
+    .project-hero{
+      background: var(--btx-white);
+      padding: 20px 0;
+    }
+
+    .info-box{
+      box-shadow: none;
+      border: 1px solid var(--btx-gray-300);
+    }
+
+    .simulation-card{
+      break-inside: avoid;
+    }
   }
 </style>
 
