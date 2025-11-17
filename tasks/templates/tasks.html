@@ -14,16 +14,39 @@
             <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/>
             <circle cx="6" cy="6" r="2" fill="currentColor"/>
           </svg>
-          Sistema de simulaciones · Modelación ambiental
+          {% if guest_mode %}
+            Vista de invitado · Solo lectura
+          {% else %}
+            Sistema de simulaciones · Modelación ambiental
+          {% endif %}
         </span>
 
         <h1 class="hero-title">
-          Registros de procesamiento BTX
+          {% if guest_mode %}
+            Simulaciones públicas BTX
+          {% else %}
+            Registros de procesamiento BTX
+          {% endif %}
         </h1>
 
         <p class="hero-subtitle">
-          Visualiza y gestiona las simulaciones creadas en el sistema de análisis de Benceno, Tolueno y Xileno.
+          {% if guest_mode %}
+            Visualización de simulaciones públicas del modelo dinámico de Benceno, Tolueno y Xileno.
+          {% else %}
+            Visualiza y gestiona las simulaciones creadas en el sistema de análisis de Benceno, Tolueno y Xileno.
+          {% endif %}
         </p>
+
+        {% if guest_mode %}
+        <div class="guest-notice">
+          <div class="alert alert-info mb-0">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Modo de invitado:</strong> Solo puedes ver las simulaciones existentes. 
+            <a href="{% url 'signup' %}" class="alert-link">Regístrate</a> o 
+            <a href="{% url 'signin' %}" class="alert-link">inicia sesión</a> para crear tus propias simulaciones.
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
   </section>
@@ -42,29 +65,49 @@
           <aside class="actions-panel">
 
             <div class="panel-header">
-              <h2 class="panel-title">Gestión de simulaciones</h2>
+              <h2 class="panel-title">
+                {% if guest_mode %}
+                  Información del sistema
+                {% else %}
+                  Gestión de simulaciones
+                {% endif %}
+              </h2>
               <p class="panel-description">
-                Crea nuevas simulaciones o gestiona las existentes del modelo dinámico de BTX.
+                {% if guest_mode %}
+                  Explora las simulaciones públicas disponibles del modelo BTX.
+                {% else %}
+                  Crea nuevas simulaciones o gestiona las existentes del modelo dinámico de BTX.
+                {% endif %}
               </p>
             </div>
 
             <div class="action-buttons">
+              {% if not guest_mode %}
               <a href="{% url 'create_task' %}" class="btn-primary-action">
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
                 Nueva simulación
               </a>
+              {% endif %}
               
               <div class="stats-card">
                 <div class="stat-item">
                   <span class="stat-number">{{ tasks|length }}</span>
-                  <span class="stat-label">Total simulaciones</span>
+                  <span class="stat-label">
+                    {% if guest_mode %}
+                      Simulaciones públicas
+                    {% else %}
+                      Total simulaciones
+                    {% endif %}
+                  </span>
                 </div>
+                {% if not guest_mode %}
                 <div class="stat-item">
-                  <span class="stat-number">{{ tasks|length }}</span>
-                  <span class="stat-label">Simulaciones activas</span>
+                  <span class="stat-number">{{ tasks_completed_count }}</span>
+                  <span class="stat-label">Simulaciones completadas</span>
                 </div>
+                {% endif %}
               </div>
             </div>
 
@@ -73,8 +116,25 @@
                 <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="currentColor" stroke-width="1.5"/>
                 <path d="M7 4V4.01M7 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
-              Las simulaciones se ordenan desde la más reciente hasta la más antigua.
+              {% if guest_mode %}
+                Las simulaciones se muestran desde la más reciente hasta la más antigua.
+              {% else %}
+                Las simulaciones se ordenan desde la más reciente hasta la más antigua.
+              {% endif %}
             </div>
+
+            {% if guest_mode %}
+            <div class="guest-actions">
+              <a href="{% url 'home' %}" class="btn-outline w-100">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 13C10.7614 13 13 10.7614 13 8C13 5.23858 10.7614 3 8 3C5.23858 3 3 5.23858 3 8C3 10.7614 5.23858 13 8 13Z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 10C9.10457 10 10 9.10457 10 8C10 6.89543 9.10457 6 8 6C6.89543 6 6 6.89543 6 8C6 9.10457 6.89543 10 8 10Z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8.5 5C8.5 5.27614 8.27614 5.5 8 5.5C7.72386 5.5 7.5 5.27614 7.5 5C7.5 4.72386 7.72386 4.5 8 4.5C8.27614 4.5 8.5 4.72386 8.5 5Z" fill="currentColor" stroke="currentColor"/>
+                </svg>
+                Volver al inicio
+              </a>
+            </div>
+            {% endif %}
           </aside>
         </div>
 
@@ -90,12 +150,18 @@
             <section class="content-section">
               <div class="section-header">
                 <div class="section-number">01</div>
-                <h2 class="section-title">Simulaciones registradas</h2>
+                <h2 class="section-title">
+                  {% if guest_mode %}
+                    Simulaciones públicas disponibles
+                  {% else %}
+                    Todas las simulaciones
+                  {% endif %}
+                </h2>
               </div>
               <div class="section-body">
                 {% if tasks %}
                 <div class="simulations-grid">
-                  {% for task in tasks reversed %}
+                  {% for task in tasks %}
                   <div class="simulation-card">
                     <div class="simulation-header">
                       <div class="simulation-title-section">
@@ -108,9 +174,28 @@
                         </h3>
                         <span class="simulation-id">ID #{{ task.id }}</span>
                       </div>
-                      <span class="status-badge {% if task.datecompleted %}completed{% else %}btx{% endif %}">
-                        {% if task.datecompleted %}Completado{% else %}BTX{% endif %}
-                      </span>
+                      <div class="simulation-badges">
+                        <span class="status-badge {% if task.datecompleted %}completed{% else %}btx{% endif %}">
+                          {% if task.datecompleted %}Completado{% else %}En proceso{% endif %}
+                        </span>
+                        {% if task.publica %}
+                        <span class="visibility-badge public">
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 10C8.76142 10 11 7.76142 11 5C11 2.23858 8.76142 0 6 0C3.23858 0 1 2.23858 1 5C1 7.76142 3.23858 10 6 10Z" stroke="currentColor" stroke-width="1"/>
+                            <path d="M6 7C7.10457 7 8 6.10457 8 5C8 3.89543 7.10457 3 6 3C4.89543 3 4 3.89543 4 5C4 6.10457 4.89543 7 6 7Z" stroke="currentColor" stroke-width="1"/>
+                          </svg>
+                          Pública
+                        </span>
+                        {% else %}
+                        <span class="visibility-badge private">
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 5V3.5C3 2.11929 4.11929 1 5.5 1H6.5C7.88071 1 9 2.11929 9 3.5V5M5.5 8.5H6.5C7.05228 8.5 7.5 8.05228 7.5 7.5C7.5 6.94772 7.05228 6.5 6.5 6.5H5.5C4.94772 6.5 4.5 6.94772 4.5 7.5C4.5 8.05228 4.94772 8.5 5.5 8.5Z" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                            <path d="M5.5 11H6.5C8.15685 11 9.5 9.65685 9.5 8V6C9.5 4.34315 8.15685 3 6.5 3H5.5C3.84315 3 2.5 4.34315 2.5 6V8C2.5 9.65685 3.84315 11 5.5 11Z" stroke="currentColor" stroke-width="1"/>
+                          </svg>
+                          Privada
+                        </span>
+                        {% endif %}
+                      </div>
                     </div>
 
                     <div class="simulation-meta">
@@ -154,12 +239,21 @@
                     {% endif %}
 
                     <div class="simulation-actions">
-                      <a href="{% url 'task_detail' task.id %}" class="btn-details">
-                        Ver detalles
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </a>
+                      {% if guest_mode %}
+                        <a href="{% url 'guest_task_detail' task.id %}" class="btn-details">
+                          Ver detalles
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </a>
+                      {% else %}
+                        <a href="{% url 'task_detail' task.id %}" class="btn-details">
+                          Ver detalles
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </a>
+                      {% endif %}
                     </div>
                   </div>
                   {% endfor %}
@@ -172,13 +266,25 @@
                       <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="2"/>
                     </svg>
                   </div>
-                  <h3 class="empty-title">No hay simulaciones registradas</h3>
+                  <h3 class="empty-title">
+                    {% if guest_mode %}
+                      No hay simulaciones públicas disponibles
+                    {% else %}
+                      No hay simulaciones registradas
+                    {% endif %}
+                  </h3>
                   <p class="empty-description">
-                    Comienza creando tu primera simulación del modelo BTX.
+                    {% if guest_mode %}
+                      Actualmente no hay simulaciones públicas para mostrar.
+                    {% else %}
+                      Comienza creando tu primera simulación del modelo BTX.
+                    {% endif %}
                   </p>
+                  {% if not guest_mode %}
                   <a href="{% url 'create_task' %}" class="btn-primary-action">
                     Crear primera simulación
                   </a>
+                  {% endif %}
                 </div>
                 {% endif %}
               </div>
@@ -288,6 +394,11 @@
     max-width: 880px;
   }
 
+  /* Notificación de invitado */
+  .guest-notice{
+    margin-top: 24px;
+  }
+
   /* Caja principal */
   .info-box {
     background-color: var(--btx-white);
@@ -358,6 +469,29 @@
     text-decoration: none;
   }
 
+  .btn-outline{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--btx-white);
+    color: var(--btx-gray-700);
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    transition: all 0.3s ease;
+    border: 1px solid var(--btx-gray-300);
+  }
+
+  .btn-outline:hover{
+    background: var(--btx-gray-050);
+    color: var(--btx-gray-700);
+    text-decoration: none;
+    border-color: var(--btx-gray-400);
+  }
+
   .stats-card{
     background: var(--btx-white);
     border: 1px solid var(--btx-gray-200);
@@ -400,6 +534,10 @@
   .info-note svg{
     flex-shrink: 0;
     margin-top: 2px;
+  }
+
+  .guest-actions{
+    margin-top: 24px;
   }
 
   /* Panel derecho - simulaciones */
@@ -495,6 +633,11 @@
     font-weight: 500;
   }
 
+  .simulation-badges{
+    display: flex;
+    gap: 8px;
+  }
+
   .status-badge{
     padding: 6px 12px;
     border-radius: 8px;
@@ -503,7 +646,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     flex-shrink: 0;
-    margin-left: 12px;
   }
 
   .status-badge.completed{
@@ -516,6 +658,26 @@
     background: rgba(255, 193, 7, 0.1);
     color: #ffc107;
     border: 1px solid rgba(255, 193, 7, 0.2);
+  }
+
+  .visibility-badge{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .visibility-badge.public{
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .visibility-badge.private{
+    background: #f3f4f6;
+    color: #6b7280;
   }
 
   .simulation-meta{
@@ -647,8 +809,7 @@
       gap: 12px;
     }
 
-    .status-badge{
-      margin-left: 0;
+    .simulation-badges{
       align-self: flex-start;
     }
   }

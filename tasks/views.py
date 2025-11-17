@@ -18,6 +18,10 @@ from scipy import stats
 from .utils import validar_archivo_excel
 from .models import Task, Simulacion, ArchivoExcel
 from .forms import TaskForm
+from django.utils.timezone import localtime, now
+import pytz
+from datetime import datetime
+
 
 
 # =========================
@@ -83,17 +87,31 @@ def signout(request):
 # =========================
 @login_required
 def tasks(request):
-    tasks_qs = Task.objects.filter(user=request.user, datecompleted__isnull=True)
-    return render(request, 'tasks.html', {"tasks": tasks_qs})
+    # Mostrar TODAS las simulaciones del usuario, ordenadas por fecha de creación (más reciente primero)
+    tasks_qs = Task.objects.filter(user=request.user).order_by('-created')
+    
+    # Contar las completadas para las estadísticas
+    tasks_completed_count = Task.objects.filter(user=request.user, datecompleted__isnull=False).count()
+    
+    return render(request, 'tasks.html', {
+        "tasks": tasks_qs,
+        "tasks_completed_count": tasks_completed_count
+    })
 
 
 @login_required
 def tasks_completed(request):
-    tasks_qs = Task.objects.filter(
-        user=request.user,
-        datecompleted__isnull=False
-    ).order_by('-datecompleted')
-    return render(request, 'tasks.html', {"tasks": tasks_qs})
+    # Mostrar también TODAS las simulaciones, igual que la vista tasks
+    tasks_qs = Task.objects.filter(user=request.user).order_by('-created')
+    
+    # Contar las completadas para las estadísticas
+    tasks_completed_count = Task.objects.filter(user=request.user, datecompleted__isnull=False).count()
+    
+    return render(request, 'tasks.html', {
+        "tasks": tasks_qs,
+        "tasks_completed_count": tasks_completed_count
+    })
+
 
 
 def regresion_lineal_manual(X, y):
@@ -1509,11 +1527,38 @@ def complete_task(request, task_id):
 
 @login_required
 def delete_task(request, task_id):
+    """Elimina tanto el Task como la Simulación asociada"""
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
+        # Buscar y eliminar también la simulación asociada
+        simulacion = Simulacion.objects.filter(
+            usuario=request.user,
+            nombre_simulacion=task.title
+        ).first()
+        
+        if simulacion:
+            simulacion.delete()
+        
         task.delete()
         return redirect('tasks')
     return redirect('task_detail', task_id=task.id)
+
+@login_required
+def delete_simulation(request, simulacion_id):
+    """Elimina una simulación del usuario (y sus archivos y Task asociado)."""
+    simulacion = get_object_or_404(Simulacion, pk=simulacion_id, usuario=request.user)
+    
+    # Buscar y eliminar también el Task asociado
+    task = Task.objects.filter(
+        user=request.user,
+        title=simulacion.nombre_simulacion
+    ).first()
+    
+    if task:
+        task.delete()
+    
+    simulacion.delete()
+    return redirect('create_task')
 
 
 # =========================
@@ -1542,11 +1587,16 @@ def create_task(request):
                     'simulaciones': simulaciones
                 })
 
+            # Usar hora actual con zona horaria
+            from django.utils import timezone
+            fecha_actual = timezone.now()
+
             simulacion = Simulacion(
                 usuario=request.user,
                 nombre_simulacion=nombre_simulacion,
                 descripcion=request.POST.get('descripcion'),
-                ubicacion=request.POST.get('ubicacion')
+                ubicacion=request.POST.get('ubicacion'),
+                fecha_creacion=fecha_actual
             )
             simulacion.save()
 
@@ -1560,13 +1610,15 @@ def create_task(request):
                     archivo=archivo_excel
                 )
 
-            # Crear Task espejo (compatibilidad)
+            # Crear Task espejo (compatibilidad) - CREAR COMO COMPLETADO
             Task.objects.create(
                 title=simulacion.nombre_simulacion,
                 description=simulacion.descripcion or "Simulación creada",
                 user=request.user,
                 important=True,
-                ubicacion=simulacion.ubicacion
+                ubicacion=simulacion.ubicacion,
+                created=fecha_actual,
+                datecompleted=fecha_actual  # ← ESTA LÍNEA ES CLAVE: crear como completado
             )
 
             return redirect('tasks')
@@ -1587,6 +1639,11 @@ def create_task(request):
     ).order_by('-fecha_ejecucion')
     return render(request, 'create_task.html', {'simulaciones': simulaciones})
 
+# AGREGAR función para forzar hora local en templates
+def get_local_time(dt):
+    """Convierte datetime a hora local para mostrar en templates"""
+    from django.utils.timezone import localtime
+    return localtime(dt)
 
 @login_required
 def crear_borrador(request):
@@ -1601,12 +1658,22 @@ def crear_borrador(request):
             ).exists():
                 return JsonResponse({'success': False, 'error': 'Ya existe una simulación con ese nombre'})
 
+            # Obtener visibilidad (por defecto privada)
+            visibilidad = request.POST.get('visibilidad', 'privada')
+            es_publica = visibilidad == 'publica'
+
+            # Usar timezone.now() para obtener la hora actual con zona horaria
+            from django.utils import timezone
+            fecha_actual = timezone.now()
+
             simulacion = Simulacion.objects.create(
                 usuario=request.user,
                 nombre_simulacion=nombre_simulacion,
                 descripcion=request.POST.get('descripcion'),
                 ubicacion=request.POST.get('ubicacion'),
-                estado='borrador'
+                estado='borrador',
+                publica=es_publica,
+                fecha_creacion=fecha_actual
             )
 
             return JsonResponse({
@@ -1615,7 +1682,9 @@ def crear_borrador(request):
                     'id': simulacion.id,
                     'nombre_simulacion': simulacion.nombre_simulacion,
                     'ubicacion': simulacion.ubicacion,
-                    'descripcion': simulacion.descripcion
+                    'descripcion': simulacion.descripcion,
+                    'publica': simulacion.publica,
+                    'fecha_creacion': fecha_actual.strftime('%d/%m/%Y %H:%M')
                 }
             })
 
@@ -1719,7 +1788,7 @@ def eliminar_archivo_borrador(request):
 
 @login_required
 def finalizar_simulacion(request):
-    """Pasa una simulación de 'borrador' a 'completada' y crea su Task espejo - AQUÍ SE PROCESA TODO"""
+    """Pasa una simulación de 'borrador' a 'completada' y crea su Task espejo"""
     if request.method == 'POST':
         try:
             simulacion_id = request.POST.get('simulacion_id')
@@ -1727,29 +1796,55 @@ def finalizar_simulacion(request):
                 Simulacion, id=simulacion_id, usuario=request.user, estado='borrador'
             )
 
-            # PROCESAR DATOS ANTES DE FINALIZAR - AQUÍ SE CALCULA TODO
+            # Obtener la visibilidad del formulario
+            visibilidad = request.POST.get('visibilidad', 'privada')
+            es_publica = visibilidad == 'publica'
+
+            # PROCESAR DATOS ANTES DE FINALIZAR
             resultados, mensaje = procesar_datos_simulacion(simulacion)
             
             if resultados:
+                # Usar timezone.now() para la hora actual
+                from django.utils import timezone
+                fecha_ejecucion = timezone.now()
+                
                 simulacion.estado = 'completada'
+                simulacion.publica = es_publica
+                simulacion.fecha_ejecucion = fecha_ejecucion
                 simulacion.save()
 
-                Task.objects.create(
+                # Crear Task espejo (compatibilidad) - COMO COMPLETADO
+                task = Task.objects.create(
                     title=simulacion.nombre_simulacion,
                     description=simulacion.descripcion or "Simulación completada",
                     user=request.user,
                     important=True,
-                    ubicacion=simulacion.ubicacion
+                    ubicacion=simulacion.ubicacion,
+                    publica=es_publica,
+                    created=fecha_ejecucion,
+                    datecompleted=fecha_ejecucion  # ← COMPLETADO AUTOMÁTICAMENTE
                 )
 
                 return redirect('tasks')
             else:
                 error = f"Error al procesar datos: {mensaje}"
-                return render(request, 'create_task.html', {'error': error})
+                simulaciones = Simulacion.objects.filter(
+                    usuario=request.user, estado='completada'
+                ).order_by('-fecha_ejecucion')
+                return render(request, 'create_task.html', {
+                    'error': error,
+                    'simulaciones': simulaciones
+                })
 
         except Exception as e:
             error = f"Error al finalizar simulación: {str(e)}"
-            return render(request, 'create_task.html', {'error': error})
+            simulaciones = Simulacion.objects.filter(
+                usuario=request.user, estado='completada'
+            ).order_by('-fecha_ejecucion')
+            return render(request, 'create_task.html', {
+                'error': error,
+                'simulaciones': simulaciones
+            })
     return redirect('create_task')
 
 
@@ -2213,28 +2308,36 @@ def guest_tasks(request):
     if not request.session.get('guest_mode'):
         return redirect('home')
     
-    # Obtener algunas simulaciones públicas o recientes
-    tasks_qs = Task.objects.filter(datecompleted__isnull=False).order_by('-datecompleted')[:10]
+    # Obtener tasks públicos y completados
+    tasks_qs = Task.objects.filter(
+        publica=True,
+        datecompleted__isnull=False
+    ).order_by('-datecompleted')
+    
     return render(request, 'tasks.html', {
         "tasks": tasks_qs,
         "guest_mode": True
     })
+
 
 def guest_task_detail(request, task_id):
     """Detalle de simulación para invitados"""
     if not request.session.get('guest_mode'):
         return redirect('home')
     
-    task = get_object_or_404(Task, pk=task_id, datecompleted__isnull=False)
+    # Solo permitir ver tareas públicas
+    task = get_object_or_404(Task, pk=task_id, datecompleted__isnull=False, publica=True)
     
     # Archivos de la simulación asociada
     archivos_simulacion = ArchivoExcel.objects.filter(
-        simulacion__nombre_simulacion=task.title
+        simulacion__nombre_simulacion=task.title,
+        simulacion__publica=True
     ).order_by('-fecha_carga')
 
     # Buscar la simulación asociada
     simulacion = Simulacion.objects.filter(
-        nombre_simulacion=task.title
+        nombre_simulacion=task.title,
+        publica=True
     ).first()
 
     # Leer resultados existentes
@@ -2263,6 +2366,6 @@ def guest_task_detail(request, task_id):
             'archivos_simulacion': archivos_simulacion, 
             'resultados_txt': resultados_txt,
             'datos_graficas': datos_graficas,
-            'guest_mode': True  # Indicar que es modo invitado
+            'guest_mode': True
         }
     )

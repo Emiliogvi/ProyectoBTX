@@ -48,10 +48,20 @@
           <!-- Gráfica del modelo causal -->
           <div class="causal-model-wrapper">
             <div class="causal-model-container">
-              <img src="{% url 'causal_graph_jpg' %}?v={{ task.created|date:'U' }}"
-                   alt="Modelo Causal BTX"
-                   class="causal-model-img img-fluid"
-                   id="causalModel">
+              {% if guest_mode %}
+                <!-- PARA MODO INVITADO: Usar la imagen estática JPG -->
+                <img src="/static/media/foto4.jpg"
+                     alt="Modelo Causal BTX"
+                     class="causal-model-img img-fluid"
+                     id="causalModel"
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjhmOGY4Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzY2NiI+R3LDoWZpY2EgZGVsIE1vZGVsbyBDYXVzYWwgQlRYPC90ZXh0Pgo8L3N2Zz4K'">
+              {% else %}
+                <!-- PARA USUARIOS REGISTRADOS: Usar la ruta normal -->
+                <img src="{% url 'causal_graph_jpg' %}?v={{ task.created|date:'U' }}"
+                     alt="Modelo Causal BTX"
+                     class="causal-model-img img-fluid"
+                     id="causalModel">
+              {% endif %}
             </div>
             <p class="text-muted text-center small mt-2 mb-0">
               Representación del modelo dinámico de causalidad de gases BTX y efectos en la salud.
@@ -207,7 +217,9 @@
                   <th>Fecha de carga</th>
                   <th>Tamaño</th>
                   <th>Validación</th>
+                  {% if not guest_mode %}
                   <th class="text-end">Acciones</th>
+                  {% endif %}
                 </tr>
               </thead>
               <tbody>
@@ -239,6 +251,7 @@
                       <span class="badge bg-danger text-light small">Inválido</span>
                     {% endif %}
                   </td>
+                  {% if not guest_mode %}
                   <td class="text-end">
                     <a href="{{ archivo.archivo.url }}"
                        class="btn btn-sm btn-primary rounded-3 me-1"
@@ -251,6 +264,7 @@
                       <i class="fas fa-trash me-1"></i>Eliminar
                     </a>
                   </td>
+                  {% endif %}
                 </tr>
                 {% endfor %}
               </tbody>
@@ -264,6 +278,7 @@
           {% endif %}
 
           <!-- Formulario para agregar más archivos -->
+          {% if not guest_mode %}
           <div class="mt-4">
             <h6 class="fw-semibold small mb-2 text-muted text-uppercase">
               Agregar archivos a esta simulación
@@ -297,6 +312,7 @@
               </div>
             </form>
           </div>
+          {% endif %}
 
         </div>
       </div>
@@ -333,6 +349,7 @@
       </div>
 
       <!-- Gestión del registro -->
+      {% if not guest_mode %}
       <div class="card shadow-sm border-0 soft-card">
         <div class="card-body">
           <h6 class="card-title mb-3 h6 fw-semibold text-center">
@@ -359,12 +376,23 @@
           </div>
         </div>
       </div>
+      {% else %}
+      <div class="card shadow-sm border-0 soft-card">
+        <div class="card-body text-center">
+          <div class="alert alert-info mb-0">
+            <i class="fas fa-user-clock me-2"></i>
+            <strong>Modo de invitado:</strong> Solo puedes ver los detalles de las simulaciones.
+          </div>
+        </div>
+      </div>
+      {% endif %}
     </div>
 
   </div>
 </div>
 
 <!-- Modal de confirmación para eliminar -->
+{% if not guest_mode %}
 <div class="modal fade" id="deleteModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content soft-card">
@@ -401,6 +429,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <!-- Scripts para gráficas -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -670,6 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 400px;
   }
 
   .causal-model-img{

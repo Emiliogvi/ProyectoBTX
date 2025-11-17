@@ -148,3 +148,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# settings.py
+
+# Configuración de zona horaria para Colombia
+TIME_ZONE = 'America/Bogota'
+USE_TZ = True
+USE_L10N = True

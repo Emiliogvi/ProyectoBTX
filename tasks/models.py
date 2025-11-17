@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator
+from django.utils import timezone
 import os
 
 # -------------------------
@@ -9,15 +10,21 @@ import os
 class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=1000)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)  # Hora automática al crear
     datecompleted = models.DateTimeField(null=True, blank=True)
     important = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ubicacion = models.CharField(max_length=150, blank=True, null=True)
     archivos_procesados = models.JSONField(default=list, blank=True)
+    publica = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.title} - {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        # No necesitas establecer created manualmente si usas auto_now_add=True
+        super().save(*args, **kwargs)
+
 
 
 # -------------------------
@@ -48,7 +55,8 @@ class Simulacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     nombre_simulacion = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
-    fecha_ejecucion = models.DateTimeField(auto_now_add=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)  # Se actualiza solo al crear
+    fecha_ejecucion = models.DateTimeField(null=True, blank=True)  # Se establece manualmente
     ubicacion = models.CharField(max_length=255, blank=True, null=True)
     datos_txt = models.FileField(
         upload_to='simulaciones_txt/',
@@ -56,10 +64,18 @@ class Simulacion(models.Model):
         null=True,
         validators=[FileExtensionValidator(allowed_extensions=['txt'])]
     )
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='borrador')  # ← NUEVO CAMPO
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='borrador')
+    publica = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.nombre_simulacion} - {self.usuario.username} ({self.estado})"
+
+    def save(self, *args, **kwargs):
+        if self.estado == 'completada' and not self.fecha_ejecucion:
+            from django.utils import timezone
+            self.fecha_ejecucion = timezone.now()
+        super().save(*args, **kwargs)
+
 
 class ArchivoExcel(models.Model):
     TIPOS = [
@@ -77,14 +93,13 @@ class ArchivoExcel(models.Model):
     )
     fecha_carga = models.DateTimeField(auto_now_add=True)
 
-    # 👇 NUEVOS CAMPOS
+    # Campos de validación
     valido = models.BooleanField(default=False)
     errores_validacion = models.TextField(blank=True, null=True)
     num_filas = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.tipo_tabla} ({self.simulacion.nombre_simulacion})"
-
 
 
 # -------------------------
